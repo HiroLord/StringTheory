@@ -18,6 +18,9 @@ use std::ffi;
 use collections::vec;
 
 
+mod object;
+mod shader;
+
 fn main() {
     sdl2::init(sdl2::INIT_VIDEO);
 
@@ -36,6 +39,8 @@ fn main() {
     let context = window.gl_create_context().unwrap();
     gl::load_with(|s| unsafe { std::mem::transmute(sdl2::video::gl_get_proc_address(s)) });
 
+    let obj = object::new();
+
     loop {
         match poll_event() {
             Quit(_) => break,
@@ -46,8 +51,7 @@ fn main() {
             }
             _ => {}
         }
-        unsafe {
-        }
+        obj.draw();
         window.gl_swap_window();
     }
     sdl2::quit();
