@@ -11,5 +11,5 @@ sdl2 = "0.0.21"
 [dependencies.gl]
 git = "https://github.com/bjz/gl-rs"
 
-[dependencies.sdl2_net]
-git = "https://github.com/Limvot/rust-sdl2_net"
+[dependencies.rustnet]
+git = "https://github.com/HiroLord/rustnet"

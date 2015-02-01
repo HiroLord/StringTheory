@@ -1,7 +1,7 @@
 extern crate sdl2;
 extern crate collections;
 extern crate gl;
-extern crate sdl2_net;
+extern crate rustnet;
 
 use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
 use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
