@@ -2,11 +2,11 @@
 
 name = "StringTheory"
 version = "0.0.1"
-authors = ["HiroLord <presto4132@comcast.net>", "Nathan Braswell <miloignis@gmail.com>"]
+authors = ["HiroLord <prestonturner42@gmail.com>", "Nathan Braswell <miloignis@gmail.com>"]
 
 
 [dependencies]
-sdl2 = "0.0.21"
+sdl2 = "0.0.24"
 
 [dependencies.gl]
 git = "https://github.com/bjz/gl-rs"

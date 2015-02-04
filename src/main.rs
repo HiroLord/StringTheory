@@ -24,6 +24,17 @@ mod shader;
 fn main() {
     sdl2::init(sdl2::INIT_VIDEO);
 
+    let port: u16 = 1231;
+
+    let mut connected = true;
+
+    if !rustnet::init_client("127.0.0.1", port) {
+        println!("Unable to connect to server on port {}", port);
+        connected = false;
+    } else {
+        println!("Connected!");
+    }
+
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask, sdl2::video::GLProfile::GLCoreProfile as i32);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 3);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 3);
@@ -41,6 +52,8 @@ fn main() {
 
     let obj = object::new();
 
+    let mut sent = false;
+
     loop {
         match poll_event() {
             Quit(_) => break,
@@ -53,6 +66,30 @@ fn main() {
         }
         obj.draw();
         window.gl_swap_window();
+        if connected {
+            if rustnet::check_sockets(){
+                if !rustnet::read_server_socket(can_handle, user_defined){
+                    println!("Lost server connection.");
+                    break;;
+                }
+            }
+
+            if !sent {
+                rustnet::clear_buffer();
+                rustnet::write_byte(1);
+                rustnet::write_byte(5);
+                rustnet::send_ts_message();
+                sent = true;
+            }
+        }
     }
     sdl2::quit();
+}
+
+fn user_defined(msg_id: u8) -> u32 {
+    0
+}
+
+fn can_handle(msg_id: u8, buffer_size: u32) -> bool {
+    true
 }

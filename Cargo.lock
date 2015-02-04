@@ -4,7 +4,7 @@ version = "0.0.1"
 dependencies = [
  "gl 0.0.7 (git+https://github.com/bjz/gl-rs)",
  "rustnet 0.0.1 (git+https://github.com/HiroLord/rustnet)",
- "sdl2 0.0.21 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sdl2 0.0.24 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -15,37 +15,37 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "gl"
 version = "0.0.7"
-source = "git+https://github.com/bjz/gl-rs#c5303f86a9aac5392bae959b21a8af84e86510e3"
+source = "git+https://github.com/bjz/gl-rs#304569673d345b7b752aff2242f6926043e47b46"
 dependencies = [
  "gl_common 0.0.3 (git+https://github.com/bjz/gl-rs)",
- "gl_generator 0.0.13 (git+https://github.com/bjz/gl-rs)",
+ "gl_generator 0.0.14 (git+https://github.com/bjz/gl-rs)",
  "khronos_api 0.0.5 (git+https://github.com/bjz/gl-rs)",
 ]
 
 [[package]]
 name = "gl_common"
 version = "0.0.3"
-source = "git+https://github.com/bjz/gl-rs#c5303f86a9aac5392bae959b21a8af84e86510e3"
+source = "git+https://github.com/bjz/gl-rs#304569673d345b7b752aff2242f6926043e47b46"
 
 [[package]]
 name = "gl_generator"
-version = "0.0.13"
-source = "git+https://github.com/bjz/gl-rs#c5303f86a9aac5392bae959b21a8af84e86510e3"
+version = "0.0.14"
+source = "git+https://github.com/bjz/gl-rs#304569673d345b7b752aff2242f6926043e47b46"
 dependencies = [
  "gl_common 0.0.3 (git+https://github.com/bjz/gl-rs)",
  "khronos_api 0.0.5 (git+https://github.com/bjz/gl-rs)",
- "log 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "xml-rs 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "xml-rs 0.1.17 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "khronos_api"
 version = "0.0.5"
-source = "git+https://github.com/bjz/gl-rs#c5303f86a9aac5392bae959b21a8af84e86510e3"
+source = "git+https://github.com/bjz/gl-rs#304569673d345b7b752aff2242f6926043e47b46"
 
 [[package]]
 name = "log"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -56,7 +56,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "rustnet"
 version = "0.0.1"
-source = "git+https://github.com/HiroLord/rustnet#bdcade07981f60ccb35bc5cc79205b52b515277d"
+source = "git+https://github.com/HiroLord/rustnet#2ae8128fb0b2f517e97b7cc1db307cf8aff107ce"
 dependencies = [
  "sdl2_net 0.0.1 (git+https://github.com/Limvot/rust-sdl2_net)",
 ]
@@ -71,6 +71,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "sdl2"
+version = "0.0.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "bitflags 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sdl2-sys 0.0.23 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "sdl2-sys"
 version = "0.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -79,16 +88,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "sdl2-sys"
+version = "0.0.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "pkg-config 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "sdl2_net"
 version = "0.0.1"
-source = "git+https://github.com/Limvot/rust-sdl2_net#4ee042d5d29b6b489145478948c0198fff61bba0"
+source = "git+https://github.com/Limvot/rust-sdl2_net#e86ea1ae18a227cca0f1b72a97394e456f8d14fd"
 dependencies = [
  "sdl2 0.0.21 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "xml-rs"
-version = "0.1.16"
+version = "0.1.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
