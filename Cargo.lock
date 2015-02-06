@@ -3,7 +3,7 @@ name = "StringTheory"
 version = "0.0.1"
 dependencies = [
  "gl 0.0.7 (git+https://github.com/bjz/gl-rs)",
- "rustnet 0.0.1 (git+https://github.com/HiroLord/rustnet)",
+ "rustnet 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sdl2 0.0.24 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -56,9 +56,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "rustnet"
 version = "0.0.1"
-source = "git+https://github.com/HiroLord/rustnet#48597c95a17472abe4219f16eba3a21652f9ee1e"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "sdl2_net 0.0.1 (git+https://github.com/Limvot/rust-sdl2_net)",
+ "sdl2_net 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -81,7 +81,7 @@ dependencies = [
 [[package]]
 name = "sdl2_net"
 version = "0.0.1"
-source = "git+https://github.com/Limvot/rust-sdl2_net#835018dae68aa36a26935243d80b7fe8f497ee4f"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "sdl2 0.0.24 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

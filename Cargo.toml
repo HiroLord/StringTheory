@@ -7,9 +7,7 @@ authors = ["HiroLord <prestonturner42@gmail.com>", "Nathan Braswell <miloignis@g
 
 [dependencies]
 sdl2 = "0.0.24"
+rustnet = "0.0.1"
 
 [dependencies.gl]
 git = "https://github.com/bjz/gl-rs"
-
-[dependencies.rustnet]
-git = "https://github.com/HiroLord/rustnet"
