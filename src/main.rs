@@ -6,8 +6,9 @@ extern crate rustnet;
 use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
 use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
 use sdl2::pixels::Color;
-use sdl2::event::poll_event;
-use sdl2::event::Event::{Quit, KeyDown};
+use sdl2::event::{Event, poll_event};
+//use sdl2::event::poll_event;
+//use sdl2::event::Event::{Quit, KeyDown};
 use sdl2::keycode::KeyCode;
 
 use gl::types::*;
@@ -56,8 +57,8 @@ fn main() {
 
     loop {
         match poll_event() {
-            Quit(_) => break,
-            KeyDown(_, _, key, _, _, _) => {
+            Event::Quit{..} => break,
+            Event::KeyDown{keycode: key, ..} => {
                 if key == KeyCode::Escape {
                     break;
                 }
