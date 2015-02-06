@@ -56,7 +56,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "rustnet"
 version = "0.0.1"
-source = "git+https://github.com/HiroLord/rustnet#81fc8153a90e568d733bfacefaf551981efc6354"
+source = "git+https://github.com/HiroLord/rustnet#48597c95a17472abe4219f16eba3a21652f9ee1e"
 dependencies = [
  "sdl2_net 0.0.1 (git+https://github.com/Limvot/rust-sdl2_net)",
 ]
