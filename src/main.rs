@@ -52,7 +52,7 @@ fn main() {
     gl::load_with(|s| unsafe { std::mem::transmute(sdl2::video::gl_get_proc_address(s)) });
 
     //let obj = object::new(-0.5, -0.5, -0.5, -1.5, -1.5, -1.5);
-    //let obj = object::new(0.5, 0.5, 0.5, 1.5, 1.5, 1.5);
+    let obj2 = object::new(0.5, 0.5, 0.5, 1.5, 1.5, 1.5);
     //let obj = object::new(0.5, 0.5, 0.5, -1.5, -1.5, -1.5);
     let obj = object::new(-0.5, -0.5, 0.5, 0.5, 0.5, 1.5);
     //let obj = object::newTri();
@@ -69,7 +69,13 @@ fn main() {
             }
             _ => {}
         }
+        unsafe {
+            gl::ClearColor(0.3, 0.3, 0.5, 1.0);
+            gl::Clear(gl::COLOR_BUFFER_BIT);
+        }
+
         obj.draw();
+        obj2.draw();
         window.gl_swap_window();
         if connected {
             if rustnet::check_sockets(){

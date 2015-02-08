@@ -38,14 +38,14 @@ attribute vec3 norm_model;
 //uniform mat4 viewProjectionMatrix;
 
 //varying vec4 position_modelSpace;
-//varying vec4 normal_modelSpace;
+varying vec4 normal_modelSpace;
 
 void main() {
     //gl_Position = viewProjectionMatrix * modelMatrix * vec4(vertPos_model, 1);
     gl_Position = vec4(vert_model, 1);
     //position_modelSpace = modelMatrix * vec4(vertPos_model, 1);
     //normal_modelSpace = normalize(modelMatrix * vec4(norm_model, 1));
-    //normal_modelSpace = vec4(norm_model, 1);
+    normal_modelSpace = vec4(norm_model, 1);
 }
     ";
 
@@ -56,7 +56,7 @@ static FS_SRC: &'static str = "\n\
 //uniform float alpha;
 
 //varying vec4 position_modelSpace;
-//varying vec4 normal_modelSpace;
+varying vec4 normal_modelSpace;
 
 void main() {
     //vec4 light_pos = vec4(0, 40, 0, 1);
@@ -67,8 +67,8 @@ void main() {
     //float cosTheta = clamp( dot(normal_modelSpace, light_pos), 0, 1);
     //float dist = distance(position_modelSpace, light_pos); 
     //gl_FragColor =   vec4(materialColor * vec3(0.3,0.3,0.3) + (cosTheta * materialColor * light_color) / (dist), alpha);
-    //gl_FragColor =   normal_modelSpace;
-    gl_FragColor =   vec4(1,1,0,1);
+    gl_FragColor =   normal_modelSpace;
+    //gl_FragColor =   vec4(1,1,0,1);
 }
     ";
 
@@ -91,6 +91,7 @@ pub struct Object {
     visible: bool,
 
     shader: shader::Shader,
+    vao: u32,
     vert_buff: u32,
     norm_buff: u32,
     texc_buff: u32,
@@ -100,35 +101,31 @@ pub struct Object {
 impl Object {
     pub fn draw(&self) -> () {
         unsafe {
-
-            gl::ClearColor(0.3, 0.3, 0.5, 1.0);
-            gl::Clear(gl::COLOR_BUFFER_BIT);
-
+            gl::BindVertexArray(self.vao);
 
             self.shader.bind();
             let position_handle = self.shader.get_attrib("vert_model");
-            //let normal_handle = self.shader.get_attrib("norm_model");
+            let normal_handle = self.shader.get_attrib("norm_model");
 
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vert_buff);
             // attribute, size, type, normalized, stride, offset
             gl::EnableVertexAttribArray(position_handle);
             gl::VertexAttribPointer(position_handle, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
 
-            //gl::BindBuffer(gl::ARRAY_BUFFER, self.norm_buff);
-            //// attribute, size, type, normalized, stride, offset
-            //gl::VertexAttribPointer(normal_handle, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
-            //gl::EnableVertexAttribArray(normal_handle);
+            gl::BindBuffer(gl::ARRAY_BUFFER, self.norm_buff);
+            // attribute, size, type, normalized, stride, offset
+            gl::VertexAttribPointer(normal_handle, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
+            gl::EnableVertexAttribArray(normal_handle);
 
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.indx_buff);
             gl::DrawElements(gl::TRIANGLES, self.num_indx as i32, gl::UNSIGNED_INT, ptr::null());
-            //gl::DrawArrays(gl::TRIANGLES, 0, 3);
-
 
             gl::DisableVertexAttribArray(position_handle);
-            //gl::DisableVertexAttribArray(normal_handle);
+            gl::DisableVertexAttribArray(normal_handle);
         }
     }
 }
+
 pub fn newTri()  -> Object {
     //let shader = shader::new(VS_SRC, FS_SRC);
     let shader = shader::new(VS_SRC_S, FS_SRC_S);
@@ -144,60 +141,8 @@ pub fn newTri()  -> Object {
             ];
     let mut indxs: [u32; 9] = [0; 9];
     for i in 0..(9) { indxs[i] = i as u32; }
-    //for i in 0..(9) { indxs[i] = (i+1) as u32; }
-    let mut vert_buff:u32 = 0;
-    let mut norm_buff:u32 = 0;
-    //let mut vert_buff:u32;
-    let mut indx_buff:u32 = 0;
-    unsafe {
-    let mut vao = 0;
-        gl::GenVertexArrays(1, &mut vao);
-        gl::BindVertexArray(vao);
-
-        gl::GenBuffers(1, &mut vert_buff);
-        gl::GenBuffers(1, &mut norm_buff);
-        //gl::GenBuffers(1, &mut texc_buff);
-        gl::GenBuffers(1, &mut indx_buff);
-
-        gl::BindBuffer(gl::ARRAY_BUFFER, vert_buff);
-        gl::BufferData(gl::ARRAY_BUFFER, (verts.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
-                        mem::transmute(&verts[0]), gl::STATIC_DRAW);
-        gl::BindBuffer(gl::ARRAY_BUFFER, norm_buff);
-        gl::BufferData(gl::ARRAY_BUFFER, (norms.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
-                        mem::transmute(&norms[0]), gl::STATIC_DRAW);
-        //gl::BindBuffer(gl::ARRAY_BUFFER, texc_buff);
-        //gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, (.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
-                        //mem::transmute(&[0]), gl::STATIC_DRAW);
-        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, indx_buff);
-        gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, (indxs.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
-                        mem::transmute(&indxs[0]), gl::STATIC_DRAW);
-
-    }
-    Object {
-        x: 0f32,
-        y: 0f32,
-        z: 0f32,
-
-        rx: 0f32,
-        ry: 0f32,
-        rz: 0f32,
-
-        r: 0f32,
-        g: 0f32,
-        b: 0f32,
-
-        num_indx: indxs.len() as u32,
-
-        visible: true,
-
-        shader: shader,
-        vert_buff: vert_buff,
-        norm_buff: norm_buff,
-        texc_buff: 0,
-        indx_buff: indx_buff,
-    }
+    generate(shader, &verts, &norms, &indxs)
 }
-
 
 pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32)  -> Object {
     let shader = shader::new(VS_SRC, FS_SRC);
@@ -295,12 +240,16 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32)  -> Object {
             ];
     let mut indxs: [u32; 6*6*3] = [0; 6*6*3];
     for i in 0..(6*6*3) { indxs[i] = i as u32; }
+    generate(shader, &verts, &norms, &indxs)
+}
+
+fn generate(shader: shader::Shader, verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32]) -> Object {
     let mut vert_buff:u32 = 0;
     let mut norm_buff:u32 = 0;
     //let mut vert_buff:u32;
     let mut indx_buff:u32 = 0;
-    unsafe {
     let mut vao = 0;
+    unsafe {
         gl::GenVertexArrays(1, &mut vao);
         gl::BindVertexArray(vao);
 
@@ -341,13 +290,12 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32)  -> Object {
         visible: true,
 
         shader: shader,
+        vao: vao,
         vert_buff: vert_buff,
         norm_buff: norm_buff,
         texc_buff: 0,
         indx_buff: indx_buff,
     }
 }
-
-
 
 
