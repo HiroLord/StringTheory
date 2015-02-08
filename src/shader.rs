@@ -19,16 +19,18 @@ pub struct Shader {
 
 
 impl Shader {
+    pub fn get_attrib(&self, attrib: &str) -> u32 { unsafe { gl::GetAttribLocation(self.program,
+                                                                ffi::CString::from_slice(attrib.as_bytes()).as_ptr()) as u32 } }
     pub fn bind(&self) -> () {
         unsafe {
             gl::UseProgram(self.program);
             gl::GetAttribLocation(self.program, ffi::CString::from_slice("out_color".as_bytes()).as_ptr());
 
             // specify location of vertex data
-            let pos_attr = gl::GetAttribLocation(self.program, ffi::CString::from_slice("position".as_bytes()).as_ptr());
-            gl::EnableVertexAttribArray(pos_attr as GLuint);
-            gl::VertexAttribPointer(pos_attr as GLuint, 3, gl::FLOAT,
-                                    gl::FALSE as GLboolean, 0, ptr::null());
+            //let pos_attr = gl::GetAttribLocation(self.program, ffi::CString::from_slice("position".as_bytes()).as_ptr());
+            //gl::EnableVertexAttribArray(pos_attr as GLuint);
+            //gl::VertexAttribPointer(pos_attr as GLuint, 3, gl::FLOAT,
+                                    //gl::FALSE as GLboolean, 0, ptr::null());
         }
     }
 }

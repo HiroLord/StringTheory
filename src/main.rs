@@ -51,7 +51,10 @@ fn main() {
     let context = window.gl_create_context().unwrap();
     gl::load_with(|s| unsafe { std::mem::transmute(sdl2::video::gl_get_proc_address(s)) });
 
-    let obj = object::new();
+    //let obj = object::new(-0.5, -0.5, -0.5, -1.5, -1.5, -1.5);
+    //let obj = object::new(-0.5, -0.5, -0.5, -1.5, -1.5, -1.5);
+    //let obj = object::new(0.5, 0.5, 0.5, -1.5, -1.5, -1.5);
+    let obj = object::newTri();
 
     let mut sent = false;
 
