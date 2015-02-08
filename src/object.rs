@@ -119,9 +119,9 @@ impl Object {
             //gl::VertexAttribPointer(normal_handle, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
             //gl::EnableVertexAttribArray(normal_handle);
 
-            //gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.indx_buff);
-            //gl::DrawElements(gl::TRIANGLES, self.num_indx as i32, gl::UNSIGNED_INT, ptr::null());
-            gl::DrawArrays(gl::TRIANGLES, 0, 3);
+            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.indx_buff);
+            gl::DrawElements(gl::TRIANGLES, self.num_indx as i32, gl::UNSIGNED_INT, ptr::null());
+            //gl::DrawArrays(gl::TRIANGLES, 0, 3);
 
 
             gl::DisableVertexAttribArray(position_handle);
@@ -150,6 +150,9 @@ pub fn newTri()  -> Object {
     //let mut vert_buff:u32;
     let mut indx_buff:u32 = 0;
     unsafe {
+    let mut vao = 0;
+        gl::GenVertexArrays(1, &mut vao);
+        gl::BindVertexArray(vao);
 
         gl::GenBuffers(1, &mut vert_buff);
         gl::GenBuffers(1, &mut norm_buff);
@@ -297,6 +300,9 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32)  -> Object {
     //let mut vert_buff:u32;
     let mut indx_buff:u32 = 0;
     unsafe {
+    let mut vao = 0;
+        gl::GenVertexArrays(1, &mut vao);
+        gl::BindVertexArray(vao);
 
         gl::GenBuffers(1, &mut vert_buff);
         gl::GenBuffers(1, &mut norm_buff);
