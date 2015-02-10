@@ -1,5 +1,6 @@
 use shader;
 use gl;
+use camera;
 
 use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
 use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
@@ -16,33 +17,34 @@ use std::ffi;
 use collections::vec;
 
 static VS_SRC_S: &'static str =
-    "#version 150\n\
-    in vec3 vert_model;\n\
-    void main() {\n\
-        gl_Position = vec4(vert_model, 1.0);\n\
+    "#version 150
+    in vec3 vert_model;
+    void main() {
+        gl_Position = vec4(vert_model, 1.0);
     }";
 
 static FS_SRC_S: &'static str =
-    "#version 150\n\
-    out vec4 out_color;\n\
-    void main() {\n\
-        out_color = vec4(1.0, 0.5, 0.5, 1.0);\n\
+    "#version 150
+    out vec4 out_color;
+    void main() {
+        out_color = vec4(1.0, 0.5, 0.5, 1.0);
     }";
 
-static VS_SRC: &'static str = "\n\
+static VS_SRC: &'static str = "
 #version 120
 attribute vec3 vert_model;
 attribute vec3 norm_model;
 
 //uniform mat4 modelMatrix;
-//uniform mat4 viewProjectionMatrix;
+uniform mat4 viewProjectionMatrix;
 
 //varying vec4 position_modelSpace;
 varying vec4 normal_modelSpace;
 
 void main() {
     //gl_Position = viewProjectionMatrix * modelMatrix * vec4(vertPos_model, 1);
-    gl_Position = vec4(vert_model, 1);
+    gl_Position = viewProjectionMatrix * vec4(vert_model, 1);
+    //gl_Position = vec4(vert_model, 1);
     //position_modelSpace = modelMatrix * vec4(vertPos_model, 1);
     //normal_modelSpace = normalize(modelMatrix * vec4(norm_model, 1));
     normal_modelSpace = vec4(norm_model, 1);
@@ -67,7 +69,8 @@ void main() {
     //float cosTheta = clamp( dot(normal_modelSpace, light_pos), 0, 1);
     //float dist = distance(position_modelSpace, light_pos); 
     //gl_FragColor =   vec4(materialColor * vec3(0.3,0.3,0.3) + (cosTheta * materialColor * light_color) / (dist), alpha);
-    gl_FragColor =   normal_modelSpace;
+    //gl_FragColor =   normal_modelSpace;
+    gl_FragColor =   normal_modelSpace / vec4(2,2,2,2)  + vec4(1,1,1,1);
     //gl_FragColor =   vec4(1,1,0,1);
 }
     ";
@@ -99,13 +102,16 @@ pub struct Object {
 }
 
 impl Object {
-    pub fn draw(&self) -> () {
+    pub fn draw(&self, camera:&camera::Camera) -> () {
         unsafe {
             gl::BindVertexArray(self.vao);
 
             self.shader.bind();
             let position_handle = self.shader.get_attrib("vert_model");
             let normal_handle = self.shader.get_attrib("norm_model");
+            //let model_matrix_handel = self.shader.get_attrib("modelMatrix");
+            let view_projection_matrix_handle = self.shader.get_uniform("viewProjectionMatrix");
+            gl::UniformMatrix4fv(view_projection_matrix_handle as i32, 1, gl::FALSE, mem::transmute(&camera.view_projection.data[0]));
 
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vert_buff);
             // attribute, size, type, normalized, stride, offset
