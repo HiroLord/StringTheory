@@ -48,7 +48,7 @@ fn main() {
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDepthSize, 24);
     let window = match Window::new("rust-sdl2: Video", WindowPos::PosCentered, WindowPos::PosCentered, window_width, window_height, OPENGL) {
         Ok(window) => window,
-        Err(err) => panic!("faid to create window: {}", err)
+        Err(err) => panic!("Failed to create window: {}", err)
     };
 
     // MUST ASSIGN RESULT THIS TO A VARIABLE
@@ -79,38 +79,36 @@ fn main() {
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
-    loop {
-        match poll_event() {
-            Event::Quit{..} => break,
-            Event::MouseMotion{x: mx, y: my, ..} => {
-                let midx = window_width / 2;
-                let midy = window_height / 2;
-                let difx = midx - mx;
-                let dify = midy - my;
-                camera.horizontal_angle += 0.01f32*(difx as f32);
-                camera.vertical_angle += 0.01f32*(dify as f32);
-                sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
+    let mut running = true;
+
+    while running {
+        let mut polling = true;
+        while polling {
+            match poll_event() {
+                Event::Quit{..} => running = false,
+                Event::MouseMotion{x: mx, y: my, ..} => {
+                    let midx = window_width / 2;
+                    let midy = window_height / 2;
+                    
+                    let difx = midx - mx;
+                    let dify = midy - my;
+                    camera.horizontal_angle += 0.01f32*(difx as f32);
+                    camera.vertical_angle += 0.01f32*(dify as f32);
+                    
+                    sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
+                }
+                Event::KeyDown{keycode: key, ..} => {
+                    if key == KeyCode::Escape { running = false; }
+                    if key == KeyCode::W { z = -1.0f32; }
+                    if key == KeyCode::S { z = 1.0f32; }
+                    if key == KeyCode::Z { y = -1.0f32; }
+                    if key == KeyCode::X { y = 1.0f32; }
+                    if key == KeyCode::A { x = -1.0f32; }
+                    if key == KeyCode::D { x = 1.0f32; }
+                }
+                Event::None => polling = false,
+                _ => {}
             }
-            Event::KeyDown{keycode: key, ..} => {
-                if key == KeyCode::Escape { break; }
-                if key == KeyCode::Up { z = -1.0f32; }
-                if key == KeyCode::Down { z = 1.0f32; }
-                if key == KeyCode::Z { y = -1.0f32; }
-                if key == KeyCode::X { y = 1.0f32; }
-                if key == KeyCode::Left { x = -1.0f32; }
-                if key == KeyCode::Right { x = 1.0f32; }
-                //if key == KeyCode::Up { z = z - 1.0f32; }
-                //if key == KeyCode::Down { z = z + 1.0f32; }
-                //if key == KeyCode::Z { y = y - 1.0f32; }
-                //if key == KeyCode::X { y = y + 1.0f32; }
-                //if key == KeyCode::Left { x = x + 1.0f32; }
-                //if key == KeyCode::Right { x = x - 1.0f32; }
-                if key == KeyCode::D { camera.horizontal_angle +=  -0.10f32; }
-                if key == KeyCode::A { camera.horizontal_angle +=  0.10f32; }
-                if key == KeyCode::S { camera.vertical_angle +=  -0.10f32; }
-                if key == KeyCode::W { camera.vertical_angle +=  0.10f32; }
-            }
-            _ => {}
         }
 
         camera.translate(x, y, z);
