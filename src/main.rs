@@ -67,7 +67,7 @@ fn main() {
     //let floor = object::new(-0.5, -0.5, -1.5, 0.5, 0.5, -2.5,     0.4, 0.9, 0.4);
     let floor = object::new(-5.5, -4.5, 5.5,  5.5, -4.0, -5.5,     0.4, 0.9, 0.4);
     let aspect_ratio = window_x as f32 / window_y as f32;
-    let mut camera = camera::new(60.0f32, aspect_ratio, 1.0f32, 100.0f32);
+    let mut camera = camera::new(60.0f32, aspect_ratio, 0.0f32, 100.0f32);
     let mut x = 0.0f32;
     let mut y = 0.0f32;
     let mut z = 0.0f32;
