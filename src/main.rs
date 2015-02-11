@@ -79,12 +79,18 @@ fn main() {
             Event::Quit{..} => break,
             Event::KeyDown{keycode: key, ..} => {
                 if key == KeyCode::Escape { break; }
-                if key == KeyCode::Up { z = z - 1.0f32; }
-                if key == KeyCode::Down { z = z + 1.0f32; }
-                if key == KeyCode::Z { y = y - 1.0f32; }
-                if key == KeyCode::X { y = y + 1.0f32; }
-                if key == KeyCode::Left { x = x + 1.0f32; }
-                if key == KeyCode::Right { x = x - 1.0f32; }
+                if key == KeyCode::Up { z = -1.0f32; }
+                if key == KeyCode::Down { z = 1.0f32; }
+                if key == KeyCode::Z { y = -1.0f32; }
+                if key == KeyCode::X { y = 1.0f32; }
+                if key == KeyCode::Left { x = -1.0f32; }
+                if key == KeyCode::Right { x = 1.0f32; }
+                //if key == KeyCode::Up { z = z - 1.0f32; }
+                //if key == KeyCode::Down { z = z + 1.0f32; }
+                //if key == KeyCode::Z { y = y - 1.0f32; }
+                //if key == KeyCode::X { y = y + 1.0f32; }
+                //if key == KeyCode::Left { x = x + 1.0f32; }
+                //if key == KeyCode::Right { x = x - 1.0f32; }
                 if key == KeyCode::D { camera.horizontal_angle +=  -0.10f32; }
                 if key == KeyCode::A { camera.horizontal_angle +=  0.10f32; }
                 if key == KeyCode::S { camera.vertical_angle +=  -0.10f32; }
@@ -93,8 +99,12 @@ fn main() {
             _ => {}
         }
 
-        camera.set_translation(x, y, z);
+        camera.translate(x, y, z);
+        //camera.set_translation(x, y, z);
         camera.update_view_projection();
+        x = 0.0f32;
+        y = 0.0f32;
+        z = 0.0f32;
         unsafe {
             gl::ClearColor(0.3, 0.3, 0.5, 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);

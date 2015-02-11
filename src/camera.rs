@@ -1,4 +1,5 @@
 use matrix;
+use std::num::Float;
 use gl::types::*;
 
 pub struct Camera {
@@ -21,6 +22,18 @@ impl Camera {
         self.x = x;
         self.y = y;
         self.z = z;
+    }
+    pub fn translate(&mut self, x: GLfloat, y: GLfloat, z: GLfloat) {
+        self.x += self.horizontal_angle.sin() * self.vertical_angle.cos() * z +
+                  self.horizontal_angle.cos() * x +
+                  self.horizontal_angle.sin() * self.vertical_angle.sin() * y;
+
+        self.y += -self.vertical_angle.sin() * z +
+                  self.vertical_angle.cos() * y;
+
+        self.z += self.horizontal_angle.cos() * self.vertical_angle.cos() * z +
+                  -self.horizontal_angle.sin() * x +
+                  self.horizontal_angle.cos() * self.vertical_angle.sin() * y;
     }
 }
 
