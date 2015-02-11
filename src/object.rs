@@ -1,6 +1,7 @@
 use shader;
 use gl;
 use camera;
+use matrix;
 
 use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
 use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
@@ -35,17 +36,17 @@ static VS_SRC: &'static str = "
 attribute vec3 vert_model;
 attribute vec3 norm_model;
 
-//uniform mat4 modelMatrix;
+uniform mat4 modelMatrix;
 uniform mat4 viewProjectionMatrix;
 
-//varying vec4 position_modelSpace;
+varying vec4 position_modelSpace;
 varying vec4 normal_modelSpace;
 
 void main() {
-    //gl_Position = viewProjectionMatrix * modelMatrix * vec4(vertPos_model, 1);
-    gl_Position = viewProjectionMatrix * vec4(vert_model, 1);
+    gl_Position = viewProjectionMatrix * modelMatrix * vec4(vert_model, 1);
+    //gl_Position = viewProjectionMatrix * vec4(vert_model, 1);
     //gl_Position = vec4(vert_model, 1);
-    //position_modelSpace = modelMatrix * vec4(vertPos_model, 1);
+    position_modelSpace = modelMatrix * vec4(vert_model, 1);
     //normal_modelSpace = normalize(modelMatrix * vec4(norm_model, 1));
     normal_modelSpace = vec4(norm_model, 1);
 }
@@ -54,23 +55,23 @@ void main() {
 static FS_SRC: &'static str = "\n\
 #version 120
 
-//uniform vec3 materialColor;
-//uniform float alpha;
+uniform vec3 material_color;
+uniform float alpha;
 
-//varying vec4 position_modelSpace;
+varying vec4 position_modelSpace;
 varying vec4 normal_modelSpace;
 
 void main() {
-    //vec4 light_pos = vec4(0, 40, 0, 1);
-    //vec3 light_color = vec3(30,30,30);
+    vec4 light_pos = vec4(0, 40, 0, 1);
+    vec3 light_color = vec3(30,30,30);
 
     //vec3 matDiffuseColor = vec3(0.9, 0.9, 0.9);
 
-    //float cosTheta = clamp( dot(normal_modelSpace, light_pos), 0, 1);
-    //float dist = distance(position_modelSpace, light_pos); 
-    //gl_FragColor =   vec4(materialColor * vec3(0.3,0.3,0.3) + (cosTheta * materialColor * light_color) / (dist), alpha);
+    float cosTheta = clamp( dot(normal_modelSpace, light_pos), 0, 1);
+    float dist = distance(position_modelSpace, light_pos); 
+    gl_FragColor =   vec4(material_color * vec3(0.3,0.3,0.3) + (cosTheta * material_color * light_color) / (dist), alpha);
     //gl_FragColor =   normal_modelSpace;
-    gl_FragColor =   normal_modelSpace / vec4(2,2,2,2)  + vec4(1,1,1,1);
+    //gl_FragColor =   normal_modelSpace / vec4(2,2,2,2)  + vec4(1,1,1,1);
     //gl_FragColor =   vec4(1,1,0,1);
 }
     ";
@@ -88,6 +89,8 @@ pub struct Object {
     r: f32,
     g: f32,
     b: f32,
+
+    model_matrix: matrix::Matrix,
 
     num_indx: u32,
 
@@ -109,9 +112,20 @@ impl Object {
             self.shader.bind();
             let position_handle = self.shader.get_attrib("vert_model");
             let normal_handle = self.shader.get_attrib("norm_model");
-            //let model_matrix_handel = self.shader.get_attrib("modelMatrix");
-            let view_projection_matrix_handle = self.shader.get_uniform("viewProjectionMatrix");
-            gl::UniformMatrix4fv(view_projection_matrix_handle as i32, 1, gl::FALSE, mem::transmute(&camera.view_projection.data[0]));
+
+            let model_handle = self.shader.get_uniform("modelMatrix");
+            //for i in 0..16 { print!(" {} ", self.model_matrix.data[i]); }
+            //println!("");
+            gl::UniformMatrix4fv(model_handle, 1, gl::FALSE, mem::transmute(&self.model_matrix.data[0]));
+
+            let view_projection_handle = self.shader.get_uniform("viewProjectionMatrix");
+            gl::UniformMatrix4fv(view_projection_handle, 1, gl::FALSE, mem::transmute(&camera.view_projection.data[0]));
+
+            let material_color_handle = self.shader.get_uniform("material_color");
+            gl::Uniform3f(material_color_handle, self.r, self.g, self.b);
+
+            let alpha_handle = self.shader.get_uniform("alpha");
+            gl::Uniform1f(alpha_handle, 1.0f32);
 
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vert_buff);
             // attribute, size, type, normalized, stride, offset
@@ -132,7 +146,7 @@ impl Object {
     }
 }
 
-pub fn newTri()  -> Object {
+pub fn newTri(r:f32, g:f32, b:f32)  -> Object {
     //let shader = shader::new(VS_SRC, FS_SRC);
     let shader = shader::new(VS_SRC_S, FS_SRC_S);
     let verts: [GLfloat; 9] = [
@@ -147,10 +161,10 @@ pub fn newTri()  -> Object {
             ];
     let mut indxs: [u32; 9] = [0; 9];
     for i in 0..(9) { indxs[i] = i as u32; }
-    generate(shader, &verts, &norms, &indxs)
+    generate(shader, &verts, &norms, &indxs, r, g, b)
 }
 
-pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32)  -> Object {
+pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32)  -> Object {
     let shader = shader::new(VS_SRC, FS_SRC);
     let verts: [GLfloat; 6*6*3] = [
         // Front face
@@ -246,10 +260,10 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32)  -> Object {
             ];
     let mut indxs: [u32; 6*6*3] = [0; 6*6*3];
     for i in 0..(6*6*3) { indxs[i] = i as u32; }
-    generate(shader, &verts, &norms, &indxs)
+    generate(shader, &verts, &norms, &indxs, r, g, b)
 }
 
-fn generate(shader: shader::Shader, verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32]) -> Object {
+fn generate(shader: shader::Shader, verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f32, g:f32, b:f32) -> Object {
     let mut vert_buff:u32 = 0;
     let mut norm_buff:u32 = 0;
     //let mut vert_buff:u32;
@@ -287,9 +301,11 @@ fn generate(shader: shader::Shader, verts: &[GLfloat], norms: &[GLfloat], indxs:
         ry: 0f32,
         rz: 0f32,
 
-        r: 0f32,
-        g: 0f32,
-        b: 0f32,
+        r: r,
+        g: g,
+        b: b,
+
+        model_matrix: matrix::new(),
 
         num_indx: indxs.len() as u32,
 

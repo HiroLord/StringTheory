@@ -61,11 +61,10 @@ fn main() {
         gl::Enable(gl::DEPTH_TEST);
     }
 
-    //let obj = object::new(-0.5, -0.5, -0.5, -1.5, -1.5, -1.5);
-    let obj2 = object::new(0.5, 0.5, -1.5, 1.5, 1.5, -2.5);
-    //let obj = object::new(0.5, 0.5, 0.5, -1.5, -1.5, -1.5);
-    let obj = object::new(-0.5, -0.5, -1.5, 0.5, 0.5, -2.5);
-    //let obj3 = object::newTri();
+    let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
+    let obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
+    //let floor = object::new(-0.5, -0.5, -1.5, 0.5, 0.5, -2.5,     0.4, 0.9, 0.4);
+    let floor = object::new(-5.5, -4.5, 5.5,  5.5, -4.0, -5.5,     0.4, 0.9, 0.4);
     let aspect_ratio = window_x as f32 / window_y as f32;
     let mut camera = camera::new(60.0f32, aspect_ratio, 1.0f32, 100.0f32);
     let mut x = 0.0f32;
@@ -80,17 +79,21 @@ fn main() {
             Event::Quit{..} => break,
             Event::KeyDown{keycode: key, ..} => {
                 if key == KeyCode::Escape { break; }
-                if key == KeyCode::Up { z = z + 1.0f32; }
-                if key == KeyCode::Down { z = z - 1.0f32; }
-                if key == KeyCode::Z { y = y + 1.0f32; }
-                if key == KeyCode::X { y = y - 1.0f32; }
+                if key == KeyCode::Up { z = z - 1.0f32; }
+                if key == KeyCode::Down { z = z + 1.0f32; }
+                if key == KeyCode::Z { y = y - 1.0f32; }
+                if key == KeyCode::X { y = y + 1.0f32; }
                 if key == KeyCode::Left { x = x + 1.0f32; }
                 if key == KeyCode::Right { x = x - 1.0f32; }
+                if key == KeyCode::D { camera.horizontal_angle +=  -0.10f32; }
+                if key == KeyCode::A { camera.horizontal_angle +=  0.10f32; }
+                if key == KeyCode::S { camera.vertical_angle +=  -0.10f32; }
+                if key == KeyCode::W { camera.vertical_angle +=  0.10f32; }
             }
             _ => {}
         }
 
-        camera.view.setTranslation(x, y, z);
+        camera.set_translation(x, y, z);
         camera.update_view_projection();
         unsafe {
             gl::ClearColor(0.3, 0.3, 0.5, 1.0);
@@ -99,6 +102,7 @@ fn main() {
 
         obj.draw(&camera);
         obj2.draw(&camera);
+        floor.draw(&camera);
         //obj3.draw(&camera);
         window.gl_swap_window();
         if connected {

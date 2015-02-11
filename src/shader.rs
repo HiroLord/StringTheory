@@ -21,8 +21,8 @@ pub struct Shader {
 impl Shader {
     pub fn get_attrib(&self, attrib: &str) -> u32 { unsafe { gl::GetAttribLocation(self.program,
                                                                 ffi::CString::from_slice(attrib.as_bytes()).as_ptr()) as u32 } }
-    pub fn get_uniform(&self, uniform: &str) -> u32 { unsafe { gl::GetUniformLocation(self.program,
-                                                                ffi::CString::from_slice(uniform.as_bytes()).as_ptr()) as u32 } }
+    pub fn get_uniform(&self, uniform: &str) -> i32 { unsafe { gl::GetUniformLocation(self.program,
+                                                                ffi::CString::from_slice(uniform.as_bytes()).as_ptr()) as i32 } }
     pub fn bind(&self) -> () {
         unsafe {
             gl::UseProgram(self.program);

@@ -10,24 +10,30 @@ pub struct Matrix {
 }
 impl Copy for Matrix {}
 impl Matrix {
-    pub fn setIdentity(&mut self) -> () {
+    pub fn set_identity(&mut self) -> () {
         for i in 0..16 { self.data[i] = 0.0f32; }
         self.data[0] = 1.0f32;
         self.data[5] = 1.0f32;
         self.data[10] = 1.0f32;
         self.data[15] = 1.0f32;
     }
-    pub fn setTranslation(&mut self, x: GLfloat, y: GLfloat, z: GLfloat) -> () {
+    pub fn set_translation(&mut self, x: GLfloat, y: GLfloat, z: GLfloat) -> () {
         self.data[12] = x;
         self.data[13] = y;
         self.data[14] = z;
     }
-    pub fn setScale(&mut self, x: GLfloat, y: GLfloat, z: GLfloat) -> () {
+    pub fn set_scale(&mut self, x: GLfloat, y: GLfloat, z: GLfloat) -> () {
         self.data[0] = x;
         self.data[5] = y;
         self.data[10] = z;
     }
-    pub fn setPerspectiveMatrix(&mut self, fovy: GLfloat, aspect: GLfloat, z_near: GLfloat, z_far: GLfloat) {
+    
+    pub fn rotate(&mut self, x: GLfloat, y: GLfloat, z: GLfloat) {
+        let res = rotated(x,y,z);
+        for i in 0..16 { self.data[i] = res.data[i]; }
+    }
+
+    pub fn set_perspective_matrix(&mut self, fovy: GLfloat, aspect: GLfloat, z_near: GLfloat, z_far: GLfloat) {
         //let f = 1.0f32/tan(deg_to_rad(fovy/2.0f32));
         let f = 1.0f32/deg_to_rad(fovy/2.0f32).tan();
         self.data[0] = f/aspect;
@@ -67,8 +73,43 @@ impl Mul for Matrix {
 
 pub fn new() -> Matrix {
     let mut ret = Matrix { data: [0.0f32; 16] };
-    ret.setIdentity();
+    ret.set_identity();
     ret
+}
+
+pub fn translated(x: GLfloat, y:GLfloat, z:GLfloat) -> Matrix {
+    let mut ret = new();
+    ret.set_translation(x,y,z);
+    ret
+}
+pub fn rotated(x: GLfloat, y:GLfloat, z:GLfloat) -> Matrix {
+    let mut rot_x = new();
+    let mut rot_y = new();
+    let mut rot_z = new();
+
+    // The X rotation matrix
+    rot_x.data[0] = 1.0f32;
+    rot_x.data[5] = x.cos();
+    rot_x.data[6] = x.sin();
+    rot_x.data[9] = -x.sin();
+    rot_x.data[10] = x.cos();
+    rot_x.data[15] = 1.0f32;
+
+    rot_y.data[0] = y.cos();
+    rot_y.data[2] = -y.sin();
+    rot_y.data[5] = 1.0f32;
+    rot_y.data[8] = y.sin();
+    rot_y.data[10] = y.cos();
+    rot_y.data[15] = 1.0f32;
+
+    rot_z.data[0] = z.cos();
+    rot_z.data[1] = z.sin();
+    rot_z.data[4] = -z.sin();
+    rot_z.data[5] = z.cos();
+    rot_z.data[10] = 1.0f32;
+    rot_z.data[15] = 1.0f32;
+
+    rot_x * rot_y * rot_z
 }
 
 fn deg_to_rad(deg: GLfloat) -> GLfloat { (deg % 360.0f32) / 180.0f32 * consts::PI }
