@@ -26,8 +26,8 @@ mod matrix;
 
 fn main() {
     sdl2::init(sdl2::INIT_VIDEO);
-    let window_x = 800;
-    let window_y = 600;
+    let window_width = 800;
+    let window_height = 600;
 
     let port: u16 = 1231;
 
@@ -46,7 +46,7 @@ fn main() {
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 1);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDoubleBuffer, 1);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDepthSize, 24);
-    let window = match Window::new("rust-sdl2: Video", WindowPos::PosCentered, WindowPos::PosCentered, window_x, window_y, OPENGL) {
+    let window = match Window::new("rust-sdl2: Video", WindowPos::PosCentered, WindowPos::PosCentered, window_width, window_height, OPENGL) {
         Ok(window) => window,
         Err(err) => panic!("faid to create window: {}", err)
     };
@@ -66,7 +66,7 @@ fn main() {
     let obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
     //let floor = object::new(-0.5, -0.5, -1.5, 0.5, 0.5, -2.5,     0.4, 0.9, 0.4);
     let floor = object::new(-5.5, -4.5, 5.5,  5.5, -4.0, -5.5,     0.4, 0.9, 0.4);
-    let aspect_ratio = window_x as f32 / window_y as f32;
+    let aspect_ratio = window_width as f32 / window_height as f32;
     let mut camera = camera::new(60.0f32, aspect_ratio, 0.0f32, 100.0f32);
     let mut x = 0.0f32;
     let mut y = 0.0f32;
@@ -75,9 +75,22 @@ fn main() {
 
     let mut sent = false;
 
+    let midx = window_width / 2;
+    let midy = window_height / 2;
+    sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
+
     loop {
         match poll_event() {
             Event::Quit{..} => break,
+            Event::MouseMotion{x: mx, y: my, ..} => {
+                let midx = window_width / 2;
+                let midy = window_height / 2;
+                let difx = midx - mx;
+                let dify = midy - my;
+                camera.horizontal_angle += 0.01f32*(difx as f32);
+                camera.vertical_angle += 0.01f32*(dify as f32);
+                sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
+            }
             Event::KeyDown{keycode: key, ..} => {
                 if key == KeyCode::Escape { break; }
                 if key == KeyCode::Up { z = -1.0f32; }
@@ -132,8 +145,12 @@ fn main() {
                 sent = true;
             }
         }
+        sdl2::timer::delay(15);
     }
     sdl2::quit();
+}
+
+fn key_input() {
 }
 
 fn user_defined(msg_id: u8) -> u32 {
