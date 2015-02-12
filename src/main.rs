@@ -23,6 +23,7 @@ mod object;
 mod shader;
 mod camera;
 mod matrix;
+mod player;
 
 fn main() {
     sdl2::init(sdl2::INIT_VIDEO);
@@ -79,6 +80,8 @@ fn main() {
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
+    let mut player = player::new(0f32, 0f32, 0f32, 5f32);
+
     let mut running = true;
 
     while running {
@@ -111,7 +114,9 @@ fn main() {
             }
         }
 
-        camera.translate(x, y, z);
+        //camera.translate(x, y, z);
+        player.move_from_camera(&camera, x, z);
+        camera.snap_to_player(&player);
         //camera.set_translation(x, y, z);
         camera.update_view_projection();
         x = 0.0f32;

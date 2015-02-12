@@ -2,6 +2,8 @@ use matrix;
 use std::num::Float;
 use gl::types::*;
 
+use player::Player;
+
 pub struct Camera {
     x: GLfloat,
     y: GLfloat,
@@ -34,6 +36,11 @@ impl Camera {
         self.z += self.horizontal_angle.cos() * self.vertical_angle.cos() * z +
                   -self.horizontal_angle.sin() * x +
                   self.horizontal_angle.cos() * self.vertical_angle.sin() * y;
+    }
+    pub fn snap_to_player(&mut self, p: &Player) {
+        self.x = p.x;
+        self.y = p.y;
+        self.z = p.z;
     }
 }
 
