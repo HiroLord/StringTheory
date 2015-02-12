@@ -105,6 +105,18 @@ pub struct Object {
 }
 
 impl Object {
+    pub fn set_translation(&mut self, x: GLfloat, y: GLfloat, z: GLfloat) -> () {
+        self.x = x;
+        self.y = y;
+        self.z = z;
+        self.model_matrix.set_translation(x,y,z);
+    }
+    pub fn translate(&mut self, x: GLfloat, y: GLfloat, z: GLfloat) -> () {
+        self.x += x;
+        self.y += y;
+        self.z += z;
+        self.model_matrix.set_translation(self.x,self.y,self.z);
+    }
     pub fn draw(&self, camera:&camera::Camera) -> () {
         unsafe {
             gl::BindVertexArray(self.vao);

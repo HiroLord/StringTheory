@@ -66,7 +66,7 @@ fn main() {
     }
 
     let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
-    let obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
+    let mut obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
     //let floor = object::new(-0.5, -0.5, -1.5, 0.5, 0.5, -2.5,     0.4, 0.9, 0.4);
     let floor = object::new(-5.5, -4.5, 5.5,  5.5, -4.0, -5.5,     0.4, 0.9, 0.4);
     let aspect_ratio = window_width as f32 / window_height as f32;
@@ -109,10 +109,12 @@ fn main() {
                     if key == KeyCode::Escape { running = false; }
                     if key == KeyCode::W { forward = 1f32; }
                     if key == KeyCode::S { forward = -1f32; }
-                    //if key == KeyCode::Z { y = -1f32; }
-                    //if key == KeyCode::X { y = 1.0f32; }
                     if key == KeyCode::A { strafe = -1.0f32; }
                     if key == KeyCode::D { strafe = 1.0f32; }
+                    //if key == KeyCode::Z { obj2.set_translation(0.0f32, 0.0f32, 0.0f32); }
+                    //if key == KeyCode::X { obj2.set_translation(1.0f32, 1.0f32, 1.0f32); }
+                    if key == KeyCode::Z { obj2.translate(-0.1f32, -0.1f32, -0.1f32); }
+                    if key == KeyCode::X { obj2.translate(0.1f32, 0.1f32, 0.1f32); }
                 }
                 Event::KeyUp{keycode: key, ..} => {
                     if key == KeyCode::W { forward = 0f32; }
