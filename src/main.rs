@@ -30,6 +30,8 @@ fn main() {
     let window_width = 800;
     let window_height = 600;
 
+    let mouse_sense = 0.5f32;
+
     let port: u16 = 1231;
 
     let mut connected = true;
@@ -80,9 +82,12 @@ fn main() {
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
-    let mut player = player::new(0f32, 0f32, 0f32, 5f32);
+    let mut player = player::new(0f32, 0f32, 0f32, 1f32);
 
     let mut running = true;
+
+    let mut forward = 0f32;
+    let mut strafe = 0f32;
 
     while running {
         let mut polling = true;
@@ -95,19 +100,25 @@ fn main() {
                     
                     let difx = midx - mx;
                     let dify = midy - my;
-                    camera.horizontal_angle += 0.01f32*(difx as f32);
-                    camera.vertical_angle += 0.01f32*(dify as f32);
+                    camera.horizontal_angle += mouse_sense*0.01f32*(difx as f32);
+                    camera.vertical_angle += mouse_sense*0.01f32*(dify as f32);
                     
                     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
                 }
                 Event::KeyDown{keycode: key, ..} => {
                     if key == KeyCode::Escape { running = false; }
-                    if key == KeyCode::W { z = -1.0f32; }
-                    if key == KeyCode::S { z = 1.0f32; }
-                    if key == KeyCode::Z { y = -1.0f32; }
-                    if key == KeyCode::X { y = 1.0f32; }
-                    if key == KeyCode::A { x = -1.0f32; }
-                    if key == KeyCode::D { x = 1.0f32; }
+                    if key == KeyCode::W { forward = 1f32; }
+                    if key == KeyCode::S { forward = -1f32; }
+                    //if key == KeyCode::Z { y = -1f32; }
+                    //if key == KeyCode::X { y = 1.0f32; }
+                    if key == KeyCode::A { strafe = -1.0f32; }
+                    if key == KeyCode::D { strafe = 1.0f32; }
+                }
+                Event::KeyUp{keycode: key, ..} => {
+                    if key == KeyCode::W { forward = 0f32; }
+                    if key == KeyCode::A { strafe = 0f32; }
+                    if key == KeyCode::D { strafe = 0f32; }
+                    if key == KeyCode::S { forward = 0f32; }
                 }
                 Event::None => polling = false,
                 _ => {}
@@ -115,7 +126,9 @@ fn main() {
         }
 
         //camera.translate(x, y, z);
-        player.move_from_camera(&camera, x, z);
+        player.forward(&camera, forward);
+        player.strafe(&camera, strafe);
+        //player.move_from_camera(&camera, x, z);
         camera.snap_to_player(&player);
         //camera.set_translation(x, y, z);
         camera.update_view_projection();
