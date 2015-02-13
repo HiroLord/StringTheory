@@ -9,48 +9,77 @@ pub struct Player {
     pub y: GLfloat,
     pub z: GLfloat,
 
+    fb: GLfloat,
+    lr: GLfloat,
+
+    movement: Vect,
+
     speed: GLfloat,
 }
 
+struct Vect {
+    x: GLfloat,
+    y: GLfloat,
+    z: GLfloat,
+}
+
 impl Player {
-    pub fn move_self(&mut self, dx: GLfloat, dz: GLfloat) {
-        self.x += dx;
-        self.z += dz;
+    pub fn move_self(&mut self) {
+        self.x += self.movement.x * 0.1f32 * self.speed;
+        self.z += self.movement.z * 0.1f32 * self.speed;
     }
 
     pub fn forward(&mut self, c: &Camera, mut dz: GLfloat) {
-        if dz > 0f32 {
+        if dz > 1f32 {
             dz = 1f32;
         }
-        else if dz < 0f32 {
+        else if dz < -1f32 {
             dz = -1f32;
         }
 
-        let adx = -c.horizontal_angle.sin() * 0.15f32 * self.speed * dz;
-        let adz = -c.horizontal_angle.cos() * 0.15f32 * self.speed * dz;
-        self.move_self(adx, adz);
+        self.fb = -dz;
+        
+        self.set_vector(c);
+    }
+
+    fn set_vector(&mut self, c: &Camera) {
+        self.movement.x = c.horizontal_angle.sin() * self.fb +
+            c.horizontal_angle.cos() * self.lr;
+
+        self.movement.z =  c.horizontal_angle.cos() * self.fb - 
+            c.horizontal_angle.sin() * self.lr;
+
+        let mag = (self.movement.x * self.movement.x + self.movement.z * self.movement.z).sqrt() as
+            f32;
+        if mag > 1f32 {
+            self.movement.x /= mag;
+            self.movement.z /= mag;
+        }
     }
 
     pub fn strafe(&mut self, c: &Camera, mut dx: GLfloat) {
-        if dx > 0f32 {
+        if dx > 1f32 {
             dx = 1f32;
         }
-        else if dx < 0f32 {
+        else if dx < -1f32 {
             dx = -1f32;
         }
-        let adx = c.horizontal_angle.cos() * 0.15f32 * dx * self.speed;
-        let adz = -c.horizontal_angle.sin() * 0.15f32  * dx * self.speed;
-        self.move_self(adx, adz);
+
+        self.lr = dx;
+
+        self.set_vector(c);
     }
 
+    /*
     pub fn move_from_camera(&mut self, c: &Camera, dx: GLfloat, dz: GLfloat) {
         let adx = c.horizontal_angle.cos() * dx + c.horizontal_angle.sin() * dz;
         let adz = -c.horizontal_angle.sin() * dx + c.horizontal_angle.cos() * dz;
         self.move_self(adx, adz);
     }
+    */
 }
 
 pub fn new(x: GLfloat, y: GLfloat, z: GLfloat, speed: GLfloat) -> Player {
-    Player{ x: x, y: y, z: z, speed: speed }
+    Player{ x: x, y: y, z: z, fb: 0f32, lr: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
 }
 

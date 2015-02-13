@@ -130,7 +130,7 @@ fn main() {
         //camera.translate(x, y, z);
         player.forward(&camera, forward);
         player.strafe(&camera, strafe);
-        //player.move_from_camera(&camera, x, z);
+        player.move_self();
         camera.snap_to_player(&player);
         //camera.set_translation(x, y, z);
         camera.update_view_projection();
