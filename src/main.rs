@@ -25,6 +25,7 @@ mod camera;
 mod matrix;
 mod player;
 mod solids;
+mod mapgen;
 
 fn main() {
     sdl2::init(sdl2::INIT_VIDEO);
@@ -69,15 +70,8 @@ fn main() {
 
     let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
     let mut obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
-    //let floor = object::new(-0.5, -0.5, -1.5, 0.5, 0.5, -2.5,     0.4, 0.9, 0.4);
-    //let floor = object::new(-5.5, -4.5, 5.5,  5.5, -4.0, -5.5,     0.4, 0.9, 0.4);
-    let mut floor = solids::new_floor(0f32, -1f32, 0f32);
     let aspect_ratio = window_width as f32 / window_height as f32;
     let mut camera = camera::new(60.0f32, aspect_ratio, 0.0f32, 100.0f32);
-    let mut x = 0.0f32;
-    let mut y = 0.0f32;
-    let mut z = 0.0f32;
-    //camera.view.setScale(1.0, 1.0, 1.0);
 
     let mut sent = false;
 
@@ -85,7 +79,9 @@ fn main() {
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
-    let mut player = player::new(0f32, 0f32, 0f32, 1f32);
+    let mut player = player::new(0f32, 2f32, 0f32, 1f32);
+
+    let mut map = mapgen::new_map(1);
 
     let mut running = true;
 
@@ -103,8 +99,8 @@ fn main() {
                     
                     let difx = midx - mx;
                     let dify = midy - my;
-                    camera.horizontal_angle += mouse_sense*0.01f32*(difx as f32);
-                    camera.vertical_angle += mouse_sense*0.01f32*(dify as f32);
+                    camera.change_horizontal_angle(mouse_sense*0.01f32*(difx as f32));
+                    camera.change_vertical_angle(mouse_sense*0.01f32*(dify as f32));
                     
                     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
                 }
@@ -130,16 +126,13 @@ fn main() {
             }
         }
 
-        //camera.translate(x, y, z);
         player.forward(&camera, forward);
         player.strafe(&camera, strafe);
         player.move_self();
+
         camera.snap_to_player(&player);
-        //camera.set_translation(x, y, z);
         camera.update_view_projection();
-        x = 0.0f32;
-        y = 0.0f32;
-        z = 0.0f32;
+
         unsafe {
             gl::ClearColor(0.3, 0.3, 0.5, 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
@@ -147,8 +140,13 @@ fn main() {
 
         obj.draw(&camera);
         obj2.draw(&camera);
-        floor.draw(&camera);
         //obj3.draw(&camera);
+
+        for i in range(0, map.len()){
+            map[i].draw(&camera);
+            //o.draw(&camera);
+        }
+
         window.gl_swap_window();
         if connected {
             if rustnet::check_sockets(){

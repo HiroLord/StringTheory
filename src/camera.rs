@@ -4,12 +4,15 @@ use gl::types::*;
 
 use player::Player;
 
+const PI_3_2: f32 = 4.71238898039;
+const PI_5_2: f32 = 7.85398163398;
+
 pub struct Camera {
     x: GLfloat,
     y: GLfloat,
     z: GLfloat,
-    pub horizontal_angle: GLfloat,
-    pub vertical_angle: GLfloat,
+    horizontal_angle: GLfloat,
+    vertical_angle: GLfloat,
     projection: matrix::Matrix,
     pub view_projection: matrix::Matrix,
 }
@@ -41,6 +44,24 @@ impl Camera {
         self.x = p.x;
         self.y = p.y;
         self.z = p.z;
+    }
+
+    pub fn horizontal_angle(&self) -> f32 {
+        self.horizontal_angle
+    }
+
+    pub fn vertical_angle(&self) -> f32 {
+        self.vertical_angle
+    }
+
+    pub fn change_horizontal_angle(&mut self, dh: GLfloat) {
+        self.horizontal_angle += dh;
+    }
+
+    pub fn change_vertical_angle(&mut self, dv: GLfloat) {
+        self.vertical_angle += dv;
+        if self.vertical_angle < PI_3_2 { self.vertical_angle = PI_3_2 }
+        else if self.vertical_angle > PI_5_2 { self.vertical_angle = PI_5_2 }
     }
 }
 

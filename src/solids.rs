@@ -24,7 +24,7 @@ impl Floor {
 
 pub fn new_floor(x: f32, y: f32, z: f32) -> Floor {
 
-    let m = object::new(-0.5, -0.25, 0.5,  0.5, 0.25, -0.5,  0.7, 0.4, 0.2);
+    let m = object::new(-1.0, -0.1, 1.0,  1.0, 0.1, -1.0,  0.6, 0.6, 0.8);
 
     let mut f = Floor{x: x, y: y, z:z, model: m};
     f.set_position();

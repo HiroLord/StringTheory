@@ -43,11 +43,11 @@ impl Player {
     }
 
     fn set_vector(&mut self, c: &Camera) {
-        self.movement.x = c.horizontal_angle.sin() * self.fb +
-            c.horizontal_angle.cos() * self.lr;
+        self.movement.x = c.horizontal_angle().sin() * self.fb +
+            c.horizontal_angle().cos() * self.lr;
 
-        self.movement.z =  c.horizontal_angle.cos() * self.fb - 
-            c.horizontal_angle.sin() * self.lr;
+        self.movement.z =  c.horizontal_angle().cos() * self.fb - 
+            c.horizontal_angle().sin() * self.lr;
 
         let mag = (self.movement.x * self.movement.x + self.movement.z * self.movement.z).sqrt() as
             f32;
