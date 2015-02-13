@@ -24,6 +24,7 @@ mod shader;
 mod camera;
 mod matrix;
 mod player;
+mod solids;
 
 fn main() {
     sdl2::init(sdl2::INIT_VIDEO);
@@ -65,10 +66,12 @@ fn main() {
         gl::Enable(gl::DEPTH_TEST);
     }
 
+
     let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
     let mut obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
     //let floor = object::new(-0.5, -0.5, -1.5, 0.5, 0.5, -2.5,     0.4, 0.9, 0.4);
-    let floor = object::new(-5.5, -4.5, 5.5,  5.5, -4.0, -5.5,     0.4, 0.9, 0.4);
+    //let floor = object::new(-5.5, -4.5, 5.5,  5.5, -4.0, -5.5,     0.4, 0.9, 0.4);
+    let mut floor = solids::new_floor(0f32, -1f32, 0f32);
     let aspect_ratio = window_width as f32 / window_height as f32;
     let mut camera = camera::new(60.0f32, aspect_ratio, 0.0f32, 100.0f32);
     let mut x = 0.0f32;
