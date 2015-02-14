@@ -1,22 +1,20 @@
+#![feature(core)]
+#![feature(collections)]
+#![feature(std_misc)]
+
 extern crate sdl2;
 extern crate collections;
 extern crate gl;
 extern crate rustnet;
+//extern crate time;
 
 use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
-use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
-use sdl2::pixels::Color;
+//use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
+//use sdl2::pixels::Color;
 use sdl2::event::{Event, poll_event};
 //use sdl2::event::poll_event;
 //use sdl2::event::Event::{Quit, KeyDown};
 use sdl2::keycode::KeyCode;
-
-use gl::types::*;
-use std::mem;
-use std::ptr;
-use std::str;
-use std::ffi;
-use collections::vec;
 
 
 mod object;
@@ -27,10 +25,12 @@ mod player;
 mod solids;
 mod mapgen;
 
+use solids::GameObject;
+
 fn main() {
     sdl2::init(sdl2::INIT_VIDEO);
-    let window_width = 800;
-    let window_height = 600;
+    let window_width = 1280;
+    let window_height = 720;
 
     let mouse_sense = 0.5f32;
 
@@ -142,8 +142,8 @@ fn main() {
         obj2.draw(&camera);
         //obj3.draw(&camera);
 
-        for i in range(0, map.len()){
-            map[i].draw(&camera);
+        for i in range(0, map.get_floors().len()){
+            map.get_floors()[i].draw(&camera);
             //o.draw(&camera);
         }
 

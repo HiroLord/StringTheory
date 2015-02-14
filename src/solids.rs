@@ -1,25 +1,50 @@
-use std::num::Float;
 use gl::types::*;
 
 use object;
 use camera::Camera;
 
+pub trait GameObject {
+    fn x(&self) -> f32;
+    fn y(&self) -> f32;
+    fn z(&self) -> f32;
+    fn draw(&self, &Camera);
+}
+
 pub struct Floor {
-    pub x: GLfloat,
-    pub y: GLfloat,
-    pub z: GLfloat,
+    x: GLfloat,
+    y: GLfloat,
+    z: GLfloat,
 
     model: object::Object,
 }
 
-impl Floor {
+impl Floor{
     pub fn set_position(&mut self) {
         self.model.translate(self.x, self.y, self.z);
     }
 
-    pub fn draw(&mut self, c: &Camera) {
+    /*
+    pub fn draw(&self, c: &Camera) {
         self.model.draw(c);
     }
+    */
+}
+
+impl GameObject for Floor {
+    fn x(&self) -> f32 { self.x }
+    fn y(&self) -> f32 { self.y }
+    fn z(&self) -> f32 { self.z }
+
+    fn draw(&self, c: &Camera) {
+        self.model.draw(c);
+    }
+}
+
+
+pub struct MedBay {
+    x: GLfloat,
+    y: GLfloat,
+    z: GLfloat,
 }
 
 pub fn new_floor(x: f32, y: f32, z: f32) -> Floor {

@@ -1,17 +1,17 @@
 use gl;
-use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
-use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
-use sdl2::pixels::Color;
-use sdl2::event::poll_event;
-use sdl2::event::Event::{Quit, KeyDown};
-use sdl2::keycode::KeyCode;
+//use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
+//use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
+//use sdl2::pixels::Color;
+//use sdl2::event::poll_event;
+//use sdl2::event::Event::{Quit, KeyDown};
+//use sdl2::keycode::KeyCode;
 
 use gl::types::*;
-use std::mem;
+//use std::mem;
 use std::ptr;
 use std::str;
 use std::ffi;
-use collections::vec;
+//use collections::vec;
 
 pub struct Shader {
     program: GLuint,

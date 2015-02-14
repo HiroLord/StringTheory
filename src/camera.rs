@@ -1,11 +1,12 @@
 use matrix;
 use std::num::Float;
 use gl::types::*;
+use std::f32::consts::PI;
 
 use player::Player;
 
-const PI_3_2: f32 = 4.71238898039;
-const PI_5_2: f32 = 7.85398163398;
+const PI_3_2: f32 = PI*(3.0/2.0); //4.71238898039;
+const PI_5_2: f32 = PI*(5.0/2.0); //7.85398163398;
 
 pub struct Camera {
     x: GLfloat,
@@ -19,7 +20,7 @@ pub struct Camera {
 
 impl Camera {
     pub fn update_view_projection(&mut self) {
-        let mut view = matrix::rotated(-self.vertical_angle, -self.horizontal_angle, 0.0f32) * matrix::translated(-self.x,-self.y,-self.z);
+        let view = matrix::rotated(-self.vertical_angle, -self.horizontal_angle, 0.0f32) * matrix::translated(-self.x,-self.y,-self.z);
         let mul = self.projection * view;
         for i in 0..16 { self.view_projection.data[i] = mul.data[i]; }
     }
@@ -67,7 +68,7 @@ impl Camera {
 
 pub fn new(fovy: GLfloat, aspect: GLfloat, z_near: GLfloat, z_far: GLfloat) -> Camera {
     let mut ret = Camera{ x: 0.0f32, y: 0.0f32, z: 0.0f32,
-                          horizontal_angle: 0.0f32, vertical_angle: 0.0f32,
+                          horizontal_angle: 0.0f32, vertical_angle: 2.0*PI,
                           projection: matrix::new(), view_projection: matrix::new() };
     ret.projection.set_perspective_matrix(fovy, aspect, z_near, z_far);
     ret.update_view_projection();
