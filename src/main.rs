@@ -79,7 +79,7 @@ fn main() {
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
-    let mut player = player::new(0f32, 2f32, 0f32, 1f32);
+    let mut player = player::new(0f32, 1.5f32, 0f32, 1f32);
 
     let mut map = mapgen::new_map(1);
 
@@ -87,11 +87,18 @@ fn main() {
 
     let mut forward = 0f32;
     let mut strafe = 0f32;
+    
+    sdl2::joystick::set_event_state(true);
+    sdl2::joystick::Joystick::open(0);
 
     while running {
         let mut polling = true;
         while polling {
             match poll_event() {
+                Event::JoyAxisMotion{axis_idx: aid, value:val, ..} => {
+                    println!("Axis is {}", aid);
+                    println!("Value is {}", val);
+                }
                 Event::Quit{..} => running = false,
                 Event::MouseMotion{x: mx, y: my, ..} => {
                     let midx = window_width / 2;
@@ -146,7 +153,9 @@ fn main() {
             map.get_floors()[i].draw(&camera);
             //o.draw(&camera);
         }
-
+        for i in range(0, map.get_walls().len()){
+            map.get_walls()[i].draw(&camera);
+        }
         window.gl_swap_window();
         if connected {
             if rustnet::check_sockets(){
