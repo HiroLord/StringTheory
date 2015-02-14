@@ -175,8 +175,8 @@ pub fn newTri(r:f32, g:f32, b:f32)  -> Object {
         0.0f32, 0.0f32, 1.0f32,
         0.0f32, 0.0f32, 1.0f32,
             ];
-    let mut indxs: [u32; 9] = [0; 9];
-    for i in 0..(9) { indxs[i] = i as u32; }
+    let mut indxs: [u32; 3] = [0; 3];
+    for i in 0..(3) { indxs[i] = i as u32; }
     generate(shader, &verts, &norms, &indxs, r, g, b)
 }
 
@@ -280,8 +280,8 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32) 
         1.0f32, 0.0f32, 0.0f32,
         1.0f32, 0.0f32, 0.0f32,
             ];
-    let mut indxs: [u32; 6*6*3] = [0; 6*6*3];
-    for i in 0..(6*6*3) { indxs[i] = i as u32; }
+    let mut indxs: [u32; 6*6] = [0; 6*6];
+    for i in 0..(6*6) { indxs[i] = i as u32; }
     generate(shader, &verts, &norms, &indxs, r, g, b)
 }
 
