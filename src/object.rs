@@ -62,16 +62,20 @@ varying vec4 position_modelSpace;
 varying vec4 normal_modelSpace;
 
 void main() {
-    vec4 light_pos = vec4(0, 40, 0, 1);
-    vec3 light_color = vec3(30,30,30);
+    vec4 light_pos = vec4(0, 1, 0, 1);
+    vec3 light_color = vec3(4,4,4);
 
     //vec3 matDiffuseColor = vec3(0.9, 0.9, 0.9);
 
-    float cosTheta = clamp( dot(normal_modelSpace, light_pos), 0, 1);
+    // I don't think I should have to negate this....
+    vec4 vecToLight = -normalize(position_modelSpace - light_pos);
+    float cosTheta = clamp( dot(normal_modelSpace, vecToLight), 0, 1);
     float dist = distance(position_modelSpace, light_pos); 
-    gl_FragColor =   vec4(material_color * vec3(0.3,0.3,0.3) + (cosTheta * material_color * light_color) / (dist), alpha);
+    //gl_FragColor =   vec4(material_color * vec3(0.3,0.3,0.3) + (cosTheta * material_color * light_color) / (dist), alpha);
+    //gl_FragColor =   vec4(material_color * vec3(0.1,0.1,0.1) + (cosTheta * material_color * light_color) / (dist*dist), alpha);
+    gl_FragColor =   vec4(material_color * vec3(0.1,0.1,0.1) + (cosTheta * material_color * light_color) / (dist), alpha);
     //gl_FragColor =   normal_modelSpace;
-    //gl_FragColor =   normal_modelSpace / vec4(2,2,2,2)  + vec4(1,1,1,1);
+    //gl_FragColor =   (normal_modelSpace + vec4(1,1,1,1)) / vec4(2,2,2,2)  ;
     //gl_FragColor =   vec4(1,1,0,1);
 }
     ";
@@ -228,6 +232,7 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32) 
         x2, y2, z2,
             ];
     let norms: [GLfloat; 6*6*3] = [
+        // Front face
         0.0f32, 0.0f32, 1.0f32,
         0.0f32, 0.0f32, 1.0f32,
         0.0f32, 0.0f32, 1.0f32,
@@ -235,6 +240,7 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32) 
         0.0f32, 0.0f32, 1.0f32,
         0.0f32, 0.0f32, 1.0f32,
 
+        // Top face
         0.0f32, 1.0f32, 0.0f32,
         0.0f32, 1.0f32, 0.0f32,
         0.0f32, 1.0f32, 0.0f32,
@@ -242,6 +248,7 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32) 
         0.0f32, 1.0f32, 0.0f32,
         0.0f32, 1.0f32, 0.0f32,
 
+        // Back face
         0.0f32, 0.0f32, -1.0f32,
         0.0f32, 0.0f32, -1.0f32,
         0.0f32, 0.0f32, -1.0f32,
@@ -249,6 +256,7 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32) 
         0.0f32, 0.0f32, -1.0f32,
         0.0f32, 0.0f32, -1.0f32,
 
+        // Bottom face
         0.0f32, -1.0f32, 0.0f32,
         0.0f32, -1.0f32, 0.0f32,
         0.0f32, -1.0f32, 0.0f32,
@@ -256,6 +264,7 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32) 
         0.0f32, -1.0f32, 0.0f32,
         0.0f32, -1.0f32, 0.0f32,
 
+        // Left face
         -1.0f32, 0.0f32, 0.0f32,
         -1.0f32, 0.0f32, 0.0f32,
         -1.0f32, 0.0f32, 0.0f32,
@@ -263,6 +272,7 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32) 
         -1.0f32, 0.0f32, 0.0f32,
         -1.0f32, 0.0f32, 0.0f32,
 
+        // Right face
         1.0f32, 0.0f32, 0.0f32,
         1.0f32, 0.0f32, 0.0f32,
         1.0f32, 0.0f32, 0.0f32,
