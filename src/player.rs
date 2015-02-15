@@ -40,6 +40,19 @@ impl Player {
     pub fn move_self(&mut self, objs: &Vec<Wall>) {
         let dx = self.movement.x * 0.1f32 * self.speed;
         let dz = self.movement.z * 0.1f32 * self.speed;
+        
+        self.z += dz;
+        let p = self.check_collisions(objs);
+        if p > -1 {
+            let i = p as usize;
+            self.z -= dz;
+            if self.z > objs[i].z() {
+                self.z = objs[i].get_front() + self.radius;
+            } else {
+                self.z = objs[i].get_back() - self.radius;
+            }
+        }
+        
         self.x += dx;
         let o = self.check_collisions(objs);
         
@@ -54,51 +67,19 @@ impl Player {
             }
         }
 
-        self.z += dz;
-        let p = self.check_collisions(objs);
         
-        if p > -1 {
-            let i = p as usize;
-            self.z -= dz;
-            
-            if self.z > objs[i].z() {
-                self.z = objs[i].get_front() + self.radius;
-            } else {
-                self.z = objs[i].get_back() - self.radius;
-            }
-        }
         
     }
 
     fn check_collisions(&self, objs: &Vec<Wall>) -> i32 {
         for i in range(0, objs.len()) {
-            if self.get_left() < objs[i].get_right() && self.get_right() > objs[i].get_left() {
-                if self.get_back() < objs[i].get_front() && self.get_front() > objs[i].get_back()
-                    {
+            if self.x < objs[i].get_right() + self.radius && self.x > objs[i].get_left() -
+                self.radius {
+                if self.z < objs[i].get_front() + self.radius && self.z > objs[i].get_back() -
+                    self.radius{
                     return i as i32
                 }
             }
-            /*
-            if objs[i].get_rotation() == 2.0 {
-                if self.z < objs[i].z() + objs[i].width()/2.0 + self.radius && self.z > objs[i].z() -
-                    objs[i].width()/2.0 - self.radius {
-                    if self.x - objs[i].x() < self.radius && self.x > objs[i].x(){
-                        self.x = objs[i].x() + self.radius;
-                    } else if objs[i].x() - self.x < self.radius && self.x < objs[i].x() {
-                        self.x = objs[i].x() - self.radius;
-                    }
-                }
-            } else {
-                if self.x > objs[i].x() - objs[i].width()/2.0 - self.radius && self.x < objs[i].x() +
-                    objs[i].width()/2.0 + self.radius {
-                    if self.z - objs[i].z() < self.radius && self.z > objs[i].z() {
-                        self.z = objs[i].z() + self.radius;
-                    } else if objs[i].z() - self.z < self.radius && self.z < objs[i].z() {
-                        self.z = objs[i].z() - self.radius;
-                    }
-                }
-            }
-            */
         }
         -1
     }
