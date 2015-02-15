@@ -7,10 +7,15 @@ pub trait GameObject {
     fn x(&self) -> f32;
     fn y(&self) -> f32;
     fn z(&self) -> f32;
+    
     fn draw(&self, &Camera);
 }
 
 pub trait SolidObject {
+    fn get_left(&self) -> f32;
+    fn get_right(&self) -> f32;
+    fn get_front(&self) -> f32;
+    fn get_back(&self) -> f32;
 }
 
 pub struct Floor {
@@ -42,6 +47,8 @@ pub struct Wall {
     x: GLfloat,
     y: GLfloat,
     z: GLfloat,
+    width: GLfloat,
+    length: GLfloat,
 
     model: object::Object,
 }
@@ -50,6 +57,9 @@ impl Wall {
     pub fn set_position(&mut self) {
         self.model.translate(self.x, self.y, self.z);
     }
+   
+    pub fn width(&self) -> f32 { self.width }
+
 }
 
 impl GameObject for Wall {
@@ -62,6 +72,12 @@ impl GameObject for Wall {
     }
 }
 
+impl SolidObject for Wall {
+    fn get_left(&self) -> f32 { self.x - self.width/2.0 }
+    fn get_right(&self) -> f32 { self.x + self.width/2.0 }
+    fn get_front(&self) -> f32 { self.z + self.length/2.0 }
+    fn get_back(&self) -> f32 { self.z - self.length/2.0 }
+}
 
 pub struct MedBay {
     x: GLfloat,
@@ -79,15 +95,23 @@ pub fn new_floor(x: f32, y: f32, z: f32) -> Floor {
 }
 
 
-pub fn new_wall(x: f32, y: f32, z: f32, rot: i32) -> Wall {
-    let m: object::Object;
-    
-    if rot == 1 {
-        m = object::new(-1.0, 0.0, 0.1,  1.0, 3.0, -0.1,  0.8, 0.6, 0.6);
+pub fn new_wall(x: f32, y: f32, z: f32, rot: f32) -> Wall {
+    let width_2: f32;
+    let length_2: f32;
+
+    if rot == 1.0 {
+        width_2 = 1.0;
+        length_2 = 0.1;
     } else {
-        m = object::new(-0.1, 0.0, 1.0,  0.1, 3.0, -1.0, 0.7, 0.5, 0.5);
+        width_2 = 0.1;
+        length_2 = 1.0;
     }
-    let mut w = Wall{x: x, y: y, z: z, model: m};
+
+    let height = 2.5;
+
+    let m = object::new(-width_2, 0.0, length_2,  width_2, height, -length_2,  0.8, 0.6, 0.6);
+    
+    let mut w = Wall{x: x, y: y, z: z, width: width_2*2.0, length: length_2*2.0, model: m};
     w.set_position();
     w
 }

@@ -79,7 +79,7 @@ fn main() {
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
-    let mut player = player::new(0f32, 1.5f32, 0f32, 1f32);
+    let mut player = player::new(0f32, 1f32, 0f32, 1f32);
 
     let mut map = mapgen::new_map(1);
 
@@ -135,7 +135,9 @@ fn main() {
 
         player.forward(&camera, forward);
         player.strafe(&camera, strafe);
-        player.move_self();
+        player.move_self(&(map.get_walls()));
+        
+        //player.check_collisions(&(map.get_walls()));
 
         camera.snap_to_player(&player);
         camera.update_view_projection();
