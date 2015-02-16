@@ -139,7 +139,7 @@ impl Player {
     */
 }
 
-pub fn new(x: GLfloat, y: GLfloat, z: GLfloat, speed: GLfloat) -> Player {
-    Player{ x: x, y: y, z: z, radius: 0.7f32, fb: 0f32, lr: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
+pub fn new(x: GLfloat, height: GLfloat, z: GLfloat, speed: GLfloat) -> Player {
+    Player{ x: x, y: height, z: z, radius: 0.78f32, fb: 0f32, lr: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
 }
 

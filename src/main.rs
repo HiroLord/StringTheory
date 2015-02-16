@@ -51,7 +51,7 @@ fn main() {
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 1);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDoubleBuffer, 1);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDepthSize, 24);
-    let window = match Window::new("rust-sdl2: Video", WindowPos::PosCentered, WindowPos::PosCentered, window_width, window_height, OPENGL) {
+    let window = match Window::new("Corridors", WindowPos::PosCentered, WindowPos::PosCentered, window_width, window_height, OPENGL) {
         Ok(window) => window,
         Err(err) => panic!("Failed to create window: {}", err)
     };
@@ -68,8 +68,8 @@ fn main() {
     }
 
 
-    let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
-    let mut obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
+    //let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
+    //let mut obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
     let aspect_ratio = window_width as f32 / window_height as f32;
     let mut camera = camera::new(60.0f32, aspect_ratio, 0.0f32, 100.0f32);
 
@@ -79,7 +79,7 @@ fn main() {
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
-    let mut player = player::new(0f32, 1f32, 0f32, 1f32);
+    let mut player = player::new(0f32, 1.5f32, 0f32, 1f32);
 
     let mut map = mapgen::new_map(1);
 
@@ -119,8 +119,8 @@ fn main() {
                     if key == KeyCode::D { strafe = 1.0f32; }
                     //if key == KeyCode::Z { obj2.set_translation(0.0f32, 0.0f32, 0.0f32); }
                     //if key == KeyCode::X { obj2.set_translation(1.0f32, 1.0f32, 1.0f32); }
-                    if key == KeyCode::Z { obj2.translate(-0.1f32, -0.1f32, -0.1f32); }
-                    if key == KeyCode::X { obj2.translate(0.1f32, 0.1f32, 0.1f32); }
+                    //if key == KeyCode::Z { obj2.translate(-0.1f32, -0.1f32, -0.1f32); }
+                    //if key == KeyCode::X { obj2.translate(0.1f32, 0.1f32, 0.1f32); }
                 }
                 Event::KeyUp{keycode: key, ..} => {
                     if key == KeyCode::W { forward = 0f32; }
@@ -147,8 +147,8 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
 
-        obj.draw(&camera);
-        obj2.draw(&camera);
+        //obj.draw(&camera);
+        //obj2.draw(&camera);
         //obj3.draw(&camera);
 
         for i in range(0, map.get_floors().len()){

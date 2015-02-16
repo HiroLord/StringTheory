@@ -87,7 +87,7 @@ pub struct MedBay {
 
 pub fn new_floor(x: f32, y: f32, z: f32) -> Floor {
 
-    let m = object::new(-1f32, -0.1f32, 1f32,  1f32, 0.1f32, -1f32,  0.6, 0.6, 0.8);
+    let m = object::new(-2f32, -0.2f32, 2f32,  2f32, 0f32, -2f32,  0.6, 0.6, 0.8);
 
     let mut f = Floor{x: x, y: y, z:z, model: m};
     f.set_position();
@@ -100,16 +100,16 @@ pub fn new_wall(x: f32, y: f32, z: f32, rot: f32) -> Wall {
     let length_2: f32;
 
     if rot == 1f32 {
-        width_2 = 1f32;
+        width_2 = 2f32;
         length_2 = 0.1f32;
     } else {
         width_2 = 0.1f32;
-        length_2 = 1f32;
+        length_2 = 2f32;
     }
 
-    let height = 2.5f32;
+    let height = 4f32;
 
-    let m = object::new(-width_2, 0f32, length_2,  width_2, height, -length_2,  0.8, 0.6, 0.6);
+    let m = object::new(-width_2, 0f32, length_2,  width_2, height, -length_2,  0.6, 0.7, 0.9);
     
     let mut w = Wall{x: x, y: y, z: z, width: width_2*2f32, length: length_2*2f32, model: m};
     w.set_position();
