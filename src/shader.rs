@@ -1,17 +1,9 @@
 use gl;
-//use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
-//use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
-//use sdl2::pixels::Color;
-//use sdl2::event::poll_event;
-//use sdl2::event::Event::{Quit, KeyDown};
-//use sdl2::keycode::KeyCode;
 
 use gl::types::*;
-//use std::mem;
 use std::ptr;
 use std::str;
 use std::ffi;
-//use collections::vec;
 
 pub struct Shader {
     program: GLuint,
@@ -27,12 +19,6 @@ impl Shader {
         unsafe {
             gl::UseProgram(self.program);
             gl::GetAttribLocation(self.program, ffi::CString::from_slice("out_color".as_bytes()).as_ptr());
-
-            // specify location of vertex data
-            //let pos_attr = gl::GetAttribLocation(self.program, ffi::CString::from_slice("position".as_bytes()).as_ptr());
-            //gl::EnableVertexAttribArray(pos_attr as GLuint);
-            //gl::VertexAttribPointer(pos_attr as GLuint, 3, gl::FLOAT,
-                                    //gl::FALSE as GLboolean, 0, ptr::null());
         }
     }
 }
@@ -59,9 +45,11 @@ fn compile_shader(src: &str, ty:GLenum) -> GLuint {
         if status != (gl::TRUE as GLint) {
             let mut len = 0;
             gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &mut len);
-            let mut buf: Vec<u8> = Vec::with_capacity((len-1) as usize); // -1 to skip trailing null
-            gl::GetShaderInfoLog(shader, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
-            panic!("{}", str::from_utf8(buf.as_slice()).unwrap());
+            let mut buf: Vec<u8> = Vec::with_capacity((len+1) as usize);
+            buf.resize((len+1) as usize, 0);
+            gl::GetShaderInfoLog(shader, len, &mut len, buf.as_mut_ptr() as *mut GLchar);
+            let log = str::from_utf8(buf.as_slice()).unwrap();
+            panic!("{}", log);
         }
     }
     shader
@@ -79,9 +67,11 @@ fn link_program(vertexShader: GLuint, fragmentShader: GLuint) -> GLuint {
         if status != (gl::TRUE as GLint) {
             let mut len: GLint = 0;
             gl::GetProgramiv(program, gl::INFO_LOG_LENGTH, &mut len);
-            let mut buf: Vec<u8> = Vec::with_capacity((len-1) as usize); // -1 to skip trailing null
+            let mut buf: Vec<u8> = Vec::with_capacity((len+1) as usize);
+            buf.resize((len+1) as usize, 0);
             gl::GetProgramInfoLog(program, len, ptr::null_mut(), buf.as_mut_ptr() as *mut GLchar);
-            panic!("{}", str::from_utf8(buf.as_slice()).unwrap());
+            let log = str::from_utf8(buf.as_slice()).unwrap();
+            panic!("{}", log);
         }
         program
     }

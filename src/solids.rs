@@ -1,4 +1,5 @@
 use gl::types::*;
+use light;
 
 use object;
 use camera::Camera;
@@ -8,7 +9,7 @@ pub trait GameObject {
     fn y(&self) -> f32;
     fn z(&self) -> f32;
     
-    fn draw(&self, &Camera);
+    fn draw(&self, &Camera, &[light::Light]);
 }
 
 pub trait SolidObject {
@@ -37,8 +38,8 @@ impl GameObject for Floor {
     fn y(&self) -> f32 { self.y }
     fn z(&self) -> f32 { self.z }
 
-    fn draw(&self, c: &Camera) {
-        self.model.draw(c);
+    fn draw(&self, c: &Camera, lights: &[light::Light]) {
+        self.model.draw(c, lights);
     }
 }
 
@@ -67,8 +68,8 @@ impl GameObject for Wall {
     fn y(&self) -> f32 { self.y }
     fn z(&self) -> f32 { self.z }
 
-    fn draw(&self, c: &Camera) {
-        self.model.draw(c);
+    fn draw(&self, c: &Camera, lights: &[light::Light]) {
+        self.model.draw(c, lights);
     }
 }
 

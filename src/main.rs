@@ -24,6 +24,7 @@ mod matrix;
 mod player;
 mod solids;
 mod mapgen;
+mod light;
 
 use solids::GameObject;
 
@@ -61,7 +62,6 @@ fn main() {
     let context = window.gl_create_context().unwrap();
     gl::load_with(|s| unsafe { std::mem::transmute(sdl2::video::gl_get_proc_address(s)) });
 
-    //unsafe { gl::Disable(gl::CULL_FACE); }
     unsafe {
         gl::Enable(gl::CULL_FACE);
         gl::Enable(gl::DEPTH_TEST);
@@ -82,6 +82,7 @@ fn main() {
     let mut player = player::new(0f32, 1.5f32, 0f32, 1f32);
 
     let mut map = mapgen::new_map(1);
+    let mut lights = [light::Light {x: 0.0, y: 0.0, z: 0.0, r: 0.0, g: 4.0, b: 4.0}];
 
     let mut running = true;
 
@@ -152,11 +153,11 @@ fn main() {
         //obj3.draw(&camera);
 
         for i in range(0, map.get_floors().len()){
-            map.get_floors()[i].draw(&camera);
+            map.get_floors()[i].draw(&camera, &lights);
             //o.draw(&camera);
         }
         for i in range(0, map.get_walls().len()){
-            map.get_walls()[i].draw(&camera);
+            map.get_walls()[i].draw(&camera, &lights);
         }
         window.gl_swap_window();
         if connected {

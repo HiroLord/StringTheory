@@ -2,34 +2,12 @@ use shader;
 use gl;
 use camera;
 use matrix;
-
-//use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
-//use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
-//use sdl2::pixels::Color;
-//use sdl2::event::poll_event;
-//use sdl2::event::Event::{Quit, KeyDown};
-//use sdl2::keycode::KeyCode;
+use light;
 
 use gl::types::*;
 use std::mem;
 use std::ptr;
-//use std::str;
-//use std::ffi;
-//use collections::vec;
 
-static VS_SRC_S: &'static str =
-    "#version 150
-    in vec3 vert_model;
-    void main() {
-        gl_Position = vec4(vert_model, 1.0);
-    }";
-
-static FS_SRC_S: &'static str =
-    "#version 150
-    out vec4 out_color;
-    void main() {
-        out_color = vec4(1.0, 0.5, 0.5, 1.0);
-    }";
 
 static VS_SRC: &'static str = "
 #version 120
@@ -55,6 +33,10 @@ void main() {
 static FS_SRC: &'static str = "\n\
 #version 120
 
+const int max_lights = 4;
+uniform vec3 light_pos[max_lights];
+uniform vec3 light_color[max_lights];
+
 uniform vec3 material_color;
 uniform float alpha;
 
@@ -62,21 +44,15 @@ varying vec4 position_modelSpace;
 varying vec4 normal_modelSpace;
 
 void main() {
-    vec4 light_pos = vec4(10, 3, 2, 1);
-    vec3 light_color = vec3(4,4,4);
+    for (int i = 0; i < max_lights; i++) {
+        vec4 light_pos_4 = vec4(light_pos[i], 1);
 
-    //vec3 matDiffuseColor = vec3(0.9, 0.9, 0.9);
-
-    // I don't think I should have to negate this....
-    vec4 vecToLight = -normalize(position_modelSpace - light_pos);
-    float cosTheta = clamp( dot(normal_modelSpace, vecToLight), 0, 1);
-    float dist = distance(position_modelSpace, light_pos); 
-    //gl_FragColor =   vec4(material_color * vec3(0.3,0.3,0.3) + (cosTheta * material_color * light_color) / (dist), alpha);
-    //gl_FragColor =   vec4(material_color * vec3(0.1,0.1,0.1) + (cosTheta * material_color * light_color) / (dist*dist), alpha);
-    gl_FragColor =   vec4(material_color * vec3(0.3,0.3,0.3) + (cosTheta * material_color * light_color) / (dist), alpha);
-    //gl_FragColor =   normal_modelSpace;
-    //gl_FragColor =   (normal_modelSpace + vec4(1,1,1,1)) / vec4(2,2,2,2)  ;
-    //gl_FragColor =   vec4(1,1,0,1);
+        // I don't think I should have to negate this....
+        vec4 vecToLight = -normalize(position_modelSpace - light_pos_4);
+        float cosTheta = clamp( dot(normal_modelSpace, vecToLight), 0, 1);
+        float dist = distance(position_modelSpace, light_pos_4); 
+        gl_FragColor += vec4(material_color * vec3(0.3,0.3,0.3) + (cosTheta * material_color * light_color[i]) / (dist), alpha);
+    }
 }
     ";
 
@@ -121,17 +97,33 @@ impl Object {
         self.z += z;
         self.model_matrix.set_translation(self.x,self.y,self.z);
     }
-    pub fn draw(&self, camera:&camera::Camera) -> () {
+    pub fn draw(&self, camera:&camera::Camera, lights:&[light::Light]) -> () {
         unsafe {
             gl::BindVertexArray(self.vao);
 
             self.shader.bind();
             let position_handle = self.shader.get_attrib("vert_model");
             let normal_handle = self.shader.get_attrib("norm_model");
+            
+            for i in 0..4 {
+                let pos_loc = self.shader.get_uniform(&format!("light_pos[{}]", i));
+                let color_loc = self.shader.get_uniform(&format!("light_color[{}]", i));
+                println!("pos_loc is {}, color_loc is {}", pos_loc, color_loc);
+                println!("for ||{}||", &format!("light_pos[{}]", i));
+                if (lights.len() > i) {
+                    println!("Using light {}, pos: {} {} {} col: {} {} {}", i, lights[i].x, lights[i].y, lights[i].z,
+                                                                               lights[i].r, lights[i].g, lights[i].b);
+                    gl::Uniform3f(pos_loc, lights[i].x, lights[i].y, lights[i].z);
+                    gl::Uniform3f(color_loc, lights[i].r, lights[i].g, lights[i].b);
+                } else {
+                    println!("Using 0 defaults");
+                    gl::Uniform3f(pos_loc, 0.0f32, 0.0f32, 0.0f32);
+                    gl::Uniform3f(color_loc, 4.0f32, 0.0f32, 0.0f32);
+                }
+            }
+            let normal_handle = self.shader.get_attrib("norm_model");
 
             let model_handle = self.shader.get_uniform("modelMatrix");
-            //for i in 0..16 { print!(" {} ", self.model_matrix.data[i]); }
-            //println!("");
             gl::UniformMatrix4fv(model_handle, 1, gl::FALSE, mem::transmute(&self.model_matrix.data[0]));
 
             let view_projection_handle = self.shader.get_uniform("viewProjectionMatrix");
@@ -163,8 +155,7 @@ impl Object {
 }
 
 pub fn newTri(r:f32, g:f32, b:f32)  -> Object {
-    //let shader = shader::new(VS_SRC, FS_SRC);
-    let shader = shader::new(VS_SRC_S, FS_SRC_S);
+    let shader = shader::new(VS_SRC, FS_SRC);
     let verts: [GLfloat; 9] = [
         0.0, 0.5, 0.0,
         0.5, -0.5, 0.0,
