@@ -82,7 +82,12 @@ fn main() {
     let mut player = player::new(0f32, 1.5f32, 0f32, 1f32);
 
     let mut map = mapgen::new_map(1);
-    let mut lights = [light::Light {x: 0.0, y: 0.0, z: 0.0, r: 0.0, g: 4.0, b: 4.0}];
+    let mut lights = [
+        light::Light {x: 0.0, y: 2.0, z: 0.0, r: 0.0, g: 4.0, b: 0.0},
+        light::Light {x: 4.0, y: 2.0, z: 4.0, r: 4.0, g: 0.0, b: 0.0},
+        light::Light {x: 8.0, y: 2.0, z: 8.0, r: 0.0, g: 0.0, b: 4.0},
+        light::Light {x: 12.0, y: 2.0, z: 12.0, r: 4.0, g: 4.0, b: 0.0},
+    ];
 
     let mut running = true;
 

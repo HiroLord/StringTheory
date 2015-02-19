@@ -33,7 +33,7 @@ void main() {
 static FS_SRC: &'static str = "\n\
 #version 120
 
-const int max_lights = 4;
+const int max_lights = 8;
 uniform vec3 light_pos[max_lights];
 uniform vec3 light_color[max_lights];
 
@@ -44,6 +44,7 @@ varying vec4 position_modelSpace;
 varying vec4 normal_modelSpace;
 
 void main() {
+    vec3 final_color = vec3(0,0,0);
     for (int i = 0; i < max_lights; i++) {
         vec4 light_pos_4 = vec4(light_pos[i], 1);
 
@@ -51,8 +52,9 @@ void main() {
         vec4 vecToLight = -normalize(position_modelSpace - light_pos_4);
         float cosTheta = clamp( dot(normal_modelSpace, vecToLight), 0, 1);
         float dist = distance(position_modelSpace, light_pos_4); 
-        gl_FragColor += vec4(material_color * vec3(0.3,0.3,0.3) + (cosTheta * material_color * light_color[i]) / (dist), alpha);
+        final_color += (cosTheta * material_color * light_color[i]) / (dist);
     }
+    gl_FragColor = vec4(final_color + material_color * vec3(0.3,0.3,0.3), 0);
 }
     ";
 
@@ -105,20 +107,20 @@ impl Object {
             let position_handle = self.shader.get_attrib("vert_model");
             let normal_handle = self.shader.get_attrib("norm_model");
             
-            for i in 0..4 {
+            for i in 0..8 {
                 let pos_loc = self.shader.get_uniform(&format!("light_pos[{}]", i));
                 let color_loc = self.shader.get_uniform(&format!("light_color[{}]", i));
-                println!("pos_loc is {}, color_loc is {}", pos_loc, color_loc);
-                println!("for ||{}||", &format!("light_pos[{}]", i));
+                //println!("pos_loc is {}, color_loc is {}", pos_loc, color_loc);
+                //println!("for ||{}||", &format!("light_pos[{}]", i));
                 if (lights.len() > i) {
-                    println!("Using light {}, pos: {} {} {} col: {} {} {}", i, lights[i].x, lights[i].y, lights[i].z,
-                                                                               lights[i].r, lights[i].g, lights[i].b);
+                    //println!("Using light {}, pos: {} {} {} col: {} {} {}", i, lights[i].x, lights[i].y, lights[i].z,
+                                                                               //lights[i].r, lights[i].g, lights[i].b);
                     gl::Uniform3f(pos_loc, lights[i].x, lights[i].y, lights[i].z);
                     gl::Uniform3f(color_loc, lights[i].r, lights[i].g, lights[i].b);
                 } else {
-                    println!("Using 0 defaults");
+                    //println!("Using 0 defaults");
                     gl::Uniform3f(pos_loc, 0.0f32, 0.0f32, 0.0f32);
-                    gl::Uniform3f(color_loc, 4.0f32, 0.0f32, 0.0f32);
+                    gl::Uniform3f(color_loc, 0.0f32, 0.0f32, 0.0f32);
                 }
             }
             let normal_handle = self.shader.get_attrib("norm_model");
