@@ -3,7 +3,6 @@ extern crate sdl2;
 extern crate rustnet;
 mod player;
 
-
 use player::IsPlayer;
 
 //use player::Player;
