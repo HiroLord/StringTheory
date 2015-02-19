@@ -1,13 +1,16 @@
 extern crate std;
 
 use solids;
+use light;
 use solids::new_floor;
 use solids::new_wall;
+use light::new_light;
 use std::old_io::File;
 
 pub struct Map {
     floors: Vec<solids::Floor>,
     walls: Vec<solids::Wall>,
+    lights: Vec<light::Light>,
 }
 
 impl Map {
@@ -18,12 +21,16 @@ impl Map {
     pub fn get_walls(&self) -> &Vec<solids::Wall> {
         &self.walls
     }
+
+    pub fn get_lights(&self) -> &Vec<light::Light> {
+        &self.lights
+    }
 }
 
 pub fn load_map() -> Map {
     let mut floors = Vec::new();
-    let mut walls = vec![];
-
+    let mut walls = Vec::new();
+    let mut lights = Vec::new();
     let mut file = File::open_mode(&Path::new("savedmap.map"),
                                 std::old_io::FileMode::Open,
                                 std::old_io::FileAccess::Read);
@@ -52,11 +59,12 @@ pub fn load_map() -> Map {
             1 => floors.push( new_floor(bx * 4.0, 0.0, by * 4.0) ),
             2 => walls.push( new_wall(bx * 4.0 - 2.0, 0.0, by * 4.0, 2.0) ),
             3 => walls.push( new_wall(bx * 4.0, 0.0, by * 4.0 - 2.0, 1.0) ),
+            4 => lights.push( new_light(bx * 4.0, 3.0, by * 4.0, 4.0, 4.0, 4.0) ),
             _ => (),
         }
     }
 
-    Map{floors: floors, walls: walls}
+    Map{floors: floors, walls: walls, lights: lights}
 }
 
 pub fn new_map(size: u32) -> Map {

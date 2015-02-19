@@ -82,12 +82,14 @@ fn main() {
     let mut player = player::new(0f32, 1.5f32, 0f32, 1f32);
 
     let mut map = mapgen::new_map(1);
+    /*
     let mut lights = [
         light::Light {x: 0.0, y: 2.0, z: 0.0, r: 0.0, g: 4.0, b: 0.0},
         light::Light {x: 4.0, y: 2.0, z: 4.0, r: 4.0, g: 0.0, b: 0.0},
         light::Light {x: 8.0, y: 2.0, z: 8.0, r: 0.0, g: 0.0, b: 4.0},
         light::Light {x: 12.0, y: 2.0, z: 12.0, r: 4.0, g: 4.0, b: 0.0},
     ];
+    */
 
     let mut running = true;
 
@@ -112,8 +114,8 @@ fn main() {
                     
                     let difx = midx - mx;
                     let dify = midy - my;
-                    camera.change_horizontal_angle(mouse_sense*0.01f32*(difx as f32));
-                    camera.change_vertical_angle(mouse_sense*0.01f32*(dify as f32));
+                    camera.change_horizontal_angle(mouse_sense*0.005f32*(difx as f32));
+                    camera.change_vertical_angle(mouse_sense*0.005f32*(dify as f32));
                     
                     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
                 }
@@ -158,11 +160,11 @@ fn main() {
         //obj3.draw(&camera);
 
         for i in range(0, map.get_floors().len()){
-            map.get_floors()[i].draw(&camera, &lights);
+            map.get_floors()[i].draw(&camera, map.get_lights());
             //o.draw(&camera);
         }
         for i in range(0, map.get_walls().len()){
-            map.get_walls()[i].draw(&camera, &lights);
+            map.get_walls()[i].draw(&camera, map.get_lights());
         }
         window.gl_swap_window();
         if connected {

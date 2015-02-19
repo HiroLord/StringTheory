@@ -59,6 +59,7 @@ fn main() {
                     let (xoff, yoff) = match draw_block.t {
                         2 => (block_size/2, 0),
                         3 => (0, block_size/2),
+                        4 => (block_size/2, block_size/2),
                         _ => (0, 0),
                     };
                     draw_block.x = (mx+xoff) - ((mx + xoff) % block_size);
@@ -74,6 +75,7 @@ fn main() {
                     if key == KeyCode::Num1 { draw_block.t = 1; }
                     if key == KeyCode::Num2 { draw_block.t = 2; }
                     if key == KeyCode::Num3 { draw_block.t = 3; }
+                    if key == KeyCode::Num4 { draw_block.t = 4; }
                 }
                 Event::None => polling = false,
                 _ => {}
@@ -83,16 +85,20 @@ fn main() {
         drawer.set_draw_color(RGB(50, 100, 150));
 
         drawer.clear();
-
-        for b in blocks.iter() {
-            let color = match b.t {
-                1 => RGB(0, 153, 204),
-                2...3 => RGB(180, 30, 20),
-                _ => RGB(0,0,0),
-            };
-            drawer.set_draw_color(color);
-            let square = get_rect(&b);
-            drawer.fill_rect(square);
+        for i in range(1, 5) {
+            for b in blocks.iter() {
+                if b.t == i {
+                    let color = match b.t {
+                        1 => RGB(0, 153, 204),
+                        2...3 => RGB(180, 30, 20),
+                        4 => RGB(250, 250, 255),
+                        _ => RGB(0,0,0),
+                    };
+                    drawer.set_draw_color(color);
+                    let square = get_rect(&b);
+                    drawer.fill_rect(square);
+                }
+            }
         }
 
         drawer.set_draw_color(RGB(254,180,204));
@@ -110,6 +116,7 @@ fn get_rect(b: &Block) -> Rect {
                 1 => Rect::new(b.x, b.y, b.block_size, b.block_size),
                 2 => Rect::new(b.x-1, b.y, 2, b.block_size),
                 3 => Rect::new(b.x, b.y-1, b.block_size, 2),
+                4 => Rect::new(b.x-3, b.y-3, 6, 6),
                 _ => Rect::new(b.x, b.y, b.block_size, b.block_size),
             };
 }
