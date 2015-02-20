@@ -40,12 +40,14 @@ impl GBuffer {
 
             let draw_buffers = [gl::COLOR_ATTACHMENT0, gl::COLOR_ATTACHMENT1, gl::COLOR_ATTACHMENT2, gl::COLOR_ATTACHMENT3];
             gl::DrawBuffers(draw_buffers.len() as i32, (&draw_buffers[0]) as *const u32);
+
             let status = gl::CheckFramebufferStatus(gl::FRAMEBUFFER);
             if status != gl::FRAMEBUFFER_COMPLETE {
                 println!("Framebuffer creation failed!");
             } else {
                 println!("Framebuffer creation success!");
             }
+
             gl::BindFramebuffer(gl::DRAW_FRAMEBUFFER, 0);
         }
     }

@@ -42,7 +42,7 @@ impl Renderer {
 
             self.gbuff.set_read_buffer(gbuffer::TextureType::Diffuse);
             gl::BlitFramebuffer(0, 0, width, height,
-                                0, half_height, half_width, width, gl::COLOR_BUFFER_BIT, gl::LINEAR);
+                                0, half_height, half_width, height, gl::COLOR_BUFFER_BIT, gl::LINEAR);
 
             self.gbuff.set_read_buffer(gbuffer::TextureType::Normal);
             gl::BlitFramebuffer(0, 0, width, height,
@@ -50,7 +50,7 @@ impl Renderer {
 
             self.gbuff.set_read_buffer(gbuffer::TextureType::Texcoord);
             gl::BlitFramebuffer(0, 0, width, height,
-                                half_width, 0, height, half_height, gl::COLOR_BUFFER_BIT, gl::LINEAR);
+                                half_width, 0, width, half_height, gl::COLOR_BUFFER_BIT, gl::LINEAR);
         }
     }
 }

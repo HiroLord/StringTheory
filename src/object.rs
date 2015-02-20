@@ -45,17 +45,22 @@ varying vec4 position_modelSpace;
 varying vec4 normal_modelSpace;
 
 void main() {
-    vec3 final_color = vec3(0,0,0);
-    for (int i = 0; i < max_lights; i++) {
-        vec4 light_pos_4 = vec4(light_pos[i], 1);
+    gl_FragData[0] = vec4(material_color, 1);
+    gl_FragData[1] = position_modelSpace;
+    gl_FragData[2] = normal_modelSpace;
+    gl_FragData[3] = (position_modelSpace/20 + normal_modelSpace) * vec4(material_color, 1);
+    //gl_FragData[3] = position_modelSpace / 20.0;
+    //vec3 final_color = vec3(0,0,0);
+    //for (int i = 0; i < max_lights; i++) {
+        //vec4 light_pos_4 = vec4(light_pos[i], 1);
 
-        // I don't think I should have to negate this....
-        vec4 vecToLight = -normalize(position_modelSpace - light_pos_4);
-        float cosTheta = clamp( dot(normal_modelSpace, vecToLight), 0, 1);
-        float dist = distance(position_modelSpace, light_pos_4); 
-        final_color += (cosTheta * material_color * light_color[i]) / (dist);
-    }
-    gl_FragColor = vec4(final_color + material_color * vec3(0.3,0.3,0.3), 0);
+        //// I don't think I should have to negate this....
+        //vec4 vecToLight = -normalize(position_modelSpace - light_pos_4);
+        //float cosTheta = clamp( dot(normal_modelSpace, vecToLight), 0, 1);
+        //float dist = distance(position_modelSpace, light_pos_4); 
+        //final_color += (cosTheta * material_color * light_color[i]) / (dist);
+    //}
+    //gl_FragColor = vec4(final_color + material_color * vec3(0.3,0.3,0.3), 0);
 }
     ";
 
