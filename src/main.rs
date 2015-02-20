@@ -26,6 +26,7 @@ mod solids;
 mod mapgen;
 mod light;
 mod gbuffer;
+mod renderer;
 
 use solids::GameObject;
 
@@ -67,9 +68,9 @@ fn main() {
         gl::Enable(gl::CULL_FACE);
         gl::Enable(gl::DEPTH_TEST);
     }
-    let mut gbuff =  gbuffer::new();
+    //let mut renderer = renderer::new(window_width as u32, window_height as u32);
+    let mut gbuff = gbuffer::new();
     gbuff.init(window_width as u32, window_height as u32);
-
 
     //let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
     //let mut obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
@@ -145,7 +146,8 @@ fn main() {
         camera.snap_to_player(&player);
         camera.update_view_projection();
 
-
+        //renderer.start_geometry_pass();
+        
         //obj.draw(&camera);
         //obj2.draw(&camera);
         //obj3.draw(&camera);
@@ -157,6 +159,9 @@ fn main() {
         for i in range(0, map.get_walls().len()){
             map.get_walls()[i].draw(&camera, map.get_lights());
         }
+
+        //renderer.start_light_pass();
+
         window.gl_swap_window();
         if connected {
             if rustnet::check_sockets(){

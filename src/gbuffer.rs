@@ -3,7 +3,7 @@ use std::ptr;
 use gl;
 use gl::types::*;
 
-enum TextureType {
+pub enum TextureType {
     Position = 0,
     Diffuse = 1,
     Normal = 2,
@@ -11,7 +11,7 @@ enum TextureType {
     Number = 4,
 }
 impl Copy for GBuffer {}
-struct GBuffer {
+pub struct GBuffer {
     fbo: GLuint,
     textures: [GLuint; TextureType::Number as usize],
     depth_texture: GLuint,
@@ -49,8 +49,9 @@ impl GBuffer {
             gl::BindFramebuffer(gl::DRAW_FRAMEBUFFER, 0);
         }
     }
-    pub fn bind_for_writing() {}
-    pub fn bind_for_reading() {}
+    pub fn bind_for_writing(&self) { unsafe { gl::BindFramebuffer(gl::DRAW_FRAMEBUFFER, self.fbo); } }
+    pub fn bind_for_reading(&self) { unsafe { gl::BindFramebuffer(gl::READ_FRAMEBUFFER, self.fbo); } }
+    pub fn set_read_buffer(&self, tex_type: TextureType) { unsafe { gl::ReadBuffer((gl::COLOR_ATTACHMENT0 + tex_type as u32) as u32); } }
 }
 
 pub fn new() -> GBuffer { GBuffer {fbo: 0, textures: [0; TextureType::Number as usize], depth_texture: 0 } }
