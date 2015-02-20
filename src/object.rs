@@ -80,6 +80,7 @@ pub struct Object {
     visible: bool,
 
     shader: shader::Shader,
+
     vao: u32,
     vert_buff: u32,
     norm_buff: u32,

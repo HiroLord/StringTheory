@@ -145,10 +145,6 @@ fn main() {
         camera.snap_to_player(&player);
         camera.update_view_projection();
 
-        unsafe {
-            gl::ClearColor(0.3, 0.3, 0.5, 1.0);
-            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-        }
 
         //obj.draw(&camera);
         //obj2.draw(&camera);
