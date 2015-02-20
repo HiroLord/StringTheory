@@ -3,17 +3,20 @@ use gl::types::*;
 //use std::num::sqrt;
 
 use solids::Wall;
+use solids::Solid;
 use camera::Camera;
 use solids::GameObject;
-use solids::SolidObject;
+use solids::Mask;
+use solids;
+use light;
 //use std::num::abs;
 
 pub struct Player {
     pub x: GLfloat,
     pub y: GLfloat,
     pub z: GLfloat,
-    
-    radius: GLfloat,
+   
+    mask: Mask,
 
     fb: GLfloat,
     lr: GLfloat,
@@ -29,64 +32,45 @@ struct Vect {
     z: GLfloat,
 }
 
-impl SolidObject for Player {
-    fn get_left(&self) -> f32 { self.x - self.radius }
-    fn get_right(&self) -> f32 { self.x + self.radius }
-    fn get_front(&self) -> f32 { self.z + self.radius }
-    fn get_back(&self) -> f32 { self.z - self.radius }
+impl GameObject for Player {
+    fn x(&self) -> f32 { self.x }
+    fn y(&self) -> f32 { self.y }
+    fn z(&self) -> f32 { self.z }
+    fn draw(&self, c: &Camera, lights: &[light::Light]) {}
+}
+
+impl Solid for Player {
+    fn get_mask(&self) -> &Mask { &(self.mask) }
 }
 
 impl Player {
-    pub fn move_self(&mut self, objs: &Vec<Wall>) {
-        let dx = self.movement.x * 0.1f32 * self.speed;
-        let dz = self.movement.z * 0.1f32 * self.speed;
-        
-        self.z += dz;
-        let p = self.check_collisions(objs);
-        if p > -1 {
-            let i = p as usize;
-            self.z -= dz;
-            if self.z > objs[i].z() {
-                self.z = objs[i].get_front() + self.radius;
-            } else {
-                self.z = objs[i].get_back() - self.radius;
-            }
-        }
-        
+
+    pub fn get_move(&self) -> (f32, f32) {
+        (self.movement.x * 0.1f32 * self.speed, self.movement.z * 0.1f32 * self.speed)
+    }
+
+    pub fn move_x(&mut self, dx: f32) {
         self.x += dx;
-        let o = self.check_collisions(objs);
-        
-        if o > -1 {
-            let i = o as usize;
-            self.x -= dx;
-            
-            if self.x > objs[i].x(){
-                self.x = objs[i].get_right() + self.radius;
-            } else {
-                self.x = objs[i].get_left() - self.radius;
-            }
-        }
-
-        
-        
+        self.set_position();
     }
 
-    fn check_collisions(&self, objs: &Vec<Wall>) -> i32 {
-        for i in range(0, objs.len()) {
-            if self.x < objs[i].get_right() + self.radius && self.x > objs[i].get_left() -
-                self.radius {
-                if self.z < objs[i].get_front() + self.radius && self.z > objs[i].get_back() -
-                    self.radius{
-                    return i as i32
-                }
-            }
-        }
-        -1
+    pub fn move_z(&mut self, dz: f32) {
+        self.z += dz;
+        self.set_position();
     }
-    
-    fn abs(f: f32) -> f32 {
-        if f < 0.0 { return -f }
-        f
+
+    pub fn set_position(&mut self) {
+        self.mask.set_pos(self.x, self.y, self.z);
+    }
+
+    pub fn set_x(&mut self, x: f32) {
+        self.x = x;
+        self.set_position();
+    }
+
+    pub fn set_z(&mut self, z: f32) {
+        self.z = z;
+        self.set_position();
     }
 
     pub fn forward(&mut self, c: &Camera, mut dz: GLfloat) {
@@ -140,6 +124,8 @@ impl Player {
 }
 
 pub fn new(x: GLfloat, height: GLfloat, z: GLfloat, speed: GLfloat) -> Player {
-    Player{ x: x, y: height, z: z, radius: 0.78f32, fb: 0f32, lr: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
+    let size = 0.78f32*2.0;
+    let mask = solids::new_mask(size, size);
+    Player{ x: x, y: height, z: z, mask: mask, fb: 0f32, lr: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
 }
 
