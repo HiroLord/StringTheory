@@ -6,6 +6,7 @@ extern crate sdl2;
 extern crate collections;
 extern crate gl;
 extern crate rustnet;
+extern crate assimp;
 //extern crate time;
 
 use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
@@ -25,10 +26,11 @@ mod player;
 mod solids;
 mod mapgen;
 mod light;
-mod gbuffer;
+mod resourcemanager;
 
 use solids::GameObject;
 
+#[allow(unused_variables)]
 fn main() {
     sdl2::init(sdl2::INIT_VIDEO);
     let window_width = 1280;
@@ -67,8 +69,6 @@ fn main() {
         gl::Enable(gl::CULL_FACE);
         gl::Enable(gl::DEPTH_TEST);
     }
-    let mut gbuff =  gbuffer::new();
-    gbuff.init(window_width as u32, window_height as u32);
 
 
     //let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
@@ -93,6 +93,19 @@ fn main() {
     
     sdl2::joystick::set_event_state(true);
     sdl2::joystick::Joystick::open(0);
+    
+    //ResourceManager Test
+    let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
+    manager.init();
+    let (verts, norms) = manager.get_model("cube.dae");
+    println!("{}", verts.len());
+    println!("{}", norms.len());
+    let mut indx : Vec<u32> = Vec::new();
+    for i in 0..verts.len()/3 {
+        indx.push(i as u32);
+    }
+    let obj = object::generate(&verts, &norms, &indx, 1.0f32, 0.5f32, 0.0f32); 
+    //End resource manager test
 
     while running {
         let mut polling = true;
@@ -153,7 +166,7 @@ fn main() {
         //obj.draw(&camera);
         //obj2.draw(&camera);
         //obj3.draw(&camera);
-
+        obj.draw(&camera, map.get_lights());
         for i in range(0, map.get_floors().len()){
             map.get_floors()[i].draw(&camera, map.get_lights());
             //o.draw(&camera);

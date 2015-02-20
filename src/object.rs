@@ -157,7 +157,6 @@ impl Object {
 }
 
 pub fn newTri(r:f32, g:f32, b:f32)  -> Object {
-    let shader = shader::new(VS_SRC, FS_SRC);
     let verts: [GLfloat; 9] = [
         0.0, 0.5, 0.0,
         0.5, -0.5, 0.0,
@@ -170,11 +169,10 @@ pub fn newTri(r:f32, g:f32, b:f32)  -> Object {
             ];
     let mut indxs: [u32; 3] = [0; 3];
     for i in 0..(3) { indxs[i] = i as u32; }
-    generate(shader, &verts, &norms, &indxs, r, g, b)
+    generate(&verts, &norms, &indxs, r, g, b)
 }
 
 pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32)  -> Object {
-    let shader = shader::new(VS_SRC, FS_SRC);
     let verts: [GLfloat; 6*6*3] = [
         // Front face
         x1, y1, z1,
@@ -275,10 +273,11 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32) 
             ];
     let mut indxs: [u32; 6*6] = [0; 6*6];
     for i in 0..(6*6) { indxs[i] = i as u32; }
-    generate(shader, &verts, &norms, &indxs, r, g, b)
+    generate(&verts, &norms, &indxs, r, g, b)
 }
 
-fn generate(shader: shader::Shader, verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f32, g:f32, b:f32) -> Object {
+pub fn generate(verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f32, g:f32, b:f32) -> Object {
+    let shader = shader::new(VS_SRC, FS_SRC);
     let mut vert_buff:u32 = 0;
     let mut norm_buff:u32 = 0;
     //let mut vert_buff:u32;
