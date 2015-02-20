@@ -76,6 +76,8 @@ fn main() {
                     if key == KeyCode::Num2 { draw_block.t = 2; }
                     if key == KeyCode::Num3 { draw_block.t = 3; }
                     if key == KeyCode::Num4 { draw_block.t = 4; }
+                    if key == KeyCode::Num5 { draw_block.t = 5; }
+                    if key == KeyCode::Num6 { draw_block.t = 6; }
                 }
                 Event::None => polling = false,
                 _ => {}
@@ -85,13 +87,14 @@ fn main() {
         drawer.set_draw_color(RGB(50, 100, 150));
 
         drawer.clear();
-        for i in range(1, 5) {
+        for i in range(1, 7) {
             for b in blocks.iter() {
                 if b.t == i {
                     let color = match b.t {
                         1 => RGB(0, 153, 204),
                         2...3 => RGB(180, 30, 20),
                         4 => RGB(250, 250, 255),
+                        5...6 => RGB(20, 30, 255),
                         _ => RGB(0,0,0),
                     };
                     drawer.set_draw_color(color);
@@ -113,12 +116,14 @@ fn main() {
 
 fn get_rect(b: &Block) -> Rect {
     return match b.t {
-                1 => Rect::new(b.x, b.y, b.block_size, b.block_size),
-                2 => Rect::new(b.x-1, b.y, 2, b.block_size),
-                3 => Rect::new(b.x, b.y-1, b.block_size, 2),
-                4 => Rect::new(b.x-3, b.y-3, 6, 6),
-                _ => Rect::new(b.x, b.y, b.block_size, b.block_size),
-            };
+        1 => Rect::new(b.x, b.y, b.block_size, b.block_size),
+        2 => Rect::new(b.x-1, b.y, 2, b.block_size),
+        3 => Rect::new(b.x, b.y-1, b.block_size, 2),
+        4 => Rect::new(b.x-3, b.y-3, 6, 6),
+        5 => Rect::new(b.x-1, b.y, 2, b.block_size),
+        6 => Rect::new(b.x, b.y-1, b.block_size, 2),
+        _ => Rect::new(b.x, b.y, b.block_size, b.block_size),
+    };
 }
 
 /*
