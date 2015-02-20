@@ -3,12 +3,12 @@ use assimp as ai;
 use object;
 use std::vec;
 
-pub struct ResourceManager<'resman> {
+pub struct ResourceManager {
     importer : ai::Importer,
     obj_list : Vec<object::Object>
 }
 
-impl<'resman> ResourceManager<'resman> {
+impl<'resman> ResourceManager {
     
     pub fn init(&self) -> () {
         println!("ResourceManager is initialized!");
@@ -36,7 +36,7 @@ impl<'resman> ResourceManager<'resman> {
 }
 
 
-pub fn new<'resman>() -> ResourceManager<'resman> {
+pub fn new() -> ResourceManager {
     ResourceManager {
        importer : ai::Importer::new(), obj_list : Vec::new()
     }

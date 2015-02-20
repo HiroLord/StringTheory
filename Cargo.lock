@@ -69,7 +69,7 @@ dependencies = [
 [[package]]
 name = "rust-assimp"
 version = "0.0.1-alpha.2"
-source = "git+https://github.com/lotusronin/rust-assimp#83051c3739f058471d481ac5d9c123d8f1655ddd"
+source = "git+https://github.com/lotusronin/rust-assimp#04f137b0dc54166480db3b48a5628346bf013440"
 dependencies = [
  "vecmath 0.0.5 (git+https://github.com/PistonDevelopers/vecmath)",
 ]
@@ -85,7 +85,7 @@ dependencies = [
 [[package]]
 name = "sdl2"
 version = "0.0.27"
-source = "git+https://github.com/nukep/rust-sdl2.git?branch=fix/rust-nightly#ea9d40e80d45378dd3e64c3bd94e0de63d46ad38"
+source = "git+https://github.com/nukep/rust-sdl2.git?branch=fix/rust-nightly#6a02cd27a3249df9638f2980ebbc2d6b82ddefcf"
 dependencies = [
  "bitflags 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -96,7 +96,7 @@ dependencies = [
 [[package]]
 name = "sdl2-sys"
 version = "0.0.26"
-source = "git+https://github.com/nukep/rust-sdl2.git?branch=fix/rust-nightly#ea9d40e80d45378dd3e64c3bd94e0de63d46ad38"
+source = "git+https://github.com/nukep/rust-sdl2.git?branch=fix/rust-nightly#6a02cd27a3249df9638f2980ebbc2d6b82ddefcf"
 dependencies = [
  "libc 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
