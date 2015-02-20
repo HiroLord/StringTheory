@@ -1,6 +1,6 @@
-#![feature(io)]
-#![feature(path)]
 #![feature(core)]
+#![feature(old_io)]
+#![feature(old_path)]
 
 extern crate sdl2;
 //mod camera;
@@ -42,12 +42,9 @@ fn main() {
     
     let mut drawer = renderer.drawer();
 
-    let mut rx = 0;
-    let mut ry = 0;
-
     let block_size = 32;
 
-    let mut blocks = Vec::new();
+    let mut blocks: Vec<Block> = Vec::new();
 
     let mut draw_block = Block{ x: 0, y: 0, t: 1, block_size: block_size }; 
 
@@ -65,8 +62,38 @@ fn main() {
                     draw_block.x = (mx+xoff) - ((mx + xoff) % block_size);
                     draw_block.y = (my+yoff) - ((my + yoff) % block_size);
                 }
-                Event::MouseButtonUp{..} => {
-                    blocks.push( Block{x: draw_block.x, y: draw_block.y, t: draw_block.t, block_size: block_size} );
+                Event::MouseButtonUp{mouse_btn: btn, ..} => {
+                    if btn == sdl2::mouse::Mouse::Left{
+                        let mut add = true;
+                          
+                        for black in blocks.iter() {
+                            if black.t == draw_block.t {
+                                if black.x == draw_block.x && black.y == draw_block.y {
+                                    add = false;
+                                }
+                            }
+                        }
+                        
+                        if add {
+                            blocks.push( Block{x: draw_block.x, y: draw_block.y,
+                                t: draw_block.t, block_size: block_size} );
+                        }
+                    } else if btn == sdl2::mouse::Mouse::Right {
+                        let mut to_remove = Vec::new();
+                        for b in range(0, blocks.len()) {
+                            if blocks[b].t == draw_block.t {
+                                if blocks[b].x == draw_block.x && blocks[b].y == draw_block.y {
+                                    to_remove.push(b);
+                                }
+                            }
+                        }
+                        let mut off = 0;
+                        to_remove.sort();
+                        for b in to_remove.iter() {
+                            blocks.remove(*b - off);
+                            off += 1;
+                        }
+                    }
                 }
                 Event::KeyDown{keycode: key, ..} => {
                     if key == KeyCode::Escape { break 'main; }
@@ -76,6 +103,56 @@ fn main() {
                     if key == KeyCode::Num2 { draw_block.t = 2; }
                     if key == KeyCode::Num3 { draw_block.t = 3; }
                     if key == KeyCode::Num4 { draw_block.t = 4; }
+                    if key == KeyCode::Num5 { draw_block.t = 5; }
+                    if key == KeyCode::Num6 { draw_block.t = 6; }
+                    if key == KeyCode::W {
+                        let mut to_add = Vec::new();
+                        for block in blocks.iter() {
+                            if block.t == 1 {
+                                let mut left = true;
+                                let mut right = true;
+                                let mut up = true;
+                                let mut down = true;
+                                for b2 in blocks.iter() {
+                                    if b2.t == 1{
+                                        if b2.x == block.x-block_size && b2.y == block.y { left = false; }
+                                        if b2.x == block.x+block_size && b2.y == block.y { right = false; }
+                                        if b2.y == block.y-block_size && b2.x == block.x { up = false; }
+                                        if b2.y == block.y+block_size && b2.x == block.x { down = false; }
+                                    }
+                                    if b2.t == 2 {
+                                        if b2.x == block.x && b2.y == block.y { left = false; }
+                                        if b2.x == block.x + block_size && b2.y == block.y { right
+                                            = false; }
+                                    }
+                                    if b2.t == 3 {
+                                        if b2.x == block.x && b2.y == block.y { up = false; }
+                                        if b2.x == block.x && b2.y == block.y + block_size { down =
+                                            false; }
+                                    }
+                                }
+                                if left {
+                                    to_add.push( Block{x: block.x, y: block.y, t: 2, block_size:
+                                        block_size} );
+                                }
+                                if up {
+                                    to_add.push( Block{x: block.x, y: block.y, t: 3, block_size:
+                                        block_size} );
+                                }
+                                if right {
+                                    to_add.push( Block{x: block.x+block_size, y: block.y, t: 2,
+                                        block_size: block_size} );
+                                }
+                                if down {
+                                    to_add.push( Block{x: block.x, y: block.y+block_size, t: 3,
+                                        block_size: block_size} );
+                                }
+                            }
+                        }
+                        for w in to_add {
+                            blocks.push(w);
+                        }
+                    }
                 }
                 Event::None => polling = false,
                 _ => {}
@@ -85,13 +162,14 @@ fn main() {
         drawer.set_draw_color(RGB(50, 100, 150));
 
         drawer.clear();
-        for i in range(1, 5) {
+        for i in range(1, 7) {
             for b in blocks.iter() {
                 if b.t == i {
                     let color = match b.t {
                         1 => RGB(0, 153, 204),
                         2...3 => RGB(180, 30, 20),
                         4 => RGB(250, 250, 255),
+                        5...6 => RGB(20, 30, 255),
                         _ => RGB(0,0,0),
                     };
                     drawer.set_draw_color(color);
@@ -113,12 +191,14 @@ fn main() {
 
 fn get_rect(b: &Block) -> Rect {
     return match b.t {
-                1 => Rect::new(b.x, b.y, b.block_size, b.block_size),
-                2 => Rect::new(b.x-1, b.y, 2, b.block_size),
-                3 => Rect::new(b.x, b.y-1, b.block_size, 2),
-                4 => Rect::new(b.x-3, b.y-3, 6, 6),
-                _ => Rect::new(b.x, b.y, b.block_size, b.block_size),
-            };
+        1 => Rect::new(b.x, b.y, b.block_size, b.block_size),
+        2 => Rect::new(b.x-1, b.y, 2, b.block_size),
+        3 => Rect::new(b.x, b.y-1, b.block_size, 2),
+        4 => Rect::new(b.x-3, b.y-3, 6, 6),
+        5 => Rect::new(b.x-1, b.y, 2, b.block_size),
+        6 => Rect::new(b.x, b.y-1, b.block_size, 2),
+        _ => Rect::new(b.x, b.y, b.block_size, b.block_size),
+    };
 }
 
 /*
