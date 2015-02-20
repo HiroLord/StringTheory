@@ -47,7 +47,7 @@ fn main() {
 
     let block_size = 32;
 
-    let mut blocks = Vec::new();
+    let mut blocks: Vec<Block> = Vec::new();
 
     let mut draw_block = Block{ x: 0, y: 0, t: 1, block_size: block_size }; 
 
