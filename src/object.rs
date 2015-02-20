@@ -30,7 +30,8 @@ void main() {
 }
     ";
 
-static FS_SRC: &'static str = "\n\
+static FS_SRC: &'static str = "
+
 #version 120
 
 const int max_lights = 8;
