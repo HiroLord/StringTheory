@@ -1,6 +1,6 @@
-#![feature(io)]
-#![feature(path)]
 #![feature(core)]
+#![feature(old_io)]
+#![feature(old_path)]
 
 extern crate sdl2;
 //mod camera;
@@ -41,9 +41,6 @@ fn main() {
     };
     
     let mut drawer = renderer.drawer();
-
-    let mut rx = 0;
-    let mut ry = 0;
 
     let block_size = 32;
 
