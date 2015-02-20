@@ -1,6 +1,6 @@
-#![feature(io)]
-#![feature(path)]
 #![feature(core)]
+#![feature(old_io)]
+#![feature(old_path)]
 
 extern crate sdl2;
 //mod camera;
@@ -42,12 +42,9 @@ fn main() {
     
     let mut drawer = renderer.drawer();
 
-    let mut rx = 0;
-    let mut ry = 0;
-
     let block_size = 32;
 
-    let mut blocks = Vec::new();
+    let mut blocks: Vec<Block> = Vec::new();
 
     let mut draw_block = Block{ x: 0, y: 0, t: 1, block_size: block_size }; 
 
@@ -68,7 +65,7 @@ fn main() {
                 Event::MouseButtonUp{mouse_btn: btn, ..} => {
                     if btn == sdl2::mouse::Mouse::Left{
                         let mut add = true;
-                        
+                          
                         for black in blocks.iter() {
                             if black.t == draw_block.t {
                                 if black.x == draw_block.x && black.y == draw_block.y {
