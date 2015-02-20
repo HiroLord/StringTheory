@@ -68,7 +68,9 @@ fn main() {
                 Event::MouseButtonUp{mouse_btn: btn, ..} => {
                     if btn == sdl2::mouse::Mouse::Left{
                         let mut add = true;
-                        
+                          
+                        // TODO FIX THIS
+                        /*
                         for black in blocks.iter() {
                             if black.t == draw_block.t {
                                 if black.x == draw_block.x && black.y == draw_block.y {
@@ -76,6 +78,7 @@ fn main() {
                                 }
                             }
                         }
+                        */
                         
                         if add {
                             blocks.push( Block{x: draw_block.x, y: draw_block.y,
