@@ -5,12 +5,15 @@ version = "0.0.1"
 authors = ["HiroLord <prestonturner42@gmail.com>", "Nathan Braswell <miloignis@gmail.com>", "Marcus Godwin <marcusgodwin@hotmail.com>"]
 
 
-[dependencies]
-sdl2 = "0.0.24"
-rustnet = "0.0.1"
+[dependencies.rustnet]
+git = "https://github.com/hirolord/rustnet.git"
+
+[dependencies.sdl2]
+git = "https://github.com/nukep/rust-sdl2.git"
+branch = "fix/rust-nightly"
 
 [dependencies.gl]
-git = "https://github.com/bjz/gl-rs"
+git = "https://github.com/Limvot/gl-rs.git"
 
 [dependencies.rust-assimp]
 git = "https://github.com/lotusronin/rust-assimp"
