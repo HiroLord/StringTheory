@@ -40,6 +40,7 @@ impl GBuffer {
                 //gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, window_width as i32, window_height as i32, 0, gl::RGB, gl::BYTE, ptr::null());
                 //gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, window_width as i32, window_height as i32, 0, gl::RGB, gl::SHORT, ptr::null());
                 //gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, window_width as i32, window_height as i32, 0, gl::RGB, gl::INT, ptr::null());
+                //gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, window_width as i32, window_height as i32, 0, gl::RGB, gl::FLOAT, ptr::null());
                 gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, window_width as i32, window_height as i32, 0, gl::RGB, gl::FLOAT, ptr::null());
                 gl::TexParameterf(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST as f32);
                 gl::TexParameterf(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST as f32);

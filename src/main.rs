@@ -82,7 +82,7 @@ fn main() {
         gl::Enable(gl::DEPTH_TEST);
     }
     let mut renderer = renderer::new(window_width as u32, window_height as u32);
-    let test_light = light::new_light(0.0f32, 0.0f32, 0.0f32, 1.0f32, 1.0f32, 1.0f32);
+    let test_light = light::new_light(0.0f32, 0.0f32, 0.0f32, 3.0f32, 3.0f32, 3.0f32);
     //let mut gbuff = gbuffer::new();
     //gbuff.init(window_width as u32, window_height as u32);
 

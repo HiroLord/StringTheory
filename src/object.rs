@@ -35,10 +35,6 @@ static FS_SRC: &'static str = "
 
 #version 120
 
-const int max_lights = 8;
-uniform vec3 light_pos[max_lights];
-uniform vec3 light_color[max_lights];
-
 uniform vec3 material_color;
 uniform float alpha;
 
@@ -47,8 +43,13 @@ varying vec4 normal_modelSpace;
 
 void main() {
     gl_FragData[0] = vec4(material_color, 1);
-    gl_FragData[1] = position_modelSpace;
-    gl_FragData[2] = normal_modelSpace;
+
+    //gl_FragData[1] = position_modelSpace;
+    //gl_FragData[2] = normal_modelSpace;
+
+    gl_FragData[1] = position_modelSpace / 2 + 0.5;
+    gl_FragData[2] = normal_modelSpace / 2 + 0.5;
+
     gl_FragData[3] = vec4(1,1,0,1);
     //gl_FragData[3] = (position_modelSpace/20 + normal_modelSpace) * vec4(material_color, 1);
 }
