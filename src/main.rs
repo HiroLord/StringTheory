@@ -106,8 +106,8 @@ fn main() {
     if map.get_spawns().len() > 0 {
         player.set_position_from_point(map.get_spawn(0));
     } else {
-        player.set_x(map.get_walls()[0].x());
-        player.set_z(map.get_walls()[0].z());
+        player.set_x(map.get_floors()[0].x());
+        player.set_z(map.get_floors()[0].z());
     }
 
     let mut running = true;
