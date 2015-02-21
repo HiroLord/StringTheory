@@ -56,14 +56,14 @@ fn main() {
     }
 
     
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask, sdl2::video::GLProfile::GLCoreProfile as i32);
-    //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask, sdl2::video::GLProfile::GLCompatibilityProfile as i32);
+    //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask, sdl2::video::GLProfile::GLCoreProfile as i32);
+    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask, sdl2::video::GLProfile::GLCompatibilityProfile as i32);
 
-    //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 2);
-    //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 1);
-    
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 3);
+    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 2);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 1);
+    
+    //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 3);
+    //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 1);
 
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDoubleBuffer, 1);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDepthSize, 24);
