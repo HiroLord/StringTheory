@@ -16,6 +16,12 @@ pub struct Map {
     walls: Vec<solids::Wall>,
     lights: Vec<object::Object>,
     doors: Vec<solids::Door>,
+    spawns: Vec<Point>,
+}
+
+pub struct Point {
+    pub a: f32,
+    pub b: f32,
 }
 
 impl Map {
@@ -35,6 +41,14 @@ impl Map {
         &self.doors
     }
 
+    pub fn get_spawns(&self) -> &Vec<Point> {
+        &self.spawns
+    }
+
+    pub fn get_spawn(&self, s: u32) -> &Point {
+        &self.spawns[s as usize]
+    }
+
     pub fn open_door(&mut self, door: i32) {
         self.doors[door as usize].open();
     }
@@ -49,6 +63,7 @@ pub fn load_map() -> Map {
     let mut walls = Vec::new();
     let mut lights = Vec::new();
     let mut doors = Vec::new();
+    let mut spawns = Vec::new();
     let mut file = File::open_mode(&Path::new("savedmap.map"),
                                 std::old_io::FileMode::Open,
                                 std::old_io::FileAccess::Read);
@@ -91,11 +106,14 @@ pub fn load_map() -> Map {
                 walls.push(new_short_wall(bx * 4.0, 0.0, by * 4.0 - 2.0, 3.0) );
                 doors.push(new_door(bx * 4.0, 0.0, by * 4.0 - 2.0, 1.0) );
             },
+            10 => {
+                spawns.push(Point{a: bx*4.0, b: by*4.0} );
+            },
             _ => (),
         }
     }
 
-    let mut m = Map{floors: floors, walls: walls, lights: lights, doors: doors};
+    let mut m = Map{floors: floors, walls: walls, lights: lights, doors: doors, spawns: spawns};
     m
 }
 

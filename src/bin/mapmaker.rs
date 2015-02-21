@@ -98,13 +98,14 @@ fn main() {
                 Event::KeyDown{keycode: key, ..} => {
                     if key == KeyCode::Escape { break 'main; }
                     if key == KeyCode::S { save_map(&blocks); }
-                    //if key == KeyCode::L { blocks = load_map(); }
+                    if key == KeyCode::L { blocks = load_map(); }
                     if key == KeyCode::Num1 { draw_block.t = 1; }
                     if key == KeyCode::Num2 { draw_block.t = 2; }
                     if key == KeyCode::Num3 { draw_block.t = 3; }
                     if key == KeyCode::Num4 { draw_block.t = 4; }
                     if key == KeyCode::Num5 { draw_block.t = 5; }
                     if key == KeyCode::Num6 { draw_block.t = 6; }
+                    if key == KeyCode::Num0 { draw_block.t = 10; }
                     if key == KeyCode::W {
                         let mut to_add = Vec::new();
                         for block in blocks.iter() {
@@ -162,7 +163,7 @@ fn main() {
         drawer.set_draw_color(RGB(50, 100, 150));
 
         drawer.clear();
-        for i in range(1, 7) {
+        for i in range(1, 11) {
             for b in blocks.iter() {
                 if b.t == i {
                     let color = match b.t {
@@ -170,6 +171,7 @@ fn main() {
                         2...3 => RGB(180, 30, 20),
                         4 => RGB(250, 250, 255),
                         5...6 => RGB(20, 30, 255),
+                        10 => RGB(0,155,0),
                         _ => RGB(0,0,0),
                     };
                     drawer.set_draw_color(color);
@@ -197,11 +199,11 @@ fn get_rect(b: &Block) -> Rect {
         4 => Rect::new(b.x-3, b.y-3, 6, 6),
         5 => Rect::new(b.x-1, b.y, 2, b.block_size),
         6 => Rect::new(b.x, b.y-1, b.block_size, 2),
+        10 => Rect::new(b.x+6, b.y+6, b.block_size-12,b.block_size-12),
         _ => Rect::new(b.x, b.y, b.block_size, b.block_size),
     };
 }
 
-/*
 fn load_map() -> Vec<Block> {
     let mut blocks = Vec::new();
 
@@ -213,7 +215,7 @@ fn load_map() -> Vec<Block> {
     };
     println!("Received {} objects.", size);
     for _ in range(0, size) {
-        let blocktype = match file.read_be_i32() {
+        let blocktype = match file.read_be_u32() {
             Ok(t) => t,
             Err(e) => panic!("Error {}", e),
         };
@@ -225,12 +227,10 @@ fn load_map() -> Vec<Block> {
             Ok(y) => y,
             Err(e) => panic!("Error {}", e),
         };
-        println!("{}, {}, {}", blocktype, (bx*32f32) as i32, (by*32f32) as i32);
-        blocks.push( Block{x: (bx*32f32) as i32, y: (by*32f32) as i32, t: 1} );
+        blocks.push( Block{x: (bx*32f32) as i32, y: (by*32f32) as i32, t: blocktype, block_size: 32} );
     }
     blocks
 }
-*/
 
 fn save_map(map: &Vec<Block>) -> bool{
     let mut file = File::create(&Path::new("savedmap.map"));

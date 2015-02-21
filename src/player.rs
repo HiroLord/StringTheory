@@ -10,6 +10,7 @@ use solids::Mask;
 use solids;
 use light;
 use renderer;
+use mapgen::Point;
 //use std::num::abs;
 
 pub struct Player {
@@ -62,6 +63,12 @@ impl Player {
 
     pub fn set_position(&mut self) {
         self.mask.set_pos(self.x, self.y, self.z);
+    }
+
+    pub fn set_position_from_point(&mut self, point: &Point) {
+        self.x = point.a;
+        self.z = point.b;
+        self.set_position();
     }
 
     pub fn set_x(&mut self, x: f32) {
