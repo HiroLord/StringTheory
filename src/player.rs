@@ -9,6 +9,7 @@ use solids::GameObject;
 use solids::Mask;
 use solids;
 use light;
+use renderer;
 //use std::num::abs;
 
 pub struct Player {
@@ -36,7 +37,7 @@ impl GameObject for Player {
     fn x(&self) -> f32 { self.x }
     fn y(&self) -> f32 { self.y }
     fn z(&self) -> f32 { self.z }
-    fn draw(&self, c: &Camera, lights: &[light::Light]) {}
+    fn draw(&self, c: &Camera, renderer: &renderer::Renderer) {}
 }
 
 impl Solid for Player {

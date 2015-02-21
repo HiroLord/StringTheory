@@ -1,6 +1,7 @@
 extern crate std;
 
 use solids;
+use object;
 use light;
 use solids::new_ceiling;
 use solids::new_floor;
@@ -13,7 +14,7 @@ use std::old_io::File;
 pub struct Map {
     floors: Vec<solids::Floor>,
     walls: Vec<solids::Wall>,
-    lights: Vec<light::Light>,
+    lights: Vec<object::Object>,
     doors: Vec<solids::Door>,
 }
 
@@ -26,7 +27,7 @@ impl Map {
         &self.walls
     }
 
-    pub fn get_lights(&self) -> &Vec<light::Light> {
+    pub fn get_lights(&self) -> &Vec<object::Object> {
         &self.lights
     }
 

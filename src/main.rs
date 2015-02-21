@@ -82,6 +82,7 @@ fn main() {
         gl::Enable(gl::DEPTH_TEST);
     }
     let mut renderer = renderer::new(window_width as u32, window_height as u32);
+    let test_light = light::new_light(0.0f32, 0.0f32, 0.0f32, 1.0f32, 1.0f32, 1.0f32);
     //let mut gbuff = gbuffer::new();
     //gbuff.init(window_width as u32, window_height as u32);
 
@@ -228,20 +229,25 @@ fn main() {
         //obj.draw(&camera);
         //obj2.draw(&camera);
         //obj3.draw(&camera);
-        obj.draw(&camera, map.get_lights());
+        obj.draw(&camera, &renderer);
         for i in range(0, map.get_floors().len()){
-            map.get_floors()[i].draw(&camera, map.get_lights());
+            map.get_floors()[i].draw(&camera, &renderer);
             //o.draw(&camera);
         }
         for i in range(0, map.get_walls().len()){
-            map.get_walls()[i].draw(&camera, map.get_lights());
+            map.get_walls()[i].draw(&camera, &renderer);
         }
 
         for i in range(0, map.get_doors().len()){
-            map.get_doors()[i].draw(&camera, map.get_lights());
+            map.get_doors()[i].draw(&camera, &renderer);
         }
 
         renderer.start_light_pass();
+        //for it in map.get_lights() {
+            //it.draw(&camera, &renderer);
+        //}
+        test_light.draw(&camera, &renderer);
+        
         window.gl_swap_window();
         if connected {
             if rustnet::check_sockets(){

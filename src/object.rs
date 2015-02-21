@@ -3,6 +3,7 @@ use gl;
 use camera;
 use matrix;
 use light;
+use renderer;
 
 use gl::types::*;
 use std::mem;
@@ -48,19 +49,8 @@ void main() {
     gl_FragData[0] = vec4(material_color, 1);
     gl_FragData[1] = position_modelSpace;
     gl_FragData[2] = normal_modelSpace;
-    gl_FragData[3] = (position_modelSpace/20 + normal_modelSpace) * vec4(material_color, 1);
-    //gl_FragData[3] = position_modelSpace / 20.0;
-    //vec3 final_color = vec3(0,0,0);
-    //for (int i = 0; i < max_lights; i++) {
-        //vec4 light_pos_4 = vec4(light_pos[i], 1);
-
-        //// I don't think I should have to negate this....
-        //vec4 vecToLight = -normalize(position_modelSpace - light_pos_4);
-        //float cosTheta = clamp( dot(normal_modelSpace, vecToLight), 0, 1);
-        //float dist = distance(position_modelSpace, light_pos_4); 
-        //final_color += (cosTheta * material_color * light_color[i]) / (dist);
-    //}
-    //gl_FragColor = vec4(final_color + material_color * vec3(0.3,0.3,0.3), 0);
+    gl_FragData[3] = vec4(1,1,0,1);
+    //gl_FragData[3] = (position_modelSpace/20 + normal_modelSpace) * vec4(material_color, 1);
 }
     ";
 
@@ -91,6 +81,7 @@ pub struct Object {
     norm_buff: u32,
     texc_buff: u32,
     indx_buff: u32,
+    is_light: bool,
 }
 
 impl Object {
@@ -106,30 +97,26 @@ impl Object {
         self.z += z;
         self.model_matrix.set_translation(self.x,self.y,self.z);
     }
-    pub fn draw(&self, camera:&camera::Camera, lights:&[light::Light]) -> () {
+    pub fn draw(&self, camera:&camera::Camera, renderer: &renderer::Renderer) -> () {
         unsafe {
             gl::BindVertexArray(self.vao);
 
             self.shader.bind();
             let position_handle = self.shader.get_attrib("vert_model");
-            let normal_handle = self.shader.get_attrib("norm_model");
+            //let normal_handle = self.shader.get_attrib("norm_model");
             
-            for i in 0..8 {
-                let pos_loc = self.shader.get_uniform(&format!("light_pos[{}]", i));
-                let color_loc = self.shader.get_uniform(&format!("light_color[{}]", i));
-                //println!("pos_loc is {}, color_loc is {}", pos_loc, color_loc);
-                //println!("for ||{}||", &format!("light_pos[{}]", i));
-                if (lights.len() > i) {
-                    //println!("Using light {}, pos: {} {} {} col: {} {} {}", i, lights[i].x, lights[i].y, lights[i].z,
-                                                                               //lights[i].r, lights[i].g, lights[i].b);
-                    gl::Uniform3f(pos_loc, lights[i].x, lights[i].y, lights[i].z);
-                    gl::Uniform3f(color_loc, lights[i].r, lights[i].g, lights[i].b);
-                } else {
-                    //println!("Using 0 defaults");
-                    gl::Uniform3f(pos_loc, 0.0f32, 0.0f32, 0.0f32);
-                    gl::Uniform3f(color_loc, 0.0f32, 0.0f32, 0.0f32);
-                }
+            if self.is_light {
+                // bind our deferred textures
+                let diffuse_tex = self.shader.get_uniform("diffuse_tex");
+                let position_tex = self.shader.get_uniform("position_tex");
+                let normal_tex = self.shader.get_uniform("normal_tex");
+                let last_tex = self.shader.get_uniform("last_tex");
+                gl::Uniform1i(diffuse_tex, renderer.gbuff.textures[0] as i32); 
+                gl::Uniform1i(position_tex, renderer.gbuff.textures[1] as i32); 
+                gl::Uniform1i(normal_tex, renderer.gbuff.textures[2] as i32); 
+                gl::Uniform1i(last_tex, renderer.gbuff.textures[3] as i32); 
             }
+
             let normal_handle = self.shader.get_attrib("norm_model");
 
             let model_handle = self.shader.get_uniform("modelMatrix");
@@ -284,7 +271,12 @@ pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32) 
 }
 
 pub fn generate(verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f32, g:f32, b:f32) -> Object {
-    let shader = shader::new(VS_SRC, FS_SRC);
+    generate_general(verts, norms, indxs, r, g, b, VS_SRC, FS_SRC, false)
+}
+
+pub fn generate_general(verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f32, g:f32, b:f32,
+                        vertex_shader: &str, fragment_shader: &str, is_light: bool) -> Object {
+    let shader = shader::new(vertex_shader, fragment_shader);
     let mut vert_buff:u32 = 0;
     let mut norm_buff:u32 = 0;
     //let mut vert_buff:u32;
@@ -338,6 +330,7 @@ pub fn generate(verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f32, g:f3
         norm_buff: norm_buff,
         texc_buff: 0,
         indx_buff: indx_buff,
+        is_light: is_light,
     }
 }
 

@@ -13,7 +13,7 @@ pub enum TextureType {
 impl Copy for GBuffer {}
 pub struct GBuffer {
     fbo: GLuint,
-    textures: [GLuint; TextureType::Number as usize],
+    pub textures: [GLuint; TextureType::Number as usize],
     depth_texture: GLuint,
 }
 
@@ -41,6 +41,8 @@ impl GBuffer {
                 //gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, window_width as i32, window_height as i32, 0, gl::RGB, gl::SHORT, ptr::null());
                 //gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, window_width as i32, window_height as i32, 0, gl::RGB, gl::INT, ptr::null());
                 gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, window_width as i32, window_height as i32, 0, gl::RGB, gl::FLOAT, ptr::null());
+                gl::TexParameterf(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST as f32);
+                gl::TexParameterf(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST as f32);
                 gl::FramebufferTexture2D(gl::DRAW_FRAMEBUFFER, (gl::COLOR_ATTACHMENT0 + i as u32) as u32, gl::TEXTURE_2D, self.textures[i], 0);
             }
             
@@ -52,10 +54,11 @@ impl GBuffer {
             gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as i32, window_width as i32, window_height as i32, 0, gl::DEPTH_COMPONENT, gl::FLOAT, ptr::null());
             gl::FramebufferTexture2D(gl::DRAW_FRAMEBUFFER, gl::DEPTH_ATTACHMENT, gl::TEXTURE_2D, self.depth_texture, 0);
 
-            let draw_buffers = [gl::COLOR_ATTACHMENT0, gl::COLOR_ATTACHMENT1, gl::COLOR_ATTACHMENT2, gl::COLOR_ATTACHMENT3];
+            //let draw_buffers = [gl::COLOR_ATTACHMENT0, gl::COLOR_ATTACHMENT1, gl::COLOR_ATTACHMENT2, gl::COLOR_ATTACHMENT3];
+            let draw_buffers = [gl::COLOR_ATTACHMENT1, gl::COLOR_ATTACHMENT2, gl::COLOR_ATTACHMENT3, gl::COLOR_ATTACHMENT4];
             gl::DrawBuffers(draw_buffers.len() as i32, (&draw_buffers[0]) as *const u32);
 
-                println!("glGetError: {}", gl::GetError());
+            println!("glGetError: {}", gl::GetError());
             let status = gl::CheckFramebufferStatus(gl::FRAMEBUFFER);
             if status != gl::FRAMEBUFFER_COMPLETE {
                 println!("Framebuffer creation failed!");
@@ -71,8 +74,17 @@ impl GBuffer {
             gl::BindFramebuffer(gl::DRAW_FRAMEBUFFER, 0);
         }
     }
-    pub fn bind_for_writing(&self) { unsafe { gl::BindFramebuffer(gl::DRAW_FRAMEBUFFER, self.fbo); } }
-    pub fn bind_for_reading(&self) { unsafe { gl::BindFramebuffer(gl::READ_FRAMEBUFFER, self.fbo); } }
+    pub fn bind_for_writing(&self) { unsafe {
+        gl::BindFramebuffer(gl::DRAW_FRAMEBUFFER, self.fbo);
+    } }
+    pub fn bind_for_reading(&self) { unsafe {
+        //gl::BindFramebuffer(gl::READ_FRAMEBUFFER, self.fbo);
+        gl::BindFramebuffer(gl::DRAW_FRAMEBUFFER, 0);
+        for i in 0..self.textures.len() {
+            gl::ActiveTexture(gl::TEXTURE0 + i as u32);
+            gl::BindTexture(gl::TEXTURE_2D, self.textures[i as usize]);
+        }
+    } }
     pub fn set_read_buffer(&self, tex_type: TextureType) { unsafe { gl::ReadBuffer((gl::COLOR_ATTACHMENT0 + tex_type as u32) as u32); } }
 }
 
