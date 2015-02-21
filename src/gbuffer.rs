@@ -56,8 +56,8 @@ impl GBuffer {
             gl::TexImage2D(gl::TEXTURE_2D, 0, gl::DEPTH_COMPONENT as i32, window_width as i32, window_height as i32, 0, gl::DEPTH_COMPONENT, gl::FLOAT, ptr::null());
             gl::FramebufferTexture2D(gl::DRAW_FRAMEBUFFER, gl::DEPTH_ATTACHMENT, gl::TEXTURE_2D, self.depth_texture, 0);
 
-            //let draw_buffers = [gl::COLOR_ATTACHMENT0, gl::COLOR_ATTACHMENT1, gl::COLOR_ATTACHMENT2, gl::COLOR_ATTACHMENT3];
-            let draw_buffers = [gl::COLOR_ATTACHMENT1, gl::COLOR_ATTACHMENT2, gl::COLOR_ATTACHMENT3, gl::COLOR_ATTACHMENT4];
+            let draw_buffers = [gl::COLOR_ATTACHMENT1, gl::COLOR_ATTACHMENT2, gl::COLOR_ATTACHMENT3, gl::COLOR_ATTACHMENT0];
+            //let draw_buffers = [gl::COLOR_ATTACHMENT1, gl::COLOR_ATTACHMENT2, gl::COLOR_ATTACHMENT3, gl::COLOR_ATTACHMENT4];
             gl::DrawBuffers(draw_buffers.len() as i32, (&draw_buffers[0]) as *const u32);
 
             println!("glGetError: {}", gl::GetError());
