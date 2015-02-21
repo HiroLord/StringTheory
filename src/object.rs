@@ -47,8 +47,8 @@ void main() {
     //gl_FragData[1] = position_modelSpace;
     //gl_FragData[2] = normal_modelSpace;
 
-    gl_FragData[1] = position_modelSpace / 2 + 0.5;
-    gl_FragData[2] = normal_modelSpace / 2 + 0.5;
+    gl_FragData[1] = position_modelSpace;
+    gl_FragData[2] = normal_modelSpace;
 
     gl_FragData[3] = vec4(1,1,0,1);
     //gl_FragData[3] = (position_modelSpace/20 + normal_modelSpace) * vec4(material_color, 1);
@@ -116,6 +116,13 @@ impl Object {
                 gl::Uniform1i(position_tex, renderer.gbuff.textures[1] as i32); 
                 gl::Uniform1i(normal_tex, renderer.gbuff.textures[2] as i32); 
                 gl::Uniform1i(last_tex, renderer.gbuff.textures[3] as i32); 
+
+                // we also pass in our world pos and window size
+                let light_world_pos = self.shader.get_uniform("light_world_pos");
+                gl::Uniform3f(light_world_pos, self.x, self.y, self.z);
+
+                let window_size_pos = self.shader.get_uniform("window_size");
+                gl::Uniform2f(window_size_pos, renderer.winx as f32, renderer.winy as f32);
             }
 
             let normal_handle = self.shader.get_attrib("norm_model");

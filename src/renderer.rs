@@ -7,8 +7,8 @@ use object;
 
 
 pub struct Renderer {
-    winx: u32,
-    winy: u32,
+    pub winx: u32,
+    pub winy: u32,
     pub gbuff: gbuffer::GBuffer,
 }
 

@@ -82,9 +82,7 @@ fn main() {
         gl::Enable(gl::DEPTH_TEST);
     }
     let mut renderer = renderer::new(window_width as u32, window_height as u32);
-    let test_light = light::new_light(0.0f32, 0.0f32, 0.0f32, 3.0f32, 3.0f32, 3.0f32);
-    //let mut gbuff = gbuffer::new();
-    //gbuff.init(window_width as u32, window_height as u32);
+    //let test_light = light::new_light(2.0f32, 4.0f32, 0.0f32, 3.0f32, 3.0f32, 3.0f32);
 
     //let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
     //let mut obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
@@ -243,10 +241,10 @@ fn main() {
         }
 
         renderer.start_light_pass();
-        //for it in map.get_lights() {
-            //it.draw(&camera, &renderer);
-        //}
-        test_light.draw(&camera, &renderer);
+        for it in map.get_lights() {
+            it.draw(&camera, &renderer);
+        }
+        //test_light.draw(&camera, &renderer);
         
         window.gl_swap_window();
         if connected {

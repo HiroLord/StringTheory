@@ -4,12 +4,12 @@ use gl::types::*;
 pub fn new_light(x: f32, y: f32, z: f32, r: f32, g: f32, b: f32) -> object::Object {
     let verts: [GLfloat; 6*3] = [
         // Front face
-        x-1.0f32, y-1.0f32, z,
-        x+1.0f32, y+1.0f32, z,
-        x-1.0f32, y+1.0f32, z,
-        x-1.0f32, y-1.0f32, z,
-        x+1.0f32, y-1.0f32, z,
-        x+1.0f32, y+1.0f32, z,
+        -1.0f32, -1.0f32, 0.0f32,
+         1.0f32,  1.0f32, 0.0f32,
+        -1.0f32,  1.0f32, 0.0f32,
+        -1.0f32, -1.0f32, 0.0f32,
+         1.0f32, -1.0f32, 0.0f32,
+         1.0f32,  1.0f32, 0.0f32,
             ];
     let norms: [GLfloat; 6*3] = [
         // Front face
@@ -22,7 +22,9 @@ pub fn new_light(x: f32, y: f32, z: f32, r: f32, g: f32, b: f32) -> object::Obje
             ];
     let mut indxs: [u32; 6] = [0; 6];
     for i in 0..(6) { indxs[i] = i as u32; }
-    object::generate_general(&verts, &norms, &indxs, r, g, b, VS_LIGHT_SRC, FS_LIGHT_SRC, true)
+    let mut obj = object::generate_general(&verts, &norms, &indxs, r, g, b, VS_LIGHT_SRC, FS_LIGHT_SRC, true);
+    obj.set_translation(x,y,z);
+    obj
 }
 
 
@@ -34,13 +36,8 @@ attribute vec3 norm_model;
 uniform mat4 modelMatrix;
 uniform mat4 viewProjectionMatrix;
 
-varying vec4 position_modelSpace;
-
 void main() {
     gl_Position = vec4(vert_model, 1);
-    //gl_Position = viewProjectionMatrix * modelMatrix * vec4(vert_model, 1);
-    position_modelSpace = modelMatrix * vec4(vert_model, 1);
-    //normal_modelSpace = normalize(modelMatrix * vec4(norm_model, 1));
 }
     ";
 
@@ -48,6 +45,8 @@ static FS_LIGHT_SRC: &'static str = "
 
 #version 120
 
+uniform vec3 light_world_pos;
+uniform vec2 window_size;
 uniform vec3 material_color;
 uniform float alpha;
 
@@ -59,20 +58,18 @@ uniform sampler2D last_tex;
 varying vec4 position_modelSpace;
 
 void main() {
-    vec2 tex_coord = gl_FragCoord.xy / vec2(1280,720);
+    vec2 tex_coord = gl_FragCoord.xy / window_size;
+    //vec2 tex_coord = gl_FragCoord.xy / vec2(1280,720);
 
-    //vec3 pos = texture2D(position_tex, tex_coord).xyz;
-    //vec3 normal = texture2D(normal_tex, tex_coord).xyz;
-
-    vec4 pos = (texture2D(position_tex, tex_coord) - 0.5) * 2;
-    vec4 normal = (texture2D(normal_tex, tex_coord) - 0.5) * 2;
-
-    //normal = normalize(normal);
+    vec4 pos = texture2D(position_tex, tex_coord);
+    vec4 normal = texture2D(normal_tex, tex_coord);
     vec3 color = texture2D(diffuse_tex, tex_coord).xyz;
     vec3 last = texture2D(last_tex, tex_coord).xyz;
 
-    //vec3 light_pos = position_modelSpace.xyz;
-    vec4 light_pos = vec4(3, 1, 0, 1);
+    //normal = normalize(normal);
+
+    //vec4 light_pos = vec4(3, 1, 0, 1);
+    vec4 light_pos = vec4(light_world_pos, 1);
 
     // I don't think I should have to negate this....
     //vec3 vecToLight = normalize(pos - light_pos);
@@ -80,15 +77,15 @@ void main() {
     vec4 vecToLight = -normalize(pos - light_pos);
     float cosTheta = clamp( dot(normal, vecToLight), 0, 1);
     //float cosTheta = clamp( dot(normal, vecToLight), 0, 1) + clamp( -dot(normal, vecToLight), 0, 1);
-    gl_FragColor = vec4(cosTheta, cosTheta, cosTheta, 1);
+    //gl_FragColor = vec4(cosTheta, cosTheta, cosTheta, 1);
     float dist = distance(pos, light_pos); 
-    //gl_FragColor = vec4((cosTheta * color * material_color) / (dist), 1);
+    gl_FragColor = vec4((cosTheta * color * material_color) / (dist), 1);
     //gl_FragColor = vec4(material_color, 1);
     //gl_FragColor = vec4(color, 1);
     //gl_FragColor = vec4(normal, 1);
-    //gl_FragColor = vec4(normal/2 + 0.5, 1);
+    //gl_FragColor = vec4(normal/2 + 0.5);
     //gl_FragColor = vec4(pos, 1);
-    //gl_FragColor = vec4(pos/2 + 0.5, 1);
+    //gl_FragColor = pos/2 + 0.5;
     //gl_FragColor = vec4(last, 1);
     //gl_FragColor = vec4(tex_coord,1, 1);
     //gl_FragColor = vec4(texture2D(diffuse_tex, vec2(0.5,0.5)).xyz, 1);
