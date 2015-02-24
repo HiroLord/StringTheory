@@ -59,7 +59,7 @@ pub struct Floor {
 
 impl Floor{
     pub fn set_position(&mut self) {
-        self.model.translate(self.x, self.y, self.z);
+        self.model.set_translation(self.x, self.y, self.z);
         self.mask.set_pos(self.x, self.y, self.z);
     }
 }
@@ -87,7 +87,7 @@ pub struct Wall {
 
 impl Wall {
     pub fn set_position(&mut self) {
-        self.model.translate(self.x, self.y, self.z);
+        self.model.set_translation(self.x, self.y, self.z);
         self.mask.set_pos(self.x,self.y,self.z);
     }
    
@@ -125,7 +125,7 @@ pub struct Door {
 
 impl Door {
     pub fn set_position(&mut self) {
-        self.model.translate(self.x, self.y, self.z);
+        self.model.set_translation(self.x, self.y, self.z);
         self.mask.set_pos(self.x, self.y, self.z);
     }
 

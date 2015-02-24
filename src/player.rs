@@ -2,6 +2,7 @@ use std::num::Float;
 use gl::types::*;
 //use std::num::sqrt;
 
+use object;
 use solids::Wall;
 use solids::Solid;
 use camera::Camera;
@@ -17,7 +18,9 @@ pub struct Player {
     pub x: GLfloat,
     pub y: GLfloat,
     pub z: GLfloat,
-   
+
+    model: object::Object,
+    height: GLfloat,
     mask: Mask,
 
     fb: GLfloat,
@@ -62,7 +65,8 @@ impl Player {
     }
 
     pub fn set_position(&mut self) {
-        self.mask.set_pos(self.x, self.y, self.z);
+        self.model.set_translation(self.x, self.height/2.0, self.z);
+        self.mask.set_pos(self.x, self.height/2.0, self.z);
     }
 
     pub fn set_position_from_point(&mut self, point: &Point) {
@@ -133,7 +137,9 @@ impl Player {
 
 pub fn new(x: GLfloat, height: GLfloat, z: GLfloat, speed: GLfloat) -> Player {
     let size = 0.78f32*2.0;
+    let height = 1.7f32;
+    let model = object::new(-size/2.0, 0f32, size/2.0, size/2.0, height, -size/2.0, 1.0, 0.0, 0.5);
     let mask = solids::new_mask(size, size);
-    Player{ x: x, y: height, z: z, mask: mask, fb: 0f32, lr: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
+    Player{ x: x, y: height, z: z, model: model, height: height, mask: mask, fb: 0f32, lr: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
 }
 
