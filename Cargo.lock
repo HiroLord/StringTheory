@@ -2,7 +2,7 @@
 name = "StringTheory"
 version = "0.0.1"
 dependencies = [
- "gl 0.0.8 (git+https://github.com/Limvot/gl-rs.git)",
+ "gl 0.0.8 (git+https://github.com/bjz/gl-rs)",
  "rust-assimp 0.0.1-alpha.2 (git+https://github.com/lotusronin/rust-assimp)",
  "rustnet 0.0.1 (git+https://github.com/hirolord/rustnet.git)",
  "sdl2 0.0.28 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -16,18 +16,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "gl"
 version = "0.0.8"
-source = "git+https://github.com/Limvot/gl-rs.git#6a08a837a976d3ff25a02c1f01d09d8bd4ac155c"
+source = "git+https://github.com/bjz/gl-rs#9d941381c5947bbbbe93ad6651e8eddd1c293dce"
 dependencies = [
- "gl_common 0.0.4 (git+https://github.com/Limvot/gl-rs.git)",
- "gl_generator 0.0.18 (git+https://github.com/Limvot/gl-rs.git)",
- "khronos_api 0.0.5 (git+https://github.com/Limvot/gl-rs.git)",
+ "gl_common 0.0.4 (git+https://github.com/bjz/gl-rs)",
+ "gl_generator 0.0.18 (git+https://github.com/bjz/gl-rs)",
+ "khronos_api 0.0.5 (git+https://github.com/bjz/gl-rs)",
  "libc 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "gl_common"
 version = "0.0.4"
-source = "git+https://github.com/Limvot/gl-rs.git#6a08a837a976d3ff25a02c1f01d09d8bd4ac155c"
+source = "git+https://github.com/bjz/gl-rs#9d941381c5947bbbbe93ad6651e8eddd1c293dce"
 dependencies = [
  "libc 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -35,17 +35,17 @@ dependencies = [
 [[package]]
 name = "gl_generator"
 version = "0.0.18"
-source = "git+https://github.com/Limvot/gl-rs.git#6a08a837a976d3ff25a02c1f01d09d8bd4ac155c"
+source = "git+https://github.com/bjz/gl-rs#9d941381c5947bbbbe93ad6651e8eddd1c293dce"
 dependencies = [
- "khronos_api 0.0.5 (git+https://github.com/Limvot/gl-rs.git)",
+ "khronos_api 0.0.5 (git+https://github.com/bjz/gl-rs)",
  "log 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "xml-rs 0.1.19 (git+https://github.com/bfops/xml-rs.git)",
+ "xml-rs 0.1.19 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "khronos_api"
 version = "0.0.5"
-source = "git+https://github.com/Limvot/gl-rs.git#6a08a837a976d3ff25a02c1f01d09d8bd4ac155c"
+source = "git+https://github.com/bjz/gl-rs#9d941381c5947bbbbe93ad6651e8eddd1c293dce"
 
 [[package]]
 name = "libc"
@@ -117,7 +117,7 @@ source = "git+https://github.com/PistonDevelopers/vecmath#6284864573fe185f4d87aa
 [[package]]
 name = "xml-rs"
 version = "0.1.19"
-source = "git+https://github.com/bfops/xml-rs.git#ef908d332c80d847d5223db132494b8ac686f002"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
