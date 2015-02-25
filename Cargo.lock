@@ -5,7 +5,7 @@ dependencies = [
  "gl 0.0.8 (git+https://github.com/Limvot/gl-rs.git)",
  "rust-assimp 0.0.1-alpha.2 (git+https://github.com/lotusronin/rust-assimp)",
  "rustnet 0.0.1 (git+https://github.com/hirolord/rustnet.git)",
- "sdl2 0.0.27 (git+https://github.com/nukep/rust-sdl2.git?branch=fix/rust-nightly)",
+ "sdl2 0.0.28 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -39,7 +39,7 @@ source = "git+https://github.com/Limvot/gl-rs.git#6a08a837a976d3ff25a02c1f01d09d
 dependencies = [
  "khronos_api 0.0.5 (git+https://github.com/Limvot/gl-rs.git)",
  "log 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "xml-rs 0.1.18 (git+https://github.com/bfops/xml-rs.git)",
+ "xml-rs 0.1.19 (git+https://github.com/bfops/xml-rs.git)",
 ]
 
 [[package]]
@@ -77,26 +77,26 @@ dependencies = [
 [[package]]
 name = "rustnet"
 version = "0.0.1"
-source = "git+https://github.com/hirolord/rustnet.git#6b691d03479cc6cf95c811d46c42c6560b519f00"
+source = "git+https://github.com/hirolord/rustnet.git#142bdf8a4530ea9aa84bbb9a69156932d3d50fd1"
 dependencies = [
  "sdl2_net 0.0.2 (git+https://github.com/Limvot/rust-sdl2_net)",
 ]
 
 [[package]]
 name = "sdl2"
-version = "0.0.27"
-source = "git+https://github.com/nukep/rust-sdl2.git?branch=fix/rust-nightly#6a02cd27a3249df9638f2980ebbc2d6b82ddefcf"
+version = "0.0.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "sdl2-sys 0.0.26 (git+https://github.com/nukep/rust-sdl2.git?branch=fix/rust-nightly)",
+ "sdl2-sys 0.0.27 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "sdl2-sys"
-version = "0.0.26"
-source = "git+https://github.com/nukep/rust-sdl2.git?branch=fix/rust-nightly#6a02cd27a3249df9638f2980ebbc2d6b82ddefcf"
+version = "0.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -104,9 +104,9 @@ dependencies = [
 [[package]]
 name = "sdl2_net"
 version = "0.0.2"
-source = "git+https://github.com/Limvot/rust-sdl2_net#095ab1d068077acb0626e8aa971b5565f5d41149"
+source = "git+https://github.com/Limvot/rust-sdl2_net#cc82ccda551cbe24a0b8dce8240a494c4654d7d6"
 dependencies = [
- "sdl2 0.0.27 (git+https://github.com/nukep/rust-sdl2.git?branch=fix/rust-nightly)",
+ "sdl2 0.0.28 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -116,8 +116,8 @@ source = "git+https://github.com/PistonDevelopers/vecmath#6284864573fe185f4d87aa
 
 [[package]]
 name = "xml-rs"
-version = "0.1.18"
-source = "git+https://github.com/bfops/xml-rs.git#69da41e76d5b4b4198452d33bfc73f0fdf1bff13"
+version = "0.1.19"
+source = "git+https://github.com/bfops/xml-rs.git#ef908d332c80d847d5223db132494b8ac686f002"
 dependencies = [
  "bitflags 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

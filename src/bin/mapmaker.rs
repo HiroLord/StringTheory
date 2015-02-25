@@ -7,7 +7,7 @@ extern crate sdl2;
 
 use std::old_io::File;
 use sdl2::video::{Window, WindowPos};
-use sdl2::event::{Event, poll_event};
+use sdl2::event::{Event};
 use sdl2::keycode::KeyCode;
 use sdl2::pixels::Color::RGB;
 use sdl2::rect::Rect;
@@ -20,7 +20,7 @@ struct Block {
 }
 
 fn main() {
-    sdl2::init(sdl2::INIT_VIDEO);
+    let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
 
     // 720p
     let window_width = 1280;
@@ -48,10 +48,11 @@ fn main() {
 
     let mut draw_block = Block{ x: 0, y: 0, t: 1, block_size: block_size }; 
 
+    let mut event_pump = sdl_context.event_pump();
+
     'main:loop {
-        let mut polling = true;
-        while polling {
-            match poll_event() {
+        for event in event_pump.poll_iter() {
+            match event {
                 Event::MouseMotion{x: mx, y: my, ..} => {
                     let (xoff, yoff) = match draw_block.t {
                         2 => (block_size/2, 0),
@@ -155,7 +156,6 @@ fn main() {
                         }
                     }
                 }
-                Event::None => polling = false,
                 _ => {}
             }
         }
@@ -187,18 +187,16 @@ fn main() {
 
         drawer.present();
     }
-
-    sdl2::quit();
 }
 
 fn get_rect(b: &Block) -> Rect {
     return match b.t {
         1 => Rect::new(b.x, b.y, b.block_size, b.block_size),
-        2 => Rect::new(b.x-1, b.y, 2, b.block_size),
-        3 => Rect::new(b.x, b.y-1, b.block_size, 2),
+        2 | 5 => Rect::new(b.x-1, b.y, 2, b.block_size),
+        3 | 6 => Rect::new(b.x, b.y-1, b.block_size, 2),
         4 => Rect::new(b.x-3, b.y-3, 6, 6),
-        5 => Rect::new(b.x-1, b.y, 2, b.block_size),
-        6 => Rect::new(b.x, b.y-1, b.block_size, 2),
+        //5 => Rect::new(b.x-1, b.y, 2, b.block_size),
+        //6 => Rect::new(b.x, b.y-1, b.block_size, 2),
         10 => Rect::new(b.x+6, b.y+6, b.block_size-12,b.block_size-12),
         _ => Rect::new(b.x, b.y, b.block_size, b.block_size),
     };

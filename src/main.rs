@@ -13,7 +13,7 @@ extern crate assimp;
 use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
 //use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
 //use sdl2::pixels::Color;
-use sdl2::event::{Event, poll_event};
+use sdl2::event::{Event};
 //use sdl2::event::poll_event;
 //use sdl2::event::Event::{Quit, KeyDown};
 use sdl2::keycode::KeyCode;
@@ -38,7 +38,7 @@ use solids::GameObject;
 
 #[allow(unused_variables)]
 fn main() {
-    sdl2::init(sdl2::INIT_VIDEO);
+    let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
     let window_width = 1280;
     let window_height = 720;
 
@@ -117,7 +117,9 @@ fn main() {
     
     sdl2::joystick::set_event_state(true);
     sdl2::joystick::Joystick::open(0);
-    
+    let mut event_pump = sdl_context.event_pump();
+
+
     //ResourceManager Test
     let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
     manager.init();
@@ -132,9 +134,8 @@ fn main() {
     //End resource manager test
 
     while running {
-        let mut polling = true;
-        while polling {
-            match poll_event() {
+        for event in event_pump.poll_iter() {
+            match event {
                 Event::JoyAxisMotion{axis_idx: aid, value:val, ..} => {
                     println!("Axis is {}", aid);
                     println!("Value is {}", val);
@@ -178,7 +179,6 @@ fn main() {
                         }
                     }
                 }
-                Event::None => polling = false,
                 _ => {}
             }
         }
@@ -272,7 +272,8 @@ fn main() {
         }
         //sdl2::timer::delay(15);
     }
-    sdl2::quit();
+    //sdl2::quit() no longer exists, done through destructors
+    //sdl2::quit();
 }
 
 /*

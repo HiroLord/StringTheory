@@ -8,7 +8,7 @@ use player::IsPlayer;
 //use player::Player;
 
 fn main() {
-    sdl2::init(sdl2::sdl::INIT_EVENTS);
+    let sdl_context = sdl2::init(sdl2::sdl::INIT_EVENTS);
  
     let port: u16 = 1231;
 
@@ -39,8 +39,6 @@ fn main() {
         }
         sdl2::timer::delay(20);
     }
-
-    sdl2::quit();
 }
 
 fn user_defined(msg_id: u8) -> u32 {
