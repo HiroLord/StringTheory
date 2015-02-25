@@ -1,7 +1,8 @@
 #![feature(core)]
 #![feature(collections)]
 #![feature(std_misc)]
-#![feature(io)]
+#![feature(old_io)]
+#![feature(old_path)]
 
 extern crate sdl2;
 extern crate collections;
@@ -81,7 +82,7 @@ fn main() {
         gl::Enable(gl::CULL_FACE);
         gl::Enable(gl::DEPTH_TEST);
     }
-    let mut renderer = renderer::new(window_width as u32, window_height as u32);
+    let renderer = renderer::new(window_width as u32, window_height as u32);
     //let test_light = light::new_light(2.0f32, 4.0f32, 0.0f32, 3.0f32, 3.0f32, 3.0f32);
 
     //let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
@@ -116,7 +117,7 @@ fn main() {
     let mut strafe = 0f32;
     
     sdl2::joystick::set_event_state(true);
-    sdl2::joystick::Joystick::open(0);
+    let _ = sdl2::joystick::Joystick::open(0);
     let mut event_pump = sdl_context.event_pump();
 
 

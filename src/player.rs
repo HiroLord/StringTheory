@@ -3,7 +3,6 @@ use gl::types::*;
 //use std::num::sqrt;
 
 use object;
-use solids::Wall;
 use solids::Solid;
 use camera::Camera;
 use solids::GameObject;
