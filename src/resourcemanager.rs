@@ -1,4 +1,4 @@
-use assimp as ai;
+//use assimp as ai;
 
 use object;
 use std::vec;
@@ -9,7 +9,7 @@ use matrix;
 use light;
 
 pub struct ResourceManager {
-    importer : ai::Importer,
+    //importer : ai::Importer,
     modelMap : HashMap<String, model>,
     vertsMap : HashMap<String, modelData>,
     shaderSet : HashMap<String, u32>
@@ -22,41 +22,41 @@ impl<'resman> ResourceManager {
     }
     
     //Call this to get back the models vertices
-    pub fn get_model<'a, 'b>(&'a mut self, filename : &'b str) -> (Vec<f32>, Vec<f32>) {
-        if(self.modelMap.contains_key(filename)) {
-            println!("Model from {} is already loaded!", filename);
-            return match self.vertsMap.get(filename) {
-                Some(data) => {
-                    println!("Model data obtained");
-                    (data.v.clone(), data.n.clone())
-                },
-                None => {
-                    println!("No model data! error!");
-                    (Vec::new(), Vec::new())
-                }
-            }
-        } else {
-            println!("Loading unique model from {}!", filename);
-            let mut scene = self.importer.import_from_file(filename).unwrap();
-            let mut meshes = scene.get_meshes();
-            let mesh = meshes[0];
+    //pub fn get_model<'a, 'b>(&'a mut self, filename : &'b str) -> (Vec<f32>, Vec<f32>) {
+        //if(self.modelMap.contains_key(filename)) {
+            //println!("Model from {} is already loaded!", filename);
+            //return match self.vertsMap.get(filename) {
+                //Some(data) => {
+                    //println!("Model data obtained");
+                    //(data.v.clone(), data.n.clone())
+                //},
+                //None => {
+                    //println!("No model data! error!");
+                    //(Vec::new(), Vec::new())
+                //}
+            //}
+        //} else {
+            //println!("Loading unique model from {}!", filename);
+            //let mut scene = self.importer.import_from_file(filename).unwrap();
+            //let mut meshes = scene.get_meshes();
+            //let mesh = meshes[0];
         
-            let mut verts : Vec<f32> = Vec::new();
-            for vert in mesh.get_vertices() {
-                verts.push_all(&[vert.x, vert.y, vert.z]);
-                //println!("Vertex is: {:?}", vert);
-            }
+            //let mut verts : Vec<f32> = Vec::new();
+            //for vert in mesh.get_vertices() {
+                //verts.push_all(&[vert.x, vert.y, vert.z]);
+                ////println!("Vertex is: {:?}", vert);
+            //}
         
-            let mut norms : Vec<f32> = Vec::new();
-            for norm in mesh.get_normals() {
-                norms.push_all(&[norm.x, norm.y, norm.z]);
-            }
-            self.vertsMap.insert(String::from_str(filename), modelData { v: verts.clone(), n: norms.clone() });
-            self.modelMap.insert(String::from_str(filename), model { vbo: 0, vno: 0, vio: 0, vao: 0, file: String::from_str(filename)});
-            return (verts, norms);
-        }   
+            //let mut norms : Vec<f32> = Vec::new();
+            //for norm in mesh.get_normals() {
+                //norms.push_all(&[norm.x, norm.y, norm.z]);
+            //}
+            //self.vertsMap.insert(String::from_str(filename), modelData { v: verts.clone(), n: norms.clone() });
+            //self.modelMap.insert(String::from_str(filename), model { vbo: 0, vno: 0, vio: 0, vao: 0, file: String::from_str(filename)});
+            //return (verts, norms);
+        //}   
 
-    }
+    //}
     
     pub fn new_floor(&mut self, x:f32, y:f32, z:f32) -> solids::Floor {
         //println!("floor shader!");
@@ -240,7 +240,8 @@ impl<'resman> ResourceManager {
 
 pub fn new() -> ResourceManager {
     ResourceManager {
-       importer : ai::Importer::new(), modelMap : HashMap::new(), vertsMap : HashMap::new(), shaderSet : HashMap::new()
+       //importer : ai::Importer::new(), modelMap : HashMap::new(), vertsMap : HashMap::new(), shaderSet : HashMap::new()
+       modelMap : HashMap::new(), vertsMap : HashMap::new(), shaderSet : HashMap::new()
     }
 }
 

@@ -8,7 +8,7 @@ extern crate sdl2;
 extern crate collections;
 extern crate gl;
 extern crate rustnet;
-extern crate assimp;
+//extern crate assimp;
 //extern crate time;
 
 use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
