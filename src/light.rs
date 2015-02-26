@@ -1,4 +1,5 @@
 use object;
+use shader;
 use gl::types::*;
 
 pub fn new_light(x: f32, y: f32, z: f32, r: f32, g: f32, b: f32) -> object::Object {
@@ -27,7 +28,31 @@ pub fn new_light(x: f32, y: f32, z: f32, r: f32, g: f32, b: f32) -> object::Obje
     obj
 }
 
-
+pub fn new_light2(x: f32, y: f32, z: f32, r: f32, g: f32, b: f32, shader: shader::Shader) -> object::Object {
+    let verts: [GLfloat; 6*3] = [
+        // Front face
+        -1.0f32, -1.0f32, 0.0f32,
+         1.0f32,  1.0f32, 0.0f32,
+        -1.0f32,  1.0f32, 0.0f32,
+        -1.0f32, -1.0f32, 0.0f32,
+         1.0f32, -1.0f32, 0.0f32,
+         1.0f32,  1.0f32, 0.0f32,
+            ];
+    let norms: [GLfloat; 6*3] = [
+        // Front face
+        0.0f32, 0.0f32, 1.0f32,
+        0.0f32, 0.0f32, 1.0f32,
+        0.0f32, 0.0f32, 1.0f32,
+        0.0f32, 0.0f32, 1.0f32,
+        0.0f32, 0.0f32, 1.0f32,
+        0.0f32, 0.0f32, 1.0f32,
+            ];
+    let mut indxs: [u32; 6] = [0; 6];
+    for i in 0..(6) { indxs[i] = i as u32; }
+    let mut obj = object::generate2(&verts, &norms, &indxs, r, g, b, shader, true);
+    obj.set_translation(x,y,z);
+    obj
+}
 static VS_LIGHT_SRC: &'static str = "
 #version 120
 attribute vec3 vert_model;
@@ -64,7 +89,7 @@ void main() {
     vec4 pos = texture2D(position_tex, tex_coord);
     vec4 normal = texture2D(normal_tex, tex_coord);
     vec3 color = texture2D(diffuse_tex, tex_coord).xyz;
-    vec3 last = texture2D(last_tex, tex_coord).xyz;
+    //vec3 last = texture2D(last_tex, tex_coord).xyz;
 
     //normal = normalize(normal);
 

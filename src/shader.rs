@@ -16,10 +16,15 @@ impl Shader {
     pub fn get_uniform(&self, uniform: &str) -> i32 { unsafe { gl::GetUniformLocation(self.program,
                                                                 ffi::CString::from_slice(uniform.as_bytes()).as_ptr()) as i32 } }
     pub fn bind(&self) -> () {
+        println!("Binding shader!");
         unsafe {
             gl::UseProgram(self.program);
             gl::GetAttribLocation(self.program, ffi::CString::from_slice("out_color".as_bytes()).as_ptr());
         }
+    }
+
+    pub fn get_program(&self) -> u32 {
+        return self.program;
     }
 }
 
@@ -30,6 +35,9 @@ pub fn new(VS_SRC: &str, FS_SRC: &str) -> Shader {
     Shader {program: program}
 }
 
+pub fn new2(s:u32) -> Shader {
+    Shader { program: s}
+}
 
 fn compile_shader(src: &str, ty:GLenum) -> GLuint {
     let shader;
