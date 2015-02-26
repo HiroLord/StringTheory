@@ -1,4 +1,3 @@
-#![feature(core)] 
 extern crate sdl2;
 extern crate rustnet;
 mod player;
@@ -8,7 +7,7 @@ use player::IsPlayer;
 //use player::Player;
 
 fn main() {
-    let sdl_context = sdl2::init(sdl2::sdl::INIT_EVENTS);
+    let _ = sdl2::init(sdl2::sdl::INIT_EVENTS);
  
     let port: u16 = 1231;
 
