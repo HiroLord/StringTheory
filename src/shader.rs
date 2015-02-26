@@ -16,7 +16,7 @@ impl Shader {
     pub fn get_uniform(&self, uniform: &str) -> i32 { unsafe { gl::GetUniformLocation(self.program,
                                                                 ffi::CString::from_slice(uniform.as_bytes()).as_ptr()) as i32 } }
     pub fn bind(&self) -> () {
-        println!("Binding shader!");
+        //println!("Binding shader!");
         unsafe {
             gl::UseProgram(self.program);
             gl::GetAttribLocation(self.program, ffi::CString::from_slice("out_color".as_bytes()).as_ptr());

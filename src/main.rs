@@ -18,7 +18,7 @@ use sdl2::event::{Event};
 //use sdl2::event::poll_event;
 //use sdl2::event::Event::{Quit, KeyDown};
 use sdl2::keycode::KeyCode;
-
+use sdl2::timer::get_ticks;
 
 mod object;
 mod shader;
@@ -63,9 +63,6 @@ fn main() {
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 2);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 1);
     
-    //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 3);
-    //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 1);
-
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDoubleBuffer, 1);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDepthSize, 24);
     let window = match Window::new("Corridors", WindowPos::PosCentered, WindowPos::PosCentered, window_width, window_height, OPENGL) {
@@ -122,22 +119,9 @@ fn main() {
     sdl2::joystick::set_event_state(true);
     let _ = sdl2::joystick::Joystick::open(0);
     let mut event_pump = sdl_context.event_pump();
-
-
-    //ResourceManager Test
-    //let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
-    //manager.init();
-    /*let (verts, norms) = manager.get_model("cube.dae");
-    //println!("{}", verts.len());
-    //println!("{}", norms.len());
-    let mut indx : Vec<u32> = Vec::new();
-    for i in 0..verts.len()/3 {
-        indx.push(i as u32);
-    }
-    let (verts2, norms2) = manager.get_model("cube.dae");
-    let obj = object::generate(&verts, &norms, &indx, 1.0f32, 0.5f32, 0.0f32);*/ 
-    //End resource manager test
-
+    let start_time = get_ticks();
+    let mut frames = 0;
+    let mut count = 0;
     while running {
         for event in event_pump.poll_iter() {
             match event {
@@ -236,32 +220,23 @@ fn main() {
 
         renderer.start_geometry_pass();
         
-        //obj.draw(&camera);
-        //obj2.draw(&camera);
-        //obj3.draw(&camera);
-        //obj.draw(&camera, &renderer);
-        println!("Frame start!");
         map.get_floors()[0].bind_shader();
-        for i in range(0, map.get_floors().len()){
-            map.get_floors()[i].draw(&camera, &renderer);
-            //o.draw(&camera);
+        for floor in map.get_floors() {
+            floor.draw(&camera, &renderer);
         }
-        //for i in range(0, map.get_walls().len()){
-            //map.get_walls()[i].draw(&camera, &renderer);
-        //}
 
-        for i in range(0, map.get_doors().len()){
-            map.get_doors()[i].draw(&camera, &renderer);
+        for door in map.get_doors() {
+            door.draw(&camera, &renderer);
         }
         
-        for i in range(0, map.get_walls().len()){
-            map.get_walls()[i].draw(&camera, &renderer);
+        for wall in map.get_walls() {
+            wall.draw(&camera, &renderer);
         }
         
         renderer.start_light_pass();
         map.get_lights()[0].bind_shader();
-        for it in map.get_lights() {
-            it.draw(&camera, &renderer);
+        for light in map.get_lights() {
+            light.draw(&camera, &renderer);
         }
         //test_light.draw(&camera, &renderer);
         
@@ -283,6 +258,14 @@ fn main() {
             }
         }
         //sdl2::timer::delay(15);
+        let time = sdl2::timer::get_ticks();
+        frames += 1;
+        count += 1;
+
+        if count > 100 {
+            count = 0;
+            println!("fps: {}", frames/((time-start_time)/1000));
+        }
     }
     //sdl2::quit() no longer exists, done through destructors
     //sdl2::quit();

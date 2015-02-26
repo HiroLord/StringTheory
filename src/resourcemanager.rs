@@ -23,7 +23,7 @@ impl<'resman> ResourceManager {
     
     //Call this to get back the models vertices
     pub fn get_model<'a, 'b>(&'a mut self, filename : &'b str) -> (Vec<f32>, Vec<f32>) {
-        if(self.modelMap.contains_key(filename)) {
+        if self.modelMap.contains_key(filename) {
             println!("Model from {} is already loaded!", filename);
             return match self.vertsMap.get(filename) {
                 Some(data) => {
@@ -37,7 +37,7 @@ impl<'resman> ResourceManager {
             }
         } else {
             println!("Loading unique model from {}!", filename);
-            let mut scene = self.importer.import_from_file(filename).unwrap();
+            let scene = self.importer.import_from_file(filename).unwrap();
             let mut meshes = scene.get_meshes();
             let mesh = meshes[0];
         
@@ -63,7 +63,7 @@ impl<'resman> ResourceManager {
         let shader = self.get_shader("object");
         let m = object::new2(-2f32, -0.2f32, 2f32,  2f32, 0f32, -2f32,  0.6, 0.6, 0.8, shader);
         let mask = solids::new_mask(4.0, 4.0);
-        return solids::new_floor2(x, y, z, mask, m);
+        return solids::new_floor(x, y, z, mask, m);
     }
 
 
@@ -72,7 +72,7 @@ impl<'resman> ResourceManager {
         let shader = self.get_shader("object");
         let m = object::new2(-2f32, 0f32, 2f32,  2f32, 0.2f32, -2f32,  0.8, 0.6, 0.6, shader);
         let mask = solids::new_mask(4.0, 4.0);
-        return solids::new_ceiling2(x,y,z,mask,m);
+        return solids::new_ceiling(x,y,z,mask,m);
     }
 
     pub fn new_door(&mut self, x:f32, y:f32, z:f32, rot:f32) -> solids::Door{
@@ -93,7 +93,7 @@ impl<'resman> ResourceManager {
 
         let m = object::new2(-width_2, 0f32, length_2, width_2, height, -length_2, 0.3, 0.5, 0.8, shader);
         let mask = solids::new_mask(width_2*2.0, length_2*2.0);
-        return solids::new_door2(x,y,z,rot,mask,m, width_2, length_2);
+        return solids::new_door(x,y,z,rot,mask,m, width_2, length_2);
     }
     
     pub fn new_wall(&mut self, x: f32, y: f32, z: f32, rot: f32) -> solids::Wall {
@@ -113,7 +113,7 @@ impl<'resman> ResourceManager {
 
         let m = object::new2(-width_2, 0f32, length_2,  width_2, height, -length_2,  0.6, 0.7, 0.9, shader);
         let mask = solids::new_mask(width_2*2.0, length_2*2.0);
-        return solids::new_wall2(x,y,z,width_2,length_2, mask, m);
+        return solids::new_wall(x,y,z,width_2,length_2, mask, m);
     }
 
     pub fn new_short_wall(&mut self, x: f32, y: f32, z: f32, rot: f32) -> solids::Wall {
@@ -140,20 +140,14 @@ impl<'resman> ResourceManager {
             4f32 => (0.0, 1.6),
             _ => (0.0, 0.0),
         };
-        return solids::new_short_wall2(x,y,z,xoff,zoff,width_2,length_2,mask,m);
+        return solids::new_short_wall(x,y,z,xoff,zoff,width_2,length_2,mask,m);
     }
 
     pub fn new_light(&mut self, x: f32, y: f32, z: f32, r: f32, g: f32, b: f32) -> object::Object{
         let shader = self.get_light_shader("light");
-        return light::new_light2(x,y,z,r,g,b,shader);
+        return light::new_light(x,y,z,r,g,b,shader);
     }
 /*
-    pub fn getFloor(&self, x:f32, y:f32, z:f32) -> solids::Floor {
-        let m = self.getObj("floor");
-        let mask = solids::new_mask(4.0,4.0);
-        return solids::Floor{x: x, y: y, z: z, mask: mask, model: m};
-    }
-
     pub fn getObj(&self, filename: &str) -> object::Object {
         if(self.modelMap.contains_key(filename)) {
             let s = match self.shaderSet.get("object") {
@@ -206,7 +200,7 @@ impl<'resman> ResourceManager {
     }*/
 
     pub fn get_shader(&mut self, filename: &str) -> shader::Shader {
-        if (self.shaderSet.contains_key(filename)) {
+        if self.shaderSet.contains_key(filename) {
             return match self.shaderSet.get(filename) {
                 Some(shader) => {//println!("Shader already made!");
                     shader::new2(*shader)},
@@ -214,14 +208,13 @@ impl<'resman> ResourceManager {
             };
         } else {
             let s = shader::new(VS_SRC, FS_SRC);
-            //println!("Shader being made!!!!");
             self.shaderSet.insert(String::from_str(filename), s.get_program());
             return s;
         }
     }
 
     pub fn get_light_shader(&mut self, filename: &str) -> shader::Shader {
-        if (self.shaderSet.contains_key(filename)) {
+        if self.shaderSet.contains_key(filename) {
             return match self.shaderSet.get(filename) {
                 Some(shader) => {//println!("Shader already made!");
                     shader::new2(*shader)},
@@ -229,7 +222,6 @@ impl<'resman> ResourceManager {
             };
         } else {
             let s = shader::new(VS_LIGHT_SRC, FS_LIGHT_SRC);
-            //println!("Shader being made!!!!");
             self.shaderSet.insert(String::from_str(filename), s.get_program());
             return s;
         }

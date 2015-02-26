@@ -4,12 +4,6 @@ use solids;
 use object;
 use light;
 use resourcemanager as res;
-use solids::new_ceiling;
-use solids::new_floor;
-use solids::new_door;
-use solids::new_wall;
-use solids::new_short_wall;
-use light::new_light;
 use std::old_io::File;
 
 pub struct Map {
