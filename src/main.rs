@@ -101,8 +101,11 @@ fn main() {
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
     let mut player = player::new(0f32, 1.5f32, 0f32, 1f32);
-
-    let mut map = mapgen::new_map(1);
+    
+    let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
+    manager.init();
+    
+    let mut map = mapgen::new_map(1, &mut manager);
 
     if map.get_spawns().len() > 0 {
         player.set_position_from_point(map.get_spawn(0));
@@ -122,16 +125,17 @@ fn main() {
 
 
     //ResourceManager Test
-    let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
-    manager.init();
-    let (verts, norms) = manager.get_model("cube.dae");
-    println!("{}", verts.len());
-    println!("{}", norms.len());
+    //let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
+    //manager.init();
+    /*let (verts, norms) = manager.get_model("cube.dae");
+    //println!("{}", verts.len());
+    //println!("{}", norms.len());
     let mut indx : Vec<u32> = Vec::new();
     for i in 0..verts.len()/3 {
         indx.push(i as u32);
     }
-    let obj = object::generate(&verts, &norms, &indx, 1.0f32, 0.5f32, 0.0f32); 
+    let (verts2, norms2) = manager.get_model("cube.dae");
+    let obj = object::generate(&verts, &norms, &indx, 1.0f32, 0.5f32, 0.0f32);*/ 
     //End resource manager test
 
     while running {
@@ -235,20 +239,27 @@ fn main() {
         //obj.draw(&camera);
         //obj2.draw(&camera);
         //obj3.draw(&camera);
-        obj.draw(&camera, &renderer);
+        //obj.draw(&camera, &renderer);
+        println!("Frame start!");
+        map.get_floors()[0].bind_shader();
         for i in range(0, map.get_floors().len()){
             map.get_floors()[i].draw(&camera, &renderer);
             //o.draw(&camera);
         }
-        for i in range(0, map.get_walls().len()){
-            map.get_walls()[i].draw(&camera, &renderer);
-        }
+        //for i in range(0, map.get_walls().len()){
+            //map.get_walls()[i].draw(&camera, &renderer);
+        //}
 
         for i in range(0, map.get_doors().len()){
             map.get_doors()[i].draw(&camera, &renderer);
         }
-
+        
+        for i in range(0, map.get_walls().len()){
+            map.get_walls()[i].draw(&camera, &renderer);
+        }
+        
         renderer.start_light_pass();
+        map.get_lights()[0].bind_shader();
         for it in map.get_lights() {
             it.draw(&camera, &renderer);
         }
