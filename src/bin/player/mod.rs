@@ -3,18 +3,17 @@ extern crate rustnet;
 
 pub struct Player {
     socket: rustnet::TCPsocket,
+    player_id: u32,
 }
 
-pub trait IsPlayer {
-    fn socket(&self) -> &rustnet::TCPsocket;
-}
-
-impl IsPlayer for Player {
-    fn socket(&self) -> &rustnet::TCPsocket {
+impl Player {
+    pub fn socket(&self) -> &rustnet::TCPsocket {
         &(self.socket)
     }
+
+    pub fn player_id(&self) -> u32 { self.player_id }
 }
 
-pub fn new(socket: rustnet::TCPsocket) -> Player{
-    Player{socket: socket}
+pub fn new(socket: rustnet::TCPsocket, p_id: u32) -> Player{
+    Player{socket: socket, player_id: p_id}
 }

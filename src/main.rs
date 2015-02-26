@@ -36,6 +36,7 @@ use player::Player;
 use solids::Mask;
 use solids::Solid;
 use solids::GameObject;
+use rustnet::TCPsocket;
 
 #[allow(unused_variables)]
 fn main() {
@@ -83,11 +84,6 @@ fn main() {
         gl::Enable(gl::DEPTH_TEST);
     }
     let renderer = renderer::new(window_width as u32, window_height as u32);
-    //let test_light = light::new_light(2.0f32, 4.0f32, 0.0f32, 3.0f32, 3.0f32, 3.0f32);
-
-    //let obj = object::new(-0.5, -0.5, -1.5,    0.5, 0.5, -2.5,    0.8, 0.9, 0.4);
-    //let mut obj2 = object::new(0.5, 0.5, -1.5,     1.5, 1.5, -2.5,    1.0, 0.4, 0.2);
-
 
     let aspect_ratio = window_width as f32 / window_height as f32;
     let mut camera = camera::new(60.0f32, aspect_ratio, 0.0f32, 100.0f32);
@@ -100,7 +96,8 @@ fn main() {
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
-    let mut player = player::new(0f32, 1.5f32, 0f32, 1f32);
+    let mut player = player::new(0, 0f32, 1.5f32, 0f32, 1f32);
+    let mut players: Vec<Player> = Vec::new();
 
     let mut map = mapgen::new_map(1);
 
@@ -187,7 +184,7 @@ fn main() {
         player.forward(&camera, forward);
         player.strafe(&camera, strafe);
         let (dx, dz) = player.get_move();
-        
+       
         player.move_x(dx);
         let mut i = 0;
         let maxlen = map.get_walls().len();
@@ -225,7 +222,11 @@ fn main() {
             i += 1;
         }
         
-        //player.check_collisions(&(map.get_walls()));
+
+        rustnet::clear_buffer();
+        rustnet::write_byte(1);
+        rustnet::write_float(player.x());
+        rustnet::send_ts_message();
 
         camera.snap_to_player(&player);
         camera.update_view_projection();
@@ -255,26 +256,50 @@ fn main() {
         //test_light.draw(&camera, &renderer);
         
         window.gl_swap_window();
+
+        
+        let mut msg_size = |msg_id: u8| -> u32{
+            match msg_id {
+                1 => 5,
+                _ => 1,
+            }
+        };
+
+        let mut k = 4;
+
+        let mut user_defined = |msg_id: u8, sock: &TCPsocket| {
+            match msg_id {
+                1 => {
+                    let mut new_player = player::new(rustnet::read_byte() as u32, 0f32, 1.5f32, 0f32, 1f32);
+                    //players.push(new_player);
+                    k = 5;
+                },
+                2 => {
+                    /*
+                    let p_id = 0;//rustnet::read_byte() as u32;
+                    for p in players.iter() {
+                        if p.player_id() == p_id {
+                            player.set_x(rustnet::read_float());
+                            player.set_z(rustnet::read_float());
+                        }
+                    }
+                    */
+                },
+                _ => {},
+            }
+            
+        };
+       
         if connected {
             if rustnet::check_sockets(){
-                if !rustnet::read_server_socket(can_handle, user_defined){
+                if !rustnet::read_server_socket(&msg_size, &user_defined){
                     println!("Lost server connection.");
                     break;;
                 }
             }
 
-            if !sent {
-                rustnet::clear_buffer();
-                rustnet::write_byte(1);
-                rustnet::write_byte(5);
-                rustnet::send_ts_message();
-                sent = true;
-            }
         }
-        //sdl2::timer::delay(15);
     }
-    //sdl2::quit() no longer exists, done through destructors
-    //sdl2::quit();
 }
 
 /*
@@ -316,10 +341,3 @@ fn check_collision(obja: &Mask, objb: &Mask) -> bool{
 fn key_input() {
 }
 
-fn user_defined(msg_id: u8) -> u32 {
-    0
-}
-
-fn can_handle(msg_id: u8, buffer_size: u32) -> bool {
-    true
-}

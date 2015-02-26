@@ -14,6 +14,8 @@ use mapgen::Point;
 //use std::num::abs;
 
 pub struct Player {
+    player_id: u32,
+
     pub x: GLfloat,
     pub y: GLfloat,
     pub z: GLfloat,
@@ -125,6 +127,8 @@ impl Player {
         self.set_vector(c);
     }
 
+    pub fn player_id(&self) -> u32 { self.player_id }
+
     /*
     pub fn move_from_camera(&mut self, c: &Camera, dx: GLfloat, dz: GLfloat) {
         let adx = c.horizontal_angle.cos() * dx + c.horizontal_angle.sin() * dz;
@@ -134,11 +138,11 @@ impl Player {
     */
 }
 
-pub fn new(x: GLfloat, height: GLfloat, z: GLfloat, speed: GLfloat) -> Player {
+pub fn new(id: u32, x: GLfloat, height: GLfloat, z: GLfloat,  speed: GLfloat) -> Player {
     let size = 0.78f32*2.0;
     let height = 1.7f32;
     let model = object::new(-size/2.0, 0f32, size/2.0, size/2.0, height, -size/2.0, 1.0, 0.0, 0.5);
     let mask = solids::new_mask(size, size);
-    Player{ x: x, y: height, z: z, model: model, height: height, mask: mask, fb: 0f32, lr: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
+    Player{ player_id: id, x: x, y: height, z: z, model: model, height: height, mask: mask, fb: 0f32, lr: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
 }
 
