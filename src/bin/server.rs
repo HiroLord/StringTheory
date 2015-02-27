@@ -73,10 +73,19 @@ fn main() {
                 }
             };
 
-            for player in &mut players {
-                if !player.socket().read_socket(){
+            let mut to_remove = Vec::new();
+
+            for p in range(0, players.len() ) {
+                if !players[p as usize].socket().read_socket(){
                     println!("Lost connection to socket.");
+                    to_remove.push(p);
                 }
+            }
+
+            let mut offset = 0;
+            for t in to_remove {
+                players.remove(t - offset);
+                offset -= 1;
             }
             
             for i in range(0, players.len()) {
