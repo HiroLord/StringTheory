@@ -104,6 +104,7 @@ fn main() {
                                 if p.player_id() != p_id {
                                     rustnet::clear_buffer();
                                     rustnet::write_byte(2);
+                                    rustnet::write_byte(p_id as u8);
                                     rustnet::write_float(newx);
                                     rustnet::write_float(newz);
                                     rustnet::send_message(p.socket());

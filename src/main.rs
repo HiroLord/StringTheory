@@ -52,7 +52,7 @@ fn main() {
 
     let ip = "192.168.1.146";
 
-    let option = rustnet::init_client("127.0.0.1", port);
+    let option = rustnet::init_client(ip, port);
     let mut socket: rustnet::SocketWrapper;
 
     match option {
@@ -189,7 +189,7 @@ fn main() {
                         1 => {
                             println!("New player!");
                             let new_id = socket.read_byte() as u32;
-                            let new_player = player::new(new_id, 0f32, 1.5f32, 0f32, 1f32);
+                            let new_player = player::new(new_id, player.x(), 1.5f32, player.z(), 1f32);
                             players.push(new_player);
                         },
                         2 => {
@@ -257,13 +257,15 @@ fn main() {
         camera.update_view_projection();
 
         if ready_to_send < 1 {
+            println!("sending placement");
             rustnet::clear_buffer();
             rustnet::write_byte(2);
             rustnet::write_float(player.x());
             rustnet::write_float(player.z());
             rustnet::send_message(&socket);
-            ready_to_send = 20;
+            ready_to_send = 15;
         }
+        ready_to_send -= 1;
 
 
         renderer.start_geometry_pass();
