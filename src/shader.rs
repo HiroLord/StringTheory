@@ -34,9 +34,9 @@ impl Shader {
     }
 }
 
-pub fn new(VS_SRC: &str, FS_SRC: &str) -> Shader {
-    let vertex_shader = compile_shader(VS_SRC, gl::VERTEX_SHADER);
-    let fragment_shader = compile_shader(FS_SRC, gl::FRAGMENT_SHADER);
+pub fn new(vs_src: &str, fs_src: &str) -> Shader {
+    let vertex_shader = compile_shader(vs_src, gl::VERTEX_SHADER);
+    let fragment_shader = compile_shader(fs_src, gl::FRAGMENT_SHADER);
     let program = link_program(vertex_shader, fragment_shader);
     Shader {program: program}
 }

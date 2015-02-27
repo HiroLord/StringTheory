@@ -1,11 +1,9 @@
 //use assimp as ai;
 
 use object;
-use std::vec;
 use std::collections::HashMap;
 use solids;
 use shader;
-use matrix;
 use light;
 
 pub struct ResourceManager {
@@ -204,10 +202,10 @@ impl<'resman> ResourceManager {
             return match self.shader_set.get(filename) {
                 Some(shader) => {//println!("Shader already made!");
                     shader::new2(*shader)},
-                None => shader::new(vs_src, fs_src)
+                None => shader::new(VS_SRC, FS_SRC)
             };
         } else {
-            let s = shader::new(vs_src, fs_src);
+            let s = shader::new(VS_SRC, FS_SRC);
             self.shader_set.insert(String::from_str(filename), s.get_program());
             return s;
         }
@@ -218,10 +216,10 @@ impl<'resman> ResourceManager {
             return match self.shader_set.get(filename) {
                 Some(shader) => {//println!("Shader already made!");
                     shader::new2(*shader)},
-                None => shader::new(vs_light_src, fs_light_src)
+                None => shader::new(VS_LIGHT_SRC, FS_LIGHT_SRC)
             };
         } else {
-            let s = shader::new(vs_light_src, fs_light_src);
+            let s = shader::new(VS_LIGHT_SRC, FS_LIGHT_SRC);
             self.shader_set.insert(String::from_str(filename), s.get_program());
             return s;
         }
@@ -254,7 +252,7 @@ pub struct ModelData {
 
 //Shader code
 
-static vs_src: &'static str = "
+static VS_SRC: &'static str = "
 #version 120
 attribute vec3 vert_model;
 attribute vec3 norm_model;
@@ -275,7 +273,7 @@ void main() {
 }
     ";
 
-static fs_src: &'static str = "
+static FS_SRC: &'static str = "
 
 #version 120
 
@@ -299,7 +297,7 @@ void main() {
 }
     ";
 
-static vs_light_src: &'static str = "
+static VS_LIGHT_SRC: &'static str = "
 #version 120
 attribute vec3 vert_model;
 attribute vec3 norm_model;
@@ -312,7 +310,7 @@ void main() {
 }
     ";
 
-static fs_light_src: &'static str = "
+static FS_LIGHT_SRC: &'static str = "
 
 #version 120
 

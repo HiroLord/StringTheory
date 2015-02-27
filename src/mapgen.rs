@@ -2,7 +2,6 @@ extern crate std;
 
 use solids;
 use object;
-use light;
 use resourcemanager as res;
 use std::old_io::File;
 

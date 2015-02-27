@@ -2,7 +2,6 @@ use shader;
 use gl;
 use camera;
 use matrix;
-use light;
 use renderer;
 
 use gl::types::*;
@@ -162,7 +161,7 @@ impl Object {
     }
 }
 
-pub fn newTri(r:f32, g:f32, b:f32)  -> Object {
+pub fn new_tri(r:f32, g:f32, b:f32)  -> Object {
     let verts: [GLfloat; 9] = [
         0.0, 0.5, 0.0,
         0.5, -0.5, 0.0,
