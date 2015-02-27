@@ -46,6 +46,7 @@ fn main() {
                 None => (),
                 Some(sock) => {
                     player_nums += 1;
+                    println!("New player: {}", player_nums);
                     let mut p = player::new(sock, player_nums);
 
                     for player in &mut players {

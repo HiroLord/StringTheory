@@ -2,7 +2,6 @@ use shader;
 use gl;
 use camera;
 use matrix;
-use light;
 use renderer;
 
 use gl::types::*;
@@ -102,7 +101,7 @@ impl Object {
         unsafe {
             gl::BindVertexArray(self.vao);
 
-            self.shader.bind();
+            //self.shader.bind();
             let position_handle = self.shader.get_attrib("vert_model");
             //let normal_handle = self.shader.get_attrib("norm_model");
             
@@ -111,11 +110,11 @@ impl Object {
                 let diffuse_tex = self.shader.get_uniform("diffuse_tex");
                 let position_tex = self.shader.get_uniform("position_tex");
                 let normal_tex = self.shader.get_uniform("normal_tex");
-                let last_tex = self.shader.get_uniform("last_tex");
+                //let last_tex = self.shader.get_uniform("last_tex");
                 gl::Uniform1i(diffuse_tex, renderer.gbuff.textures[0] as i32); 
                 gl::Uniform1i(position_tex, renderer.gbuff.textures[1] as i32); 
                 gl::Uniform1i(normal_tex, renderer.gbuff.textures[2] as i32); 
-                gl::Uniform1i(last_tex, renderer.gbuff.textures[3] as i32); 
+                //gl::Uniform1i(last_tex, renderer.gbuff.textures[3] as i32); 
 
                 // we also pass in our world pos and window size
                 let light_world_pos = self.shader.get_uniform("light_world_pos");
@@ -156,9 +155,13 @@ impl Object {
             gl::DisableVertexAttribArray(normal_handle);
         }
     }
+
+    pub fn bind_shader(&self){
+        self.shader.bind();
+    }
 }
 
-pub fn newTri(r:f32, g:f32, b:f32)  -> Object {
+pub fn new_tri(r:f32, g:f32, b:f32)  -> Object {
     let verts: [GLfloat; 9] = [
         0.0, 0.5, 0.0,
         0.5, -0.5, 0.0,
@@ -342,4 +345,165 @@ pub fn generate_general(verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f
     }
 }
 
+pub fn new2(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32, s:shader::Shader)  -> Object {
+    let verts: [GLfloat; 6*6*3] = [
+        // Front face
+        x1, y1, z1,
+        x2, y2, z1,
+        x1, y2, z1,
+        x1, y1, z1,
+        x2, y1, z1,
+        x2, y2, z1,
+
+        // Top face
+        x1, y2, z1,
+        x2, y2, z2,
+        x1, y2, z2,
+        x1, y2, z1,
+        x2, y2, z1,
+        x2, y2, z2,
+
+        // Back face
+        x2, y1, z2,
+        x1, y2, z2,
+        x2, y2, z2,
+        x2, y1, z2,
+        x1, y1, z2,
+        x1, y2, z2,
+
+        // Bottom face
+        x1, y1, z2,
+        x2, y1, z1,
+        x1, y1, z1,
+        x1, y1, z2,
+        x2, y1, z2,
+        x2, y1, z1,
+
+        // Left face
+        x1, y1, z2,
+        x1, y2, z1,
+        x1, y2, z2,
+        x1, y1, z2,
+        x1, y1, z1,
+        x1, y2, z1,
+
+        // Right face
+        x2, y1, z1,
+        x2, y2, z2,
+        x2, y2, z1,
+        x2, y1, z1,
+        x2, y1, z2,
+        x2, y2, z2,
+            ];
+    let norms: [GLfloat; 6*6*3] = [
+        // Front face
+        0.0f32, 0.0f32, 1.0f32,
+        0.0f32, 0.0f32, 1.0f32,
+        0.0f32, 0.0f32, 1.0f32,
+        0.0f32, 0.0f32, 1.0f32,
+        0.0f32, 0.0f32, 1.0f32,
+        0.0f32, 0.0f32, 1.0f32,
+
+        // Top face
+        0.0f32, 1.0f32, 0.0f32,
+        0.0f32, 1.0f32, 0.0f32,
+        0.0f32, 1.0f32, 0.0f32,
+        0.0f32, 1.0f32, 0.0f32,
+        0.0f32, 1.0f32, 0.0f32,
+        0.0f32, 1.0f32, 0.0f32,
+
+        // Back face
+        0.0f32, 0.0f32, -1.0f32,
+        0.0f32, 0.0f32, -1.0f32,
+        0.0f32, 0.0f32, -1.0f32,
+        0.0f32, 0.0f32, -1.0f32,
+        0.0f32, 0.0f32, -1.0f32,
+        0.0f32, 0.0f32, -1.0f32,
+
+        // Bottom face
+        0.0f32, -1.0f32, 0.0f32,
+        0.0f32, -1.0f32, 0.0f32,
+        0.0f32, -1.0f32, 0.0f32,
+        0.0f32, -1.0f32, 0.0f32,
+        0.0f32, -1.0f32, 0.0f32,
+        0.0f32, -1.0f32, 0.0f32,
+
+        // Left face
+        -1.0f32, 0.0f32, 0.0f32,
+        -1.0f32, 0.0f32, 0.0f32,
+        -1.0f32, 0.0f32, 0.0f32,
+        -1.0f32, 0.0f32, 0.0f32,
+        -1.0f32, 0.0f32, 0.0f32,
+        -1.0f32, 0.0f32, 0.0f32,
+
+        // Right face
+        1.0f32, 0.0f32, 0.0f32,
+        1.0f32, 0.0f32, 0.0f32,
+        1.0f32, 0.0f32, 0.0f32,
+        1.0f32, 0.0f32, 0.0f32,
+        1.0f32, 0.0f32, 0.0f32,
+        1.0f32, 0.0f32, 0.0f32,
+            ];
+    let mut indxs: [u32; 6*6] = [0; 6*6];
+    for i in 0..(6*6) { indxs[i] = i as u32; }
+    generate2(&verts, &norms, &indxs, r, g, b, s, false)
+}
+
+pub fn generate2(verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f32, g:f32, b:f32,
+                        s : shader::Shader, is_light: bool) -> Object {
+    let mut vert_buff:u32 = 0;
+    let mut norm_buff:u32 = 0;
+    let mut indx_buff:u32 = 0;
+    let mut vao = 0;
+    unsafe {
+        gl::GenVertexArrays(1, &mut vao);
+        gl::BindVertexArray(vao);
+
+        gl::GenBuffers(1, &mut vert_buff);
+        gl::GenBuffers(1, &mut norm_buff);
+        //gl::GenBuffers(1, &mut texc_buff);
+        gl::GenBuffers(1, &mut indx_buff);
+
+        gl::BindBuffer(gl::ARRAY_BUFFER, vert_buff);
+        gl::BufferData(gl::ARRAY_BUFFER, (verts.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
+                        mem::transmute(&verts[0]), gl::STATIC_DRAW);
+        gl::BindBuffer(gl::ARRAY_BUFFER, norm_buff);
+        gl::BufferData(gl::ARRAY_BUFFER, (norms.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
+                        mem::transmute(&norms[0]), gl::STATIC_DRAW);
+        //gl::BindBuffer(gl::ARRAY_BUFFER, texc_buff);
+        //gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, (.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
+                        //mem::transmute(&[0]), gl::STATIC_DRAW);
+        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, indx_buff);
+        gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, (indxs.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
+                        mem::transmute(&indxs[0]), gl::STATIC_DRAW);
+
+    }
+    Object {
+        x: 0f32,
+        y: 0f32,
+        z: 0f32,
+
+        rx: 0f32,
+        ry: 0f32,
+        rz: 0f32,
+
+        r: r,
+        g: g,
+        b: b,
+
+        model_matrix: matrix::new(),
+
+        num_indx: indxs.len() as u32,
+
+        visible: true,
+
+        shader: s,
+        vao: vao,
+        vert_buff: vert_buff,
+        norm_buff: norm_buff,
+        texc_buff: 0,
+        indx_buff: indx_buff,
+        is_light: is_light,
+    }
+}
 

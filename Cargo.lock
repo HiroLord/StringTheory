@@ -16,7 +16,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "gl"
 version = "0.0.8"
-source = "git+https://github.com/Limvot/gl-rs#f2a996eb2594c362029c41b963e6bee117e096c6"
+source = "git+https://github.com/Limvot/gl-rs#c7c4b94d984482ccf19176ac7f48e1338fbf4d80"
 dependencies = [
  "gl_common 0.0.4 (git+https://github.com/Limvot/gl-rs)",
  "gl_generator 0.0.18 (git+https://github.com/Limvot/gl-rs)",
@@ -27,7 +27,7 @@ dependencies = [
 [[package]]
 name = "gl_common"
 version = "0.0.4"
-source = "git+https://github.com/Limvot/gl-rs#f2a996eb2594c362029c41b963e6bee117e096c6"
+source = "git+https://github.com/Limvot/gl-rs#c7c4b94d984482ccf19176ac7f48e1338fbf4d80"
 dependencies = [
  "libc 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -35,7 +35,7 @@ dependencies = [
 [[package]]
 name = "gl_generator"
 version = "0.0.18"
-source = "git+https://github.com/Limvot/gl-rs#f2a996eb2594c362029c41b963e6bee117e096c6"
+source = "git+https://github.com/Limvot/gl-rs#c7c4b94d984482ccf19176ac7f48e1338fbf4d80"
 dependencies = [
  "khronos_api 0.0.5 (git+https://github.com/Limvot/gl-rs)",
  "xml-rs 0.1.19 (git+https://github.com/bfops/xml-rs.git)",
@@ -44,7 +44,7 @@ dependencies = [
 [[package]]
 name = "khronos_api"
 version = "0.0.5"
-source = "git+https://github.com/Limvot/gl-rs#f2a996eb2594c362029c41b963e6bee117e096c6"
+source = "git+https://github.com/Limvot/gl-rs#c7c4b94d984482ccf19176ac7f48e1338fbf4d80"
 
 [[package]]
 name = "libc"
@@ -53,7 +53,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "log"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -62,13 +62,13 @@ version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "rust-assimp"
 version = "0.0.1-alpha.2"
-source = "git+https://github.com/lotusronin/rust-assimp#04f137b0dc54166480db3b48a5628346bf013440"
+source = "git+https://github.com/lotusronin/rust-assimp#10815341549472607f7b16ca8a278637433a2681"
 dependencies = [
  "vecmath 0.0.5 (git+https://github.com/PistonDevelopers/vecmath)",
 ]
@@ -76,7 +76,7 @@ dependencies = [
 [[package]]
 name = "rustnet"
 version = "0.0.1"
-source = "git+https://github.com/hirolord/rustnet.git#02b45e127213b818dc18a2af6484fd545b7c405b"
+source = "git+https://github.com/hirolord/rustnet.git#476e5d3b5fecbc74f320b146f5336e0d958e0528"
 dependencies = [
  "sdl2_net 0.0.2 (git+https://github.com/Limvot/rust-sdl2_net)",
 ]
@@ -103,7 +103,7 @@ dependencies = [
 [[package]]
 name = "sdl2_net"
 version = "0.0.2"
-source = "git+https://github.com/Limvot/rust-sdl2_net#5e26680a7bd4b95d0b30898db40bb86d4dfeec27"
+source = "git+https://github.com/Limvot/rust-sdl2_net#d5e08a532142c92577e1c3b664c4bbd0690903ad"
 dependencies = [
  "sdl2 0.0.28 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

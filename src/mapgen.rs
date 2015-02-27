@@ -2,13 +2,7 @@ extern crate std;
 
 use solids;
 use object;
-use light;
-use solids::new_ceiling;
-use solids::new_floor;
-use solids::new_door;
-use solids::new_wall;
-use solids::new_short_wall;
-use light::new_light;
+use resourcemanager as res;
 use std::old_io::File;
 
 pub struct Map {
@@ -58,7 +52,7 @@ impl Map {
     }
 }
 
-pub fn load_map() -> Map {
+pub fn load_map(resman : &mut res::ResourceManager) -> Map {
     let mut floors = Vec::new();
     let mut walls = Vec::new();
     let mut lights = Vec::new();
@@ -90,21 +84,21 @@ pub fn load_map() -> Map {
         } as f32;
         match blocktype {
             1 => {
-                floors.push( new_floor(bx * 4.0, 0.0, by * 4.0) );
-                floors.push( new_ceiling(bx * 4.0, 4.0, by * 4.0) );
+                floors.push( resman.new_floor(bx * 4.0, 0.0, by * 4.0) );
+                floors.push( resman.new_ceiling(bx * 4.0, 4.0, by * 4.0) );
             },
-            2 => walls.push( new_wall(bx * 4.0 - 2.0, 0.0, by * 4.0, 2.0) ),
-            3 => walls.push( new_wall(bx * 4.0, 0.0, by * 4.0 - 2.0, 1.0) ),
-            4 => lights.push( new_light(bx * 4.0 - 2.0, 3.0, by * 4.0 - 2.0, 4.0, 4.0, 4.0) ),
+            2 => walls.push( resman.new_wall(bx * 4.0 - 2.0, 0.0, by * 4.0, 2.0) ),
+            3 => walls.push( resman.new_wall(bx * 4.0, 0.0, by * 4.0 - 2.0, 1.0) ),
+            4 => lights.push( resman.new_light(bx * 4.0 - 2.0, 3.0, by * 4.0 - 2.0, 4.0, 4.0, 4.0) ),
             5 => {
-                walls.push(new_short_wall(bx * 4.0 - 2.0, 0.0, by * 4.0, 2.0) );
-                walls.push(new_short_wall(bx * 4.0 - 2.0, 0.0, by * 4.0, 4.0) );
-                doors.push(new_door(bx * 4.0 - 2.0, 0.0, by * 4.0, 2.0) );
+                walls.push(resman.new_short_wall(bx * 4.0 - 2.0, 0.0, by * 4.0, 2.0) );
+                walls.push(resman.new_short_wall(bx * 4.0 - 2.0, 0.0, by * 4.0, 4.0) );
+                doors.push(resman.new_door(bx * 4.0 - 2.0, 0.0, by * 4.0, 2.0) );
             },
             6 => {
-                walls.push(new_short_wall(bx * 4.0, 0.0, by * 4.0 - 2.0, 1.0) );
-                walls.push(new_short_wall(bx * 4.0, 0.0, by * 4.0 - 2.0, 3.0) );
-                doors.push(new_door(bx * 4.0, 0.0, by * 4.0 - 2.0, 1.0) );
+                walls.push(resman.new_short_wall(bx * 4.0, 0.0, by * 4.0 - 2.0, 1.0) );
+                walls.push(resman.new_short_wall(bx * 4.0, 0.0, by * 4.0 - 2.0, 3.0) );
+                doors.push(resman.new_door(bx * 4.0, 0.0, by * 4.0 - 2.0, 1.0) );
             },
             10 => {
                 spawns.push(Point{a: bx*4.0, b: by*4.0} );
@@ -117,8 +111,8 @@ pub fn load_map() -> Map {
     m
 }
 
-pub fn new_map(size: u32) -> Map {
-    load_map()
+pub fn new_map(size: u32, resman:&mut res::ResourceManager) -> Map {
+    load_map(resman)
     /*
     let mut floors = vec![ new_floor(0.0, 0.0, 0.0), 
                     new_floor(4.0, 0.0, 0.0), new_floor(8.0, 0.0, 0.0),

@@ -1,5 +1,4 @@
 use gl::types::*;
-use light;
 use renderer;
 
 use object;
@@ -62,6 +61,10 @@ impl Floor{
         self.model.set_translation(self.x, self.y, self.z);
         self.mask.set_pos(self.x, self.y, self.z);
     }
+
+    pub fn bind_shader(&self) {
+        self.model.bind_shader();
+    }
 }
 
 impl GameObject for Floor {
@@ -92,7 +95,10 @@ impl Wall {
     }
    
     pub fn width(&self) -> f32 { self.width }
-
+    
+    pub fn bind_shader(&self){
+        self.model.bind_shader();
+    }
 }
 
 impl GameObject for Wall {
@@ -138,6 +144,10 @@ impl Door {
     pub fn close(&mut self) {
         self.open = false;
     }
+
+    pub fn bind_shader(&self) {
+        self.model.bind_shader();
+    }
 }
 
 impl GameObject for Door {
@@ -162,90 +172,32 @@ pub struct MedBay {
     z: GLfloat,
 }
 
-pub fn new_floor(x: f32, y: f32, z: f32) -> Floor {
-
-    let m = object::new(-2f32, -0.2f32, 2f32,  2f32, 0f32, -2f32,  0.6, 0.6, 0.8);
-    let mask = new_mask(4.0,4.0);
+pub fn new_floor(x: f32, y: f32, z: f32, mask: Mask, m:object::Object) -> Floor {
     let mut f = Floor{x: x, y: y, z: z, mask: mask, model: m};
     f.set_position();
     f
 }
 
-pub fn new_ceiling(x: f32, y: f32, z: f32) -> Floor {
-    let m = object::new(-2f32, 0f32, 2f32,  2f32, 0.2f32, -2f32,  0.8, 0.6, 0.6);
-    let mask = new_mask(4.0, 4.0);
+pub fn new_ceiling(x: f32, y: f32, z: f32, mask: Mask, m: object::Object) -> Floor {
     let mut f = Floor{x: x, y: y, z: z, mask: mask, model: m};
     f.set_position();
     f
 }
 
-pub fn new_door(x: f32, y: f32, z: f32, rot: f32) -> Door {
-    let width_2: f32;
-    let length_2: f32;
-
-    if rot == 1f32 {
-        width_2 = 1.5f32;
-        length_2 = 0.05f32;
-    } else {
-        width_2 = 0.05f32;
-        length_2 = 1.5f32;
-    }
-
-    let height = 4f32;
-
-    let m = object::new(-width_2, 0f32, length_2, width_2, height, -length_2, 0.3, 0.5, 0.8);
-    let mask = new_mask(width_2*2.0, length_2*2.0);
+pub fn new_door(x: f32, y: f32, z: f32, rot: f32, mask: Mask, m: object::Object, width_2: f32, length_2: f32) -> Door {
     let mut d = Door{x: x, y: y, z: z, width: width_2*2f32, length: length_2*2f32, open: false, mask: mask,
                                                                                     model: m};
     d.set_position();
     d
 }
 
-pub fn new_wall(x: f32, y: f32, z: f32, rot: f32) -> Wall {
-    let width_2: f32;
-    let length_2: f32;
-
-    if rot == 1f32 {
-        width_2 = 2f32;
-        length_2 = 0.1f32;
-    } else {
-        width_2 = 0.1f32;
-        length_2 = 2f32;
-    }
-
-    let height = 4f32;
-
-    let m = object::new(-width_2, 0f32, length_2,  width_2, height, -length_2,  0.6, 0.7, 0.9);
-    let mask = new_mask(width_2*2.0, length_2*2.0);
+pub fn new_wall(x: f32, y: f32, z: f32,  width_2: f32, length_2: f32, mask: Mask, m: object::Object) -> Wall {
     let mut w = Wall{x: x, y: y, z: z, width: width_2*2f32, length: length_2*2f32, mask: mask, model: m};
     w.set_position();
     w
 }
 
-pub fn new_short_wall(x: f32, y: f32, z: f32, rot: f32) -> Wall {
-    let width_2: f32;
-    let length_2: f32;
-
-    if rot == 1f32 || rot == 3f32 {
-        width_2 = 0.4;
-        length_2 = 0.1;
-    } else {
-        width_2 = 0.1f32;
-        length_2 = 0.4;
-    }
-
-    let height = 4f32;
-
-    let m = object::new(-width_2, 0f32, length_2, width_2, height, -length_2, 0.6, 0.9, 0.9);
-    let mask = new_mask(width_2*2.0, length_2*2.0);
-    let (xoff, zoff) = match rot {
-        1f32 => (-1.6, 0.0),
-        2f32 => (0.0, -1.6),
-        3f32 => (1.6, 0.0),
-        4f32 => (0.0, 1.6),
-        _ => (0.0, 0.0),
-    };
-
+pub fn new_short_wall(x: f32, y: f32, z: f32, xoff: f32, zoff: f32, width_2: f32, length_2: f32, mask: Mask, m: object::Object) -> Wall {
     let mut w = Wall{x: x+xoff, y: y, z: z+zoff, width: width_2*2.0, length: length_2*2f32, mask:
         mask,  model: m};
     w.set_position();

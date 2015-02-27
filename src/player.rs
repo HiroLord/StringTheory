@@ -8,7 +8,6 @@ use camera::Camera;
 use solids::GameObject;
 use solids::Mask;
 use solids;
-use light;
 use renderer;
 use mapgen::Point;
 //use std::num::abs;

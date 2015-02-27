@@ -8,7 +8,7 @@ extern crate sdl2;
 extern crate collections;
 extern crate gl;
 extern crate rustnet;
-extern crate assimp;
+//extern crate assimp;
 //extern crate time;
 
 use sdl2::video::{Window, WindowPos, OPENGL, gl_set_attribute};
@@ -18,7 +18,7 @@ use sdl2::event::{Event};
 //use sdl2::event::poll_event;
 //use sdl2::event::Event::{Quit, KeyDown};
 use sdl2::keycode::KeyCode;
-
+use sdl2::timer::get_ticks;
 
 mod object;
 mod shader;
@@ -68,9 +68,6 @@ fn main() {
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 2);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 1);
     
-    //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 3);
-    //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 1);
-
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDoubleBuffer, 1);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLDepthSize, 24);
     let window = match Window::new("Corridors", WindowPos::PosCentered, WindowPos::PosCentered, window_width, window_height, OPENGL) {
@@ -103,7 +100,8 @@ fn main() {
     let mut player = player::new(0, 0f32, 1.5f32, 0f32, 1f32);
     let mut players: Vec<Player> = Vec::new();
 
-    let mut map = mapgen::new_map(1);
+    let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
+    let mut map = mapgen::new_map(1, &mut manager);
 
     if map.get_spawns().len() > 0 {
         player.set_position_from_point(map.get_spawn(0));
@@ -117,23 +115,16 @@ fn main() {
     let mut forward = 0f32;
     let mut strafe = 0f32;
   
-    //ResourceManager Test
-    let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
-    manager.init();
-    let (verts, norms) = manager.get_model("cube.dae");
-    println!("{}", verts.len());
-    println!("{}", norms.len());
-    let mut indx : Vec<u32> = Vec::new();
-    for i in 0..verts.len()/3 {
-        indx.push(i as u32);
-    }
-    let obj = object::generate(&verts, &norms, &indx, 1.0f32, 0.5f32, 0.0f32); 
-    //End resource manager test
-
     let mut event_pump = sdl_context.event_pump();
 
     let mut ready_to_send = 20;
 
+    let _ = sdl2::joystick::Joystick::open(0);
+    let mut event_pump = sdl_context.event_pump();
+    let start_time = get_ticks();
+    let mut frames = 0;
+    let mut count = 0;
+    
     while running {
         for event in event_pump.poll_iter() {
             match event {
@@ -274,24 +265,36 @@ fn main() {
             p.draw(&camera, &renderer);
         }
         
-        obj.draw(&camera, &renderer);
-        for i in range(0, map.get_floors().len()){
-            map.get_floors()[i].draw(&camera, &renderer);
-        }
-        for i in range(0, map.get_walls().len()){
-            map.get_walls()[i].draw(&camera, &renderer);
+        
+        map.get_floors()[0].bind_shader();
+        for floor in map.get_floors() {
+            floor.draw(&camera, &renderer);
         }
 
-        for i in range(0, map.get_doors().len()){
-            map.get_doors()[i].draw(&camera, &renderer);
+        for door in map.get_doors() {
+            door.draw(&camera, &renderer);
         }
-
+        
+        for wall in map.get_walls() {
+            wall.draw(&camera, &renderer);
+        }
+        
         renderer.start_light_pass();
-        for it in map.get_lights() {
-            it.draw(&camera, &renderer);
+        map.get_lights()[0].bind_shader();
+        for light in map.get_lights() {
+            light.draw(&camera, &renderer);
         }
         
         window.gl_swap_window();
+        
+        let time = sdl2::timer::get_ticks();
+        frames += 1;
+        count += 1;
+
+        if count > 100 {
+            count = 0;
+            println!("fps: {}", frames/((time-start_time)/1000));
+        }
     }
 }
 
