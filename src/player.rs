@@ -42,6 +42,7 @@ impl GameObject for Player {
     fn y(&self) -> f32 { self.y }
     fn z(&self) -> f32 { self.z }
     fn draw(&self, c: &Camera, renderer: &renderer::Renderer) {
+        self.model.bind_shader();
         self.model.draw(c, renderer);
     }
 }
