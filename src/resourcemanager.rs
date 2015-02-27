@@ -10,9 +10,9 @@ use light;
 
 pub struct ResourceManager {
     //importer : ai::Importer,
-    modelMap : HashMap<String, model>,
-    vertsMap : HashMap<String, modelData>,
-    shaderSet : HashMap<String, u32>
+    model_map : HashMap<String, Model>,
+    verts_map : HashMap<String, ModelData>,
+    shader_set : HashMap<String, u32>
 }
 
 impl<'resman> ResourceManager {
@@ -200,29 +200,29 @@ impl<'resman> ResourceManager {
     }*/
 
     pub fn get_shader(&mut self, filename: &str) -> shader::Shader {
-        if self.shaderSet.contains_key(filename) {
-            return match self.shaderSet.get(filename) {
+        if self.shader_set.contains_key(filename) {
+            return match self.shader_set.get(filename) {
                 Some(shader) => {//println!("Shader already made!");
                     shader::new2(*shader)},
-                None => shader::new(VS_SRC, FS_SRC)
+                None => shader::new(vs_src, fs_src)
             };
         } else {
-            let s = shader::new(VS_SRC, FS_SRC);
-            self.shaderSet.insert(String::from_str(filename), s.get_program());
+            let s = shader::new(vs_src, fs_src);
+            self.shader_set.insert(String::from_str(filename), s.get_program());
             return s;
         }
     }
 
     pub fn get_light_shader(&mut self, filename: &str) -> shader::Shader {
-        if self.shaderSet.contains_key(filename) {
-            return match self.shaderSet.get(filename) {
+        if self.shader_set.contains_key(filename) {
+            return match self.shader_set.get(filename) {
                 Some(shader) => {//println!("Shader already made!");
                     shader::new2(*shader)},
-                None => shader::new(VS_LIGHT_SRC, FS_LIGHT_SRC)
+                None => shader::new(vs_light_src, fs_light_src)
             };
         } else {
-            let s = shader::new(VS_LIGHT_SRC, FS_LIGHT_SRC);
-            self.shaderSet.insert(String::from_str(filename), s.get_program());
+            let s = shader::new(vs_light_src, fs_light_src);
+            self.shader_set.insert(String::from_str(filename), s.get_program());
             return s;
         }
     }
@@ -233,11 +233,11 @@ impl<'resman> ResourceManager {
 pub fn new() -> ResourceManager {
     ResourceManager {
        //importer : ai::Importer::new(), modelMap : HashMap::new(), vertsMap : HashMap::new(), shaderSet : HashMap::new()
-       modelMap : HashMap::new(), vertsMap : HashMap::new(), shaderSet : HashMap::new()
+       model_map : HashMap::new(), verts_map : HashMap::new(), shader_set : HashMap::new()
     }
 }
 
-pub struct model {
+pub struct Model {
     //Vertex, normal, index
     vbo: u32,
     vno: u32,
@@ -246,7 +246,7 @@ pub struct model {
     file: String
 }
 
-pub struct modelData {
+pub struct ModelData {
     v : Vec<f32>,
     n : Vec<f32>
 }
@@ -254,7 +254,7 @@ pub struct modelData {
 
 //Shader code
 
-static VS_SRC: &'static str = "
+static vs_src: &'static str = "
 #version 120
 attribute vec3 vert_model;
 attribute vec3 norm_model;
@@ -275,7 +275,7 @@ void main() {
 }
     ";
 
-static FS_SRC: &'static str = "
+static fs_src: &'static str = "
 
 #version 120
 
@@ -299,7 +299,7 @@ void main() {
 }
     ";
 
-static VS_LIGHT_SRC: &'static str = "
+static vs_light_src: &'static str = "
 #version 120
 attribute vec3 vert_model;
 attribute vec3 norm_model;
@@ -312,7 +312,7 @@ void main() {
 }
     ";
 
-static FS_LIGHT_SRC: &'static str = "
+static fs_light_src: &'static str = "
 
 #version 120
 

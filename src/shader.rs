@@ -11,15 +11,21 @@ pub struct Shader {
 
 
 impl Shader {
+    /*pub fn get_attrib(&self, attrib: &str) -> u32 { unsafe { gl::GetAttribLocation(self.program, 
+                                                                ffi::CString::from_slice(attrib.as_bytes()).as_ptr()) as u32 } }*/
     pub fn get_attrib(&self, attrib: &str) -> u32 { unsafe { gl::GetAttribLocation(self.program,
-                                                                ffi::CString::from_slice(attrib.as_bytes()).as_ptr()) as u32 } }
+                                                                ffi::CString::new(attrib).unwrap().as_ptr()) as u32 } }
+ 
+    /*pub fn get_uniform(&self, uniform: &str) -> i32 { unsafe { gl::GetUniformLocation(self.program,
+                                                                ffi::CString::from_slice(uniform.as_bytes()).as_ptr()) as i32 } }*/
     pub fn get_uniform(&self, uniform: &str) -> i32 { unsafe { gl::GetUniformLocation(self.program,
-                                                                ffi::CString::from_slice(uniform.as_bytes()).as_ptr()) as i32 } }
+                                                                ffi::CString::new(uniform).unwrap().as_ptr()) as i32 } }
     pub fn bind(&self) -> () {
         //println!("Binding shader!");
         unsafe {
             gl::UseProgram(self.program);
-            gl::GetAttribLocation(self.program, ffi::CString::from_slice("out_color".as_bytes()).as_ptr());
+            //gl::GetAttribLocation(self.program, ffi::CString::from_slice("out_color".as_bytes()).as_ptr());
+            gl::GetAttribLocation(self.program, ffi::CString::new("out_color").unwrap().as_ptr());
         }
     }
 
@@ -29,9 +35,9 @@ impl Shader {
 }
 
 pub fn new(VS_SRC: &str, FS_SRC: &str) -> Shader {
-    let vertexShader = compile_shader(VS_SRC, gl::VERTEX_SHADER);
-    let fragmentShader = compile_shader(FS_SRC, gl::FRAGMENT_SHADER);
-    let program = link_program(vertexShader, fragmentShader);
+    let vertex_shader = compile_shader(VS_SRC, gl::VERTEX_SHADER);
+    let fragment_shader = compile_shader(FS_SRC, gl::FRAGMENT_SHADER);
+    let program = link_program(vertex_shader, fragment_shader);
     Shader {program: program}
 }
 
@@ -43,7 +49,7 @@ fn compile_shader(src: &str, ty:GLenum) -> GLuint {
     let shader;
     unsafe {
         shader = gl::CreateShader(ty);
-        gl::ShaderSource(shader, 1, &ffi::CString::from_slice(src.as_bytes()).as_ptr(), ptr::null());
+        gl::ShaderSource(shader, 1, &ffi::CString::new(src).unwrap().as_ptr(), ptr::null());
         gl::CompileShader(shader);
         // Get the status
         let mut status = gl::FALSE as GLint;
@@ -63,11 +69,11 @@ fn compile_shader(src: &str, ty:GLenum) -> GLuint {
     shader
 }
 
-fn link_program(vertexShader: GLuint, fragmentShader: GLuint) -> GLuint {
+fn link_program(vertex_shader: GLuint, fragment_shader: GLuint) -> GLuint {
     unsafe {
         let program = gl::CreateProgram();
-        gl::AttachShader(program, vertexShader);
-        gl::AttachShader(program, fragmentShader);
+        gl::AttachShader(program, vertex_shader);
+        gl::AttachShader(program, fragment_shader);
         gl::LinkProgram(program);
         // Link status
         let mut status = gl::FALSE as GLint;
