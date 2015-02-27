@@ -187,8 +187,8 @@ fn main() {
                             println!("Received raw float {}", socket.read_float() );
                         },
                         1 => {
-                            println!("New player!");
                             let new_id = socket.read_byte() as u32;
+                            println!("New player! {} ", new_id);
                             let new_player = player::new(new_id, player.x(), 1.5f32, player.z(), 1f32);
                             players.push(new_player);
                         },
@@ -196,7 +196,6 @@ fn main() {
                             let p_id = socket.read_byte() as u32;
                             let p_x = socket.read_float();
                             let p_z = socket.read_float();
-                            println!("Player moved! {}, {}, {}", p_id, p_x, p_z);
                             for p in &mut players {
                                 if p.player_id() == p_id {
                                     p.set_x(p_x);
@@ -257,13 +256,12 @@ fn main() {
         camera.update_view_projection();
 
         if ready_to_send < 1 {
-            println!("sending placement");
             rustnet::clear_buffer();
             rustnet::write_byte(2);
             rustnet::write_float(player.x());
             rustnet::write_float(player.z());
             rustnet::send_message(&socket);
-            ready_to_send = 15;
+            ready_to_send = 10;
         }
         ready_to_send -= 1;
 
