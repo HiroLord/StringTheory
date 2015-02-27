@@ -50,7 +50,7 @@ fn main() {
 
     let mut connected = true;
 
-    let option = rustnet::init_client("127.0.0.1", port);
+    let option = rustnet::init_client("192.168.1.146", port);
     let mut socket: rustnet::SocketWrapper;
 
     match option {
@@ -131,6 +131,8 @@ fn main() {
     //End resource manager test
 
     let mut event_pump = sdl_context.event_pump();
+
+    let mut ready_to_send = 20;
 
     while running {
         for event in event_pump.poll_iter() {
@@ -256,12 +258,14 @@ fn main() {
         camera.snap_to_player(&player);
         camera.update_view_projection();
 
-
-        rustnet::clear_buffer();
-        rustnet::write_byte(2);
-        rustnet::write_float(player.x());
-        rustnet::write_float(player.z());
-        rustnet::send_message(&socket);
+        if ready_to_send < 1 {
+            rustnet::clear_buffer();
+            rustnet::write_byte(2);
+            rustnet::write_float(player.x());
+            rustnet::write_float(player.z());
+            rustnet::send_message(&socket);
+            ready_to_send = 20;
+        }
 
 
         renderer.start_geometry_pass();
