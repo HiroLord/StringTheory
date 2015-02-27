@@ -76,7 +76,7 @@ dependencies = [
 [[package]]
 name = "rustnet"
 version = "0.0.1"
-source = "git+https://github.com/hirolord/rustnet.git#6375dfd2ab155025edd8aa2e7aa54247a77d6487"
+source = "git+https://github.com/hirolord/rustnet.git#02b45e127213b818dc18a2af6484fd545b7c405b"
 dependencies = [
  "sdl2_net 0.0.2 (git+https://github.com/Limvot/rust-sdl2_net)",
 ]

@@ -50,13 +50,17 @@ fn main() {
 
     let mut connected = true;
 
-    if !rustnet::init_client("127.0.0.1", port) {
-        println!("Unable to connect to server on port {}", port);
-        connected = false;
-    } else {
-        println!("Connected!");
-    }
+    let option = rustnet::init_client("127.0.0.1", port);
+    let mut socket: rustnet::SocketWrapper;
 
+    match option {
+        Some(sock) => socket = sock,
+        None => {
+            connected = false;
+            println!("Unable to connect to server on port {}", port);
+            return
+        },
+    }
     
     //sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask, sdl2::video::GLProfile::GLCoreProfile as i32);
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask, sdl2::video::GLProfile::GLCompatibilityProfile as i32);
@@ -112,12 +116,7 @@ fn main() {
 
     let mut forward = 0f32;
     let mut strafe = 0f32;
-    
-    sdl2::joystick::set_event_state(true);
-    let _ = sdl2::joystick::Joystick::open(0);
-    let mut event_pump = sdl_context.event_pump();
-
-
+  
     //ResourceManager Test
     let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
     manager.init();
@@ -131,13 +130,11 @@ fn main() {
     let obj = object::generate(&verts, &norms, &indx, 1.0f32, 0.5f32, 0.0f32); 
     //End resource manager test
 
+    let mut event_pump = sdl_context.event_pump();
+
     while running {
         for event in event_pump.poll_iter() {
             match event {
-                Event::JoyAxisMotion{axis_idx: aid, value:val, ..} => {
-                    println!("Axis is {}", aid);
-                    println!("Value is {}", val);
-                }
                 Event::Quit{..} => running = false,
                 Event::MouseMotion{x: mx, y: my, ..} => {
                     let midx = window_width / 2;
@@ -149,7 +146,7 @@ fn main() {
                     camera.change_vertical_angle(mouse_sense*0.005f32*(dify as f32));
                     
                     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
-                }
+                },
                 Event::KeyDown{keycode: key, ..} => {
                     if key == KeyCode::Escape { running = false; }
                     if key == KeyCode::W { forward = 1f32; }
@@ -161,11 +158,7 @@ fn main() {
                             map.open_door(i as i32);
                         }
                     }
-                    //if key == KeyCode::Z { obj2.set_translation(0.0f32, 0.0f32, 0.0f32); }
-                    //if key == KeyCode::X { obj2.set_translation(1.0f32, 1.0f32, 1.0f32); }
-                    //if key == KeyCode::Z { obj2.translate(-0.1f32, -0.1f32, -0.1f32); }
-                    //if key == KeyCode::X { obj2.translate(0.1f32, 0.1f32, 0.1f32); }
-                }
+                },
                 Event::KeyUp{keycode: key, ..} => {
                     if key == KeyCode::W { forward = 0f32; }
                     if key == KeyCode::A { strafe = 0f32; }
@@ -176,8 +169,45 @@ fn main() {
                             map.close_door(i as i32);
                         }
                     }
-                }
+                },
                 _ => {}
+            }
+        }
+
+        let msg_size = |msg_id: u8| -> u32{
+            match msg_id {
+                1 => 1,
+                2 => 9,
+                _ => 1,
+            }
+        };
+
+        if rustnet::check_sockets() {
+            if !socket.read_socket() {
+            } else {
+                while socket.has_msg(&msg_size) {
+                    match socket.read_byte() {
+                        1 => {
+                            println!("New player!");
+                            let new_id = socket.read_byte() as u32;
+                            let new_player = player::new(new_id, 0f32, 1.5f32, 0f32, 1f32);
+                            players.push(new_player);
+                        },
+                        2 => {
+                            let p_id = socket.read_byte() as u32;
+                            let p_x = socket.read_float();
+                            let p_z = socket.read_float();
+                            for p in &mut players {
+                                if p.player_id() == p_id {
+                                    p.set_x(p_x);
+                                    p.set_z(p_z);
+                                    break;
+                                }
+                            }
+                        },
+                        _ => println!("Unknown message"),
+                    }
+                }
             }
         }
 
@@ -187,8 +217,10 @@ fn main() {
        
         player.move_x(dx);
         let mut i = 0;
-        let maxlen = map.get_walls().len();
-        //for i in range(0, map.get_walls().len()) {
+        let mut maxlen = map.get_walls().len();
+        if map.get_doors().len() > maxlen {
+            maxlen = map.get_doors().len();
+        }
         while i < maxlen {
             if i < map.get_walls().len() && check_collision(player.get_mask(), map.get_walls()[i].get_mask()) {
                 player.move_x(-dx);
@@ -205,7 +237,6 @@ fn main() {
 
         i = 0;
         player.move_z(dz);
-        //for i in range(0, map.get_walls().len()) {
         while i < maxlen {
             if i < map.get_walls().len() && check_collision(player.get_mask(), map.get_walls()[i].get_mask()) {
                 player.move_z(-dz);
@@ -221,25 +252,27 @@ fn main() {
 
             i += 1;
         }
-        
-
-        rustnet::clear_buffer();
-        rustnet::write_byte(1);
-        rustnet::write_float(player.x());
-        rustnet::send_ts_message();
 
         camera.snap_to_player(&player);
         camera.update_view_projection();
 
+
+        rustnet::clear_buffer();
+        rustnet::write_byte(2);
+        rustnet::write_float(player.x());
+        rustnet::write_float(player.z());
+        rustnet::send_message(&socket);
+
+
         renderer.start_geometry_pass();
+
+        for p in &players{
+            p.draw(&camera, &renderer);
+        }
         
-        //obj.draw(&camera);
-        //obj2.draw(&camera);
-        //obj3.draw(&camera);
         obj.draw(&camera, &renderer);
         for i in range(0, map.get_floors().len()){
             map.get_floors()[i].draw(&camera, &renderer);
-            //o.draw(&camera);
         }
         for i in range(0, map.get_walls().len()){
             map.get_walls()[i].draw(&camera, &renderer);
@@ -253,62 +286,11 @@ fn main() {
         for it in map.get_lights() {
             it.draw(&camera, &renderer);
         }
-        //test_light.draw(&camera, &renderer);
         
         window.gl_swap_window();
-
-        
-        let mut msg_size = |msg_id: u8| -> u32{
-            match msg_id {
-                1 => 5,
-                _ => 1,
-            }
-        };
-
-        let mut k = 4;
-
-        let mut user_defined = |msg_id: u8, sock: &TCPsocket| {
-            match msg_id {
-                1 => {
-                    let mut new_player = player::new(rustnet::read_byte() as u32, 0f32, 1.5f32, 0f32, 1f32);
-                    //players.push(new_player);
-                    k = 5;
-                },
-                2 => {
-                    /*
-                    let p_id = 0;//rustnet::read_byte() as u32;
-                    for p in players.iter() {
-                        if p.player_id() == p_id {
-                            player.set_x(rustnet::read_float());
-                            player.set_z(rustnet::read_float());
-                        }
-                    }
-                    */
-                },
-                _ => {},
-            }
-            
-        };
-       
-        if connected {
-            if rustnet::check_sockets(){
-                if !rustnet::read_server_socket(&msg_size, &user_defined){
-                    println!("Lost server connection.");
-                    break;;
-                }
-            }
-
-        }
     }
 }
 
-/*
-fn check_move_collision(obja: &mut solids::Mask, dx: f32, dz: f32, objb: &mut solids::Mask) -> bool{
-    obja.move_x(dx);
-
-
-}
-*/
 
 fn align_x(p: &mut Player, obj: &Mask) {
     let rad = p.get_mask().width()/2.0;
@@ -336,8 +318,5 @@ fn check_collision(obja: &Mask, objb: &Mask) -> bool{
         }
     }
     false
-}
-
-fn key_input() {
 }
 

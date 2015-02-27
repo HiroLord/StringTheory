@@ -1,4 +1,5 @@
 #![feature(old_io)]
+#![feature(core)]
 
 extern crate sdl2;
 extern crate rustnet;
@@ -7,7 +8,6 @@ mod player;
 use player::Player;
 use std::thread;
 use std::sync::mpsc;
-use rustnet::TCPsocket;
 //use player::Player;
 
 fn main() {
@@ -31,7 +31,7 @@ fn main() {
         loop {
             let input = std::old_io::stdin().read_line().ok().expect("Failed to read input");
             match input.trim() { 
-                "quit" => { tx.send(7u32); },
+                "quit" => { let _ = tx.send(7u32); },
                 _ => println!("Unrecognized input."),
             }
         }
@@ -44,35 +44,61 @@ fn main() {
             let temp_client = rustnet::check_for_new_client();
             match temp_client{
                 None => (),
-                Some(s) => {
+                Some(sock) => {
                     player_nums += 1;
-                    players.push(player::new(s, player_nums));
+                    let mut p = player::new(sock, player_nums);
+
+                    for player in &mut players {
+                        rustnet::clear_buffer();
+                        rustnet::write_byte(1);
+                        rustnet::write_byte(p.player_id() as u8);
+                        rustnet::send_message(player.socket());
+
+                        rustnet::clear_buffer();
+                        rustnet::write_byte(1);
+                        rustnet::write_byte(player.player_id() as u8);
+                        rustnet::send_message(p.socket());
+                    }
+
+                    players.push(p);
                 },
             }
 
            
-            let can_handle = |msg_id: u8| {
+            let msg_sizes = |msg_id: u8| {
                 match msg_id {
-                    1 => 4,
+                    2 => 8,
                     _ => 1,
                 }
             };
 
-            let user_defined = |msg_id: u8, socket: &TCPsocket| {
-                match msg_id {
-                    1 => {
-                        let x = rustnet::read_float();
-                        println!("Received float {}", x);
-                    },
-                    _ => println!("Unknown message"),
-                }
-            };
-
-            for player in players.iter() {
-                if !rustnet::read_socket(&(player.socket()), &can_handle, &user_defined){
+            for player in &mut players {
+                if !player.socket().read_socket(){
+                    println!("Lost connection to socket.");
                 }
             }
             
+            for i in range(0, players.len()) {
+                while players[i].socket().has_msg(&msg_sizes) {
+                    match players[i].read_byte() {
+                        2=> {
+                            let p_id = players[i].player_id();
+                            let newx = players[i].read_float();
+                            let newz = players[i].read_float();
+                            for p in &mut players { 
+                                if p.player_id() != p_id {
+                                    rustnet::clear_buffer();
+                                    rustnet::write_byte(2);
+                                    rustnet::write_float(newx);
+                                    rustnet::write_float(newz);
+                                    rustnet::send_message(p.socket());
+                                }
+                            }
+                        },
+                        _ => println!("Unknown message."),
+                    }
+                }
+            }
         }
 
         let recv = rx.try_recv();
@@ -87,35 +113,3 @@ fn main() {
     println!("Server closed.");
 }
 
-struct Controller {
-    players: Vec<Player>,   
-}
-
-fn listen_for_input() {
-}
-
-impl Controller {
-
-    fn add_player(&mut self, player: Player) {
-        self.players.push(player);
-    }
-
-    pub fn user_defined(&mut self, msg_id: u8, socket: &TCPsocket) -> u32 {
-        match msg_id {
-            1 => {
-                let x = rustnet::read_float();
-                println!("Received float {}", x);
-
-                return 4
-            },
-            _ => return 1
-        }
-    }
-
-    pub fn can_handle(msg_id: u8, buffer_size: u32) -> bool {
-        match msg_id {
-            1 => return buffer_size >= 4,
-            _ => return true
-        }
-    }
-}
