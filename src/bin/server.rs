@@ -61,6 +61,11 @@ fn main() {
                         rustnet::send_message(p.socket());
                     }
 
+                    rustnet::clear_buffer();
+                    rustnet::write_byte(0);
+                    rustnet::write_float(69f32);
+                    rustnet::send_message(p.socket());
+
                     players.push(p);
                 },
             }

@@ -50,7 +50,9 @@ fn main() {
 
     let mut connected = true;
 
-    let option = rustnet::init_client("192.168.1.146", port);
+    let ip = "192.168.1.146";
+
+    let option = rustnet::init_client("127.0.0.1", port);
     let mut socket: rustnet::SocketWrapper;
 
     match option {
@@ -169,6 +171,7 @@ fn main() {
 
         let msg_size = |msg_id: u8| -> u32{
             match msg_id {
+                0 => 4,
                 1 => 1,
                 2 => 9,
                 _ => 1,
@@ -180,6 +183,9 @@ fn main() {
             } else {
                 while socket.has_msg(&msg_size) {
                     match socket.read_byte() {
+                        0 => {
+                            println!("Received raw float {}", socket.read_float() );
+                        },
                         1 => {
                             println!("New player!");
                             let new_id = socket.read_byte() as u32;
@@ -190,6 +196,7 @@ fn main() {
                             let p_id = socket.read_byte() as u32;
                             let p_x = socket.read_float();
                             let p_z = socket.read_float();
+                            println!("Player moved! {}, {}, {}", p_id, p_x, p_z);
                             for p in &mut players {
                                 if p.player_id() == p_id {
                                     p.set_x(p_x);
