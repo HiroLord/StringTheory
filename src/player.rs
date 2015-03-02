@@ -26,6 +26,8 @@ pub struct Player {
     fb: GLfloat,
     lr: GLfloat,
 
+    horizontal_angle: GLfloat,
+    vertical_angle: GLfloat,
     movement: Vect,
 
     speed: GLfloat,
@@ -53,8 +55,9 @@ impl Solid for Player {
 
 impl Player {
 
-    pub fn get_move(&self) -> (f32, f32) {
-        (self.movement.x * 0.1f32 * self.speed, self.movement.z * 0.1f32 * self.speed)
+    pub fn get_move(&self, delta: f32) -> (f32, f32) {
+        (self.movement.x * 0.1f32 * self.speed * delta, self.movement.z * 0.1f32 * self.speed *
+         delta)
     }
 
     pub fn move_x(&mut self, dx: f32) {
@@ -88,7 +91,12 @@ impl Player {
         self.set_position();
     }
 
-    pub fn forward(&mut self, c: &Camera, mut dz: GLfloat) {
+    pub fn set_look_vector(&mut self, c: &Camera) {
+        self.horizontal_angle = c.horizontal_angle();
+        self.vertical_angle = c.vertical_angle();
+    }
+
+    pub fn forward(&mut self, mut dz: GLfloat) {
         if dz > 1f32 {
             dz = 1f32;
         }
@@ -98,15 +106,15 @@ impl Player {
 
         self.fb = -dz;
         
-        self.set_vector(c);
+        self.set_vector();
     }
 
-    fn set_vector(&mut self, c: &Camera) {
-        self.movement.x = c.horizontal_angle().sin() * self.fb +
-            c.horizontal_angle().cos() * self.lr;
+    fn set_vector(&mut self) {
+        self.movement.x = self.horizontal_angle.sin() * self.fb +
+            self.horizontal_angle.cos() * self.lr;
 
-        self.movement.z =  c.horizontal_angle().cos() * self.fb - 
-            c.horizontal_angle().sin() * self.lr;
+        self.movement.z = self.horizontal_angle.cos() * self.fb - 
+            self.horizontal_angle.sin() * self.lr;
 
         let mag = (self.movement.x * self.movement.x + self.movement.z * self.movement.z).sqrt() as
             f32;
@@ -116,7 +124,7 @@ impl Player {
         }
     }
 
-    pub fn strafe(&mut self, c: &Camera, mut dx: GLfloat) {
+    pub fn strafe(&mut self, mut dx: GLfloat) {
         if dx > 1f32 {
             dx = 1f32;
         }
@@ -126,7 +134,7 @@ impl Player {
 
         self.lr = dx;
 
-        self.set_vector(c);
+        self.set_vector();
     }
 
     pub fn player_id(&self) -> u32 { self.player_id }
@@ -145,6 +153,7 @@ pub fn new(id: u32, x: GLfloat, height: GLfloat, z: GLfloat,  speed: GLfloat) ->
     let height = 1.7f32;
     let model = object::new(-size/2.0, 0f32, size/2.0, size/2.0, height, -size/2.0, 1.0, 0.0, 0.5);
     let mask = solids::new_mask(size, size);
-    Player{ player_id: id, x: x, y: height, z: z, model: model, height: height, mask: mask, fb: 0f32, lr: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
+    Player{ player_id: id, x: x, y: height, z: z, model: model, height: height, mask: mask, fb: 0f32, lr: 0f32, 
+        horizontal_angle: 0f32, vertical_angle: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
 }
 

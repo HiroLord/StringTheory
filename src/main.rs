@@ -36,7 +36,6 @@ use player::Player;
 use solids::Mask;
 use solids::Solid;
 use solids::GameObject;
-use rustnet::TCPsocket;
 
 #[allow(unused_variables)]
 fn main() {
@@ -48,9 +47,8 @@ fn main() {
 
     let port: u16 = 1231;
 
-    let mut connected = true;
-
-    let ip = "192.168.1.146";
+    let ip = "128.61.104.39"; // Desktop
+    //let ip = "lr.room409.xyz";
 
     let option = rustnet::init_client(ip, port);
     let mut socket: rustnet::SocketWrapper;
@@ -58,7 +56,6 @@ fn main() {
     match option {
         Some(sock) => socket = sock,
         None => {
-            connected = false;
             println!("Unable to connect to server on port {}", port);
             return
         },
@@ -91,26 +88,33 @@ fn main() {
     let aspect_ratio = window_width as f32 / window_height as f32;
     let mut camera = camera::new(60.0f32, aspect_ratio, 0.0f32, 100.0f32);
 
-    let mut sent = false;
-
     sdl2::mouse::show_cursor(false);
 
     let midx = window_width / 2;
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
-    let mut player = player::new(0, 0f32, 1.5f32, 0f32, 1f32);
+    let mut play = player::new(0, 0f32, 1.5f32, 0f32, 1f32);
     let mut players: Vec<Player> = Vec::new();
+    players.push(play);
+
+    /*
+    let mut player = || -> &mut Player{
+        players[0]
+    };
+    */
 
     let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
     let mut map = mapgen::new_map(1, &mut manager);
 
     if map.get_spawns().len() > 0 {
-        player.set_position_from_point(map.get_spawn(0));
+        players[0].set_position_from_point(map.get_spawn(0));
     } else {
-        player.set_x(map.get_floors()[0].x());
-        player.set_z(map.get_floors()[0].z());
+        players[0].set_x(map.get_floors()[0].x());
+        players[0].set_z(map.get_floors()[0].z());
     }
+
+    let (start_x, start_z) = (players[0].x(), players[0].z());
 
     let mut running = true;
 
@@ -123,11 +127,16 @@ fn main() {
 
     let _ = sdl2::joystick::Joystick::open(0);
     let mut event_pump = sdl_context.event_pump();
-    let start_time = get_ticks();
+
+    let mut start_time = get_ticks();
     let mut frames = 0;
-    let mut count = 0;
+    let mut last_time = get_ticks();
     
     while running {
+
+        let delta: f32 = ((get_ticks() - last_time) as f32)/16.66666f32;
+        last_time = get_ticks();
+
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit{..} => running = false,
@@ -189,7 +198,7 @@ fn main() {
                         1 => {
                             let new_id = socket.read_byte() as u32;
                             println!("New player! {} ", new_id);
-                            let new_player = player::new(new_id, player.x(), 1.5f32, player.z(), 1f32);
+                            let new_player = player::new(new_id, start_x, 1.5f32, start_z, 1f32);
                             players.push(new_player);
                         },
                         2 => {
@@ -210,56 +219,61 @@ fn main() {
             }
         }
 
-        player.forward(&camera, forward);
-        player.strafe(&camera, strafe);
-        let (dx, dz) = player.get_move();
-       
-        player.move_x(dx);
-        let mut i = 0;
-        let mut maxlen = map.get_walls().len();
-        if map.get_doors().len() > maxlen {
-            maxlen = map.get_doors().len();
-        }
-        while i < maxlen {
-            if i < map.get_walls().len() && check_collision(player.get_mask(), map.get_walls()[i].get_mask()) {
-                player.move_x(-dx);
-                align_x(&mut player, (map.get_walls()[i].get_mask()));
-                break;
+        players[0].set_look_vector(&camera);
+        players[0].forward(forward);
+        players[0].strafe(strafe);
+
+        for p in range(0, players.len()) {
+            let (dx, dz) = players[p].get_move(delta);
+           
+            players[p].move_x(dx);
+            let mut i = 0;
+            let mut maxlen = map.get_walls().len();
+            if map.get_doors().len() > maxlen {
+                maxlen = map.get_doors().len();
             }
-            if i < map.get_doors().len() && !map.get_doors()[i].is_open() && check_collision(player.get_mask(), 
+            while i < maxlen {
+                if i < map.get_walls().len() && check_collision(players[p].get_mask(), map.get_walls()[i].get_mask()) {
+                    players[p].move_x(-dx);
+                    align_x(&mut players[p], (map.get_walls()[i].get_mask()));
+                    //break;
+                }
+                if i < map.get_doors().len() && !map.get_doors()[i].is_open() && check_collision(players[p].get_mask(), 
+                                                                map.get_doors()[i].get_mask()) {
+                    players[p].move_x(-dx);
+                    align_x(&mut players[p], (map.get_doors()[i].get_mask()));
+                    //break;
+                }
+                i += 1;
+            }
+
+            i = 0;
+            players[p].move_z(dz);
+            while i < maxlen {
+                if i < map.get_walls().len() && check_collision(players[p].get_mask(), map.get_walls()[i].get_mask()) {
+                    players[p].move_z(-dz);
+                    align_z(&mut players[p], (map.get_walls()[i].get_mask()));
+                    //break;
+                }
+                if i < map.get_doors().len() && !map.get_doors()[i].is_open() && check_collision(players[p].get_mask(),
                                                             map.get_doors()[i].get_mask()) {
-                player.move_x(-dx);
-                align_x(&mut player, (map.get_doors()[i].get_mask()));
+                    players[p].move_z(-dz);
+                    align_z(&mut players[p], (map.get_doors()[i].get_mask()));
+                    //break;
+                }
+
+                i += 1;
             }
-            i += 1;
         }
 
-        i = 0;
-        player.move_z(dz);
-        while i < maxlen {
-            if i < map.get_walls().len() && check_collision(player.get_mask(), map.get_walls()[i].get_mask()) {
-                player.move_z(-dz);
-                align_z(&mut player, (map.get_walls()[i].get_mask()));
-                break;
-            }
-            if i < map.get_doors().len() && !map.get_doors()[i].is_open() && check_collision(player.get_mask(),
-                                                        map.get_doors()[i].get_mask()) {
-                player.move_z(-dz);
-                align_z(&mut player, (map.get_doors()[i].get_mask()));
-                break;
-            }
-
-            i += 1;
-        }
-
-        camera.snap_to_player(&player);
+        camera.snap_to_player(&players[0]);
         camera.update_view_projection();
 
         if ready_to_send < 1 {
             rustnet::clear_buffer();
             rustnet::write_byte(2);
-            rustnet::write_float(player.x());
-            rustnet::write_float(player.z());
+            rustnet::write_float(players[0].x());
+            rustnet::write_float(players[0].z());
             rustnet::send_message(&socket);
             ready_to_send = 10;
         }
@@ -296,11 +310,11 @@ fn main() {
         
         let time = sdl2::timer::get_ticks();
         frames += 1;
-        count += 1;
 
-        if count > 100 {
-            count = 0;
-            println!("fps: {}", frames/((time-start_time)/1000));
+        if time - start_time >= 1000 {
+            start_time = time;
+            println!("fps: {}", frames);
+            frames = 0;
         }
     }
 }
