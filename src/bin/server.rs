@@ -75,6 +75,7 @@ fn main() {
                 match msg_id {
                     2 => 8,
                     3 => 8,
+                    4 => 8,
                     _ => 1,
                 }
             };
@@ -123,6 +124,21 @@ fn main() {
                                     rustnet::write_byte(p_id as u8);
                                     rustnet::write_float(newx);
                                     rustnet::write_float(newz);
+                                    rustnet::send_message(p.socket());
+                                }
+                            }
+                        },
+                        4 => {
+                            let p_id = players[i].player_id();
+                            let newfb = players[i].read_float();
+                            let newlr = players[i].read_float();
+                            for p in &mut players { 
+                                if p.player_id() != p_id {
+                                    rustnet::clear_buffer();
+                                    rustnet::write_byte(4);
+                                    rustnet::write_byte(p_id as u8);
+                                    rustnet::write_float(newfb);
+                                    rustnet::write_float(newlr);
                                     rustnet::send_message(p.socket());
                                 }
                             }

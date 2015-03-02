@@ -120,8 +120,6 @@ fn main() {
   
     let mut event_pump = sdl_context.event_pump();
 
-    let mut ready_to_send = 20;
-
     let _ = sdl2::joystick::Joystick::open(0);
     let mut event_pump = sdl_context.event_pump();
 
@@ -132,6 +130,7 @@ fn main() {
 
     let mut last_look_time: u32 = 0;
     let mut last_pos_time: u32 = 0;
+    let mut last_move_time: u32 = 0;
     
     while running {
 
@@ -185,6 +184,7 @@ fn main() {
                 1 => 1,
                 2 => 9,
                 3 => 9,
+                4 => 9,
                 _ => 1,
             }
         };
@@ -223,6 +223,19 @@ fn main() {
                                 if p.player_id() == p_id {
                                     p.set_x(p_x);
                                     p.set_z(p_z);
+                                    break;
+                                }
+
+                            }
+                        },
+                        4 => {
+                            let p_id = socket.read_byte() as u32;
+                            let p_fb = socket.read_float();
+                            let p_lr = socket.read_float();
+                            for p in &mut players {
+                                if p.player_id() == p_id {
+                                    p.forward(p_fb);
+                                    p.strafe(p_lr);
                                     break;
                                 }
 
@@ -290,7 +303,7 @@ fn main() {
             rustnet::write_float(players[0].hor_angle());
             rustnet::write_float(players[0].ver_angle());
             rustnet::send_message(&socket);
-            players[0].make_old_new();
+            players[0].make_old_look_new();
             last_look_time = get_ticks();
         }
 
@@ -301,6 +314,16 @@ fn main() {
             rustnet::write_float(players[0].z());
             rustnet::send_message(&socket);
             last_pos_time = get_ticks();
+        }
+
+        if players[0].look_changed() && get_ticks() > last_move_time + 20u32 {
+            rustnet::clear_buffer();
+            rustnet::write_byte(4);
+            rustnet::write_float(players[0].fb());
+            rustnet::write_float(players[0].lr());
+            rustnet::send_message(&socket);
+            players[0].make_old_fb_new();
+            last_move_time = get_ticks();
         }
 
         renderer.start_geometry_pass();
