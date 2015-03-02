@@ -49,6 +49,8 @@ fn main() {
 
     let ip = "128.61.104.39"; // Desktop
     //let ip = "lr.room409.xyz";
+    //let ip = "room409.xyz";
+    //let ip = "192.168.1.146";
 
     let option = rustnet::init_client(ip, port);
     let mut socket: rustnet::SocketWrapper;
@@ -94,15 +96,10 @@ fn main() {
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
-    let mut play = player::new(0, 0f32, 1.5f32, 0f32, 1f32);
+    let play = player::new(0, 0f32, 1.5f32, 0f32, 1f32);
     let mut players: Vec<Player> = Vec::new();
     players.push(play);
 
-    /*
-    let mut player = || -> &mut Player{
-        players[0]
-    };
-    */
 
     let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
     let mut map = mapgen::new_map(1, &mut manager);
@@ -131,6 +128,10 @@ fn main() {
     let mut start_time = get_ticks();
     let mut frames = 0;
     let mut last_time = get_ticks();
+
+
+    let mut last_look_time: u32 = 0;
+    let mut last_pos_time: u32 = 0;
     
     while running {
 
@@ -183,6 +184,7 @@ fn main() {
                 0 => 4,
                 1 => 1,
                 2 => 9,
+                3 => 9,
                 _ => 1,
             }
         };
@@ -203,6 +205,18 @@ fn main() {
                         },
                         2 => {
                             let p_id = socket.read_byte() as u32;
+                            let p_ha = socket.read_float();
+                            let p_va = socket.read_float();
+                            for p in &mut players {
+                                if p.player_id() == p_id {
+                                    p.set_horizontal_angle(p_ha);
+                                    p.set_vertical_angle(p_va);
+                                    break;
+                                }
+                            }
+                        },
+                        3 => {
+                            let p_id = socket.read_byte() as u32;
                             let p_x = socket.read_float();
                             let p_z = socket.read_float();
                             for p in &mut players {
@@ -211,6 +225,7 @@ fn main() {
                                     p.set_z(p_z);
                                     break;
                                 }
+
                             }
                         },
                         _ => println!("Unknown message"),
@@ -269,16 +284,24 @@ fn main() {
         camera.snap_to_player(&players[0]);
         camera.update_view_projection();
 
-        if ready_to_send < 1 {
+        if players[0].look_changed() && get_ticks() > last_look_time + 50u32 {
             rustnet::clear_buffer();
             rustnet::write_byte(2);
+            rustnet::write_float(players[0].hor_angle());
+            rustnet::write_float(players[0].ver_angle());
+            rustnet::send_message(&socket);
+            players[0].make_old_new();
+            last_look_time = get_ticks();
+        }
+
+        if get_ticks() > last_pos_time + 3000u32 {
+            rustnet::clear_buffer();
+            rustnet::write_byte(3);
             rustnet::write_float(players[0].x());
             rustnet::write_float(players[0].z());
             rustnet::send_message(&socket);
-            ready_to_send = 10;
+            last_pos_time = get_ticks();
         }
-        ready_to_send -= 1;
-
 
         renderer.start_geometry_pass();
 

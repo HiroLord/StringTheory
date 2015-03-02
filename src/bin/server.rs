@@ -74,6 +74,7 @@ fn main() {
             let msg_sizes = |msg_id: u8| {
                 match msg_id {
                     2 => 8,
+                    3 => 8,
                     _ => 1,
                 }
             };
@@ -96,14 +97,29 @@ fn main() {
             for i in range(0, players.len()) {
                 while players[i].socket().has_msg(&msg_sizes) {
                     match players[i].read_byte() {
-                        2=> {
+                        2 => {
+                            let p_id = players[i].player_id();
+                            let newha = players[i].read_float();
+                            let newva = players[i].read_float();
+                            for p in &mut players { 
+                                if p.player_id() != p_id {
+                                    rustnet::clear_buffer();
+                                    rustnet::write_byte(2);
+                                    rustnet::write_byte(p_id as u8);
+                                    rustnet::write_float(newha);
+                                    rustnet::write_float(newva);
+                                    rustnet::send_message(p.socket());
+                                }
+                            }
+                        },
+                        3 => {
                             let p_id = players[i].player_id();
                             let newx = players[i].read_float();
                             let newz = players[i].read_float();
                             for p in &mut players { 
                                 if p.player_id() != p_id {
                                     rustnet::clear_buffer();
-                                    rustnet::write_byte(2);
+                                    rustnet::write_byte(3);
                                     rustnet::write_byte(p_id as u8);
                                     rustnet::write_float(newx);
                                     rustnet::write_float(newz);

@@ -30,7 +30,11 @@ pub struct Player {
     vertical_angle: GLfloat,
     movement: Vect,
 
+    old_horizontal_angle: GLfloat,
+    old_vertical_angle: GLfloat,
+
     speed: GLfloat,
+
 }
 
 struct Vect {
@@ -70,6 +74,23 @@ impl Player {
         self.set_position();
     }
 
+    pub fn look_changed(&self) -> bool {
+        !(self.old_horizontal_angle == self.horizontal_angle && self.vertical_angle == self.old_vertical_angle)
+    }
+
+    pub fn old_hor_angle(&self) -> f32 {
+        self.old_horizontal_angle
+    }
+
+    pub fn old_ver_angle(&self) -> f32 {
+        self.old_vertical_angle
+    }
+
+    pub fn make_old_new(&mut self) {
+        self.old_horizontal_angle = self.horizontal_angle;
+        self.old_vertical_angle = self.vertical_angle;
+    }
+
     pub fn set_position(&mut self) {
         self.model.set_translation(self.x, self.height/2.0, self.z);
         self.mask.set_pos(self.x, self.height/2.0, self.z);
@@ -94,6 +115,22 @@ impl Player {
     pub fn set_look_vector(&mut self, c: &Camera) {
         self.horizontal_angle = c.horizontal_angle();
         self.vertical_angle = c.vertical_angle();
+    }
+
+    pub fn set_horizontal_angle(&mut self, angle: f32) {
+        self.horizontal_angle = angle;
+    }
+
+    pub fn set_vertical_angle(&mut self, angle: f32) {
+        self.vertical_angle = angle;
+    }
+
+    pub fn hor_angle(&self) -> f32 {
+        self.horizontal_angle
+    }
+
+    pub fn ver_angle(&self) -> f32 {
+        self.vertical_angle
     }
 
     pub fn forward(&mut self, mut dz: GLfloat) {
@@ -139,13 +176,6 @@ impl Player {
 
     pub fn player_id(&self) -> u32 { self.player_id }
 
-    /*
-    pub fn move_from_camera(&mut self, c: &Camera, dx: GLfloat, dz: GLfloat) {
-        let adx = c.horizontal_angle.cos() * dx + c.horizontal_angle.sin() * dz;
-        let adz = -c.horizontal_angle.sin() * dx + c.horizontal_angle.cos() * dz;
-        self.move_self(adx, adz);
-    }
-    */
 }
 
 pub fn new(id: u32, x: GLfloat, height: GLfloat, z: GLfloat,  speed: GLfloat) -> Player {
@@ -154,6 +184,7 @@ pub fn new(id: u32, x: GLfloat, height: GLfloat, z: GLfloat,  speed: GLfloat) ->
     let model = object::new(-size/2.0, 0f32, size/2.0, size/2.0, height, -size/2.0, 1.0, 0.0, 0.5);
     let mask = solids::new_mask(size, size);
     Player{ player_id: id, x: x, y: height, z: z, model: model, height: height, mask: mask, fb: 0f32, lr: 0f32, 
-        horizontal_angle: 0f32, vertical_angle: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32}, speed: speed }
+        horizontal_angle: 0f32, vertical_angle: 0f32, movement: Vect{x: 0f32, y: 0f32, z: 0f32},
+        old_horizontal_angle: 0f32, old_vertical_angle: 0f32, speed: speed }
 }
 
