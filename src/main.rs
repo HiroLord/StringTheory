@@ -50,7 +50,8 @@ fn main() {
 
     let mut connected = true;
 
-    let ip = "192.168.1.146";
+    let ip = "room409.xyz";
+    //let ip = "192.168.1.146";
 
     let option = rustnet::init_client(ip, port);
     let mut socket: rustnet::SocketWrapper;
