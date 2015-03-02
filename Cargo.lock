@@ -3,6 +3,7 @@ name = "StringTheory"
 version = "0.0.1"
 dependencies = [
  "gl 0.0.9 (git+https://github.com/bjz/gl-rs.git)",
+ "rust-assimp 0.0.1-alpha.2 (git+https://github.com/lotusronin/rust-assimp)",
  "rustnet 0.0.1 (git+https://github.com/hirolord/rustnet.git)",
  "sdl2 0.0.28 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -66,9 +67,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust-assimp"
+version = "0.0.1-alpha.2"
+source = "git+https://github.com/lotusronin/rust-assimp#10815341549472607f7b16ca8a278637433a2681"
+dependencies = [
+ "vecmath 0.0.5 (git+https://github.com/PistonDevelopers/vecmath)",
+]
+
+[[package]]
 name = "rustnet"
 version = "0.0.1"
-source = "git+https://github.com/hirolord/rustnet.git#167b6d5429140b818244478907f17d9660d6c9f0"
+source = "git+https://github.com/hirolord/rustnet.git#37729434ee90a7bd4915577db1f476d18f140326"
 dependencies = [
  "sdl2_net 0.0.2 (git+https://github.com/Limvot/rust-sdl2_net)",
 ]
@@ -99,6 +108,11 @@ source = "git+https://github.com/Limvot/rust-sdl2_net#d5e08a532142c92577e1c3b664
 dependencies = [
  "sdl2 0.0.28 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "vecmath"
+version = "0.0.5"
+source = "git+https://github.com/PistonDevelopers/vecmath#6284864573fe185f4d87aadfe38d0fc3b2edcd73"
 
 [[package]]
 name = "xml-rs"

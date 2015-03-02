@@ -107,8 +107,7 @@ pub fn load_map(resman : &mut res::ResourceManager) -> Map {
         }
     }
 
-    let mut m = Map{floors: floors, walls: walls, lights: lights, doors: doors, spawns: spawns};
-    m
+    Map{floors: floors, walls: walls, lights: lights, doors: doors, spawns: spawns}
 }
 
 pub fn new_map(size: u32, resman:&mut res::ResourceManager) -> Map {
