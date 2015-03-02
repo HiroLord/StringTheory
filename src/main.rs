@@ -307,7 +307,7 @@ fn main() {
             last_look_time = get_ticks();
         }
 
-        if get_ticks() > last_pos_time + 3000u32 {
+        if get_ticks() > last_pos_time + 2000u32 {
             rustnet::clear_buffer();
             rustnet::write_byte(3);
             rustnet::write_float(players[0].x());
@@ -316,10 +316,10 @@ fn main() {
             last_pos_time = get_ticks();
         }
 
-        if players[0].look_changed() && get_ticks() > last_move_time + 20u32 {
+        if players[0].fb_lr_changed() {
             rustnet::clear_buffer();
             rustnet::write_byte(4);
-            rustnet::write_float(players[0].fb());
+            rustnet::write_float(-players[0].fb());
             rustnet::write_float(players[0].lr());
             rustnet::send_message(&socket);
             players[0].make_old_fb_new();
