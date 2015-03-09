@@ -346,10 +346,11 @@ void main() {
     if (cosTheta <= 0)
         discard;
     float dist = distance(pos, light_pos); 
-    gl_FragColor = vec4((cosTheta * color * material_color + (color * material_color * 0.5)) / (dist*(dist*0.5)), 1) ;
+    gl_FragColor = vec4((cosTheta * color * material_color + (color * material_color * 0.5)) / (dist*(dist*1.0)), 1) ;
+    //gl_FragColor = vec4((cosTheta * color * material_color) / (dist), 1) ;
 
     //gl_FragColor = vec4(material_color, 1);
-    //gl_FragColor = vec4(color, 1);
+    //gl_FragColor = vec4(color, 1) * 0.2;
     //gl_FragColor = vec4(normal, 1);
     //gl_FragColor = vec4(normal/2 + 0.5);
     //gl_FragColor = vec4(pos, 1);

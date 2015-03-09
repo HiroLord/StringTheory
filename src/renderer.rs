@@ -17,6 +17,7 @@ impl Renderer {
         self.gbuff.bind_for_writing();
         unsafe {
             gl::Enable(gl::CULL_FACE);
+            gl::CullFace(gl::BACK);
             gl::DepthMask(gl::TRUE);
             gl::ClearColor(0.0, 0.0, 0.0, 0.0);
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
@@ -30,6 +31,7 @@ impl Renderer {
     pub fn start_light_pass(&self) {
         unsafe {
             //gl::Disable(gl::CULL_FACE);
+            //gl::CullFace(gl::BACK);
             gl::DepthMask(gl::FALSE);
             gl::Disable(gl::DEPTH_TEST);
 
