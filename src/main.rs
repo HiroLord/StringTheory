@@ -81,10 +81,6 @@ fn main() {
     let context = window.gl_create_context().unwrap();
     gl::load_with(|s| unsafe { std::mem::transmute(sdl2::video::gl_get_proc_address(s)) });
 
-    unsafe {
-        gl::Enable(gl::CULL_FACE);
-        gl::Enable(gl::DEPTH_TEST);
-    }
     let renderer = renderer::new(window_width as u32, window_height as u32);
 
     let aspect_ratio = window_width as f32 / window_height as f32;
@@ -96,13 +92,13 @@ fn main() {
     let midy = window_height / 2;
     sdl2::mouse::warp_mouse_in_window(&window, midx, midy); 
 
-    let play = player::new(0, 0f32, 1.5f32, 0f32, 1f32);
+    let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
+
+    let mut map = mapgen::new_map(1, &mut manager);
+
+    let play = manager.new_player(0, 0f32, 1.5f32, 0f32, 1f32);
     let mut players: Vec<Player> = Vec::new();
     players.push(play);
-
-
-    let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
-    let mut map = mapgen::new_map(1, &mut manager);
 
     if map.get_spawns().len() > 0 {
         players[0].set_position_from_point(map.get_spawn(0));
@@ -199,7 +195,8 @@ fn main() {
                         1 => {
                             let new_id = socket.read_byte() as u32;
                             println!("New player! {} ", new_id);
-                            let new_player = player::new(new_id, start_x, 1.5f32, start_z, 1f32);
+                            //let new_player = player::new(new_id, start_x, 1.5f32, start_z, 1f32);
+                            let new_player = manager.new_player(new_id, start_x, 1.5f32, start_z, 1f32);
                             players.push(new_player);
                         },
                         2 => {

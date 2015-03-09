@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use solids;
 use shader;
 use light;
+use player;
 
 pub struct ResourceManager {
     //importer : ai::Importer,
@@ -144,6 +145,10 @@ impl<'resman> ResourceManager {
     pub fn new_light(&mut self, x: f32, y: f32, z: f32, r: f32, g: f32, b: f32) -> object::Object{
         let shader = self.get_light_shader("light");
         return light::new_light(x,y,z,r,g,b,shader);
+    }
+    pub fn new_player(&mut self, id: u32, x: f32, y: f32, z: f32, speed: f32) -> player::Player {
+        let shader = self.get_shader("object");
+        return player::new(id, x, y, z, speed, shader);
     }
 /*
     pub fn getObj(&self, filename: &str) -> object::Object {
@@ -306,7 +311,8 @@ uniform mat4 modelMatrix;
 uniform mat4 viewProjectionMatrix;
 
 void main() {
-    gl_Position = vec4(vert_model, 1);
+    //gl_Position = vec4(vert_model, 1);
+    gl_Position = viewProjectionMatrix * modelMatrix * vec4(vert_model, 1);
 }
     ";
 
@@ -345,10 +351,16 @@ void main() {
     //vec3 vecToLight = -normalize(pos - light_pos);
     vec4 vecToLight = -normalize(pos - light_pos);
     float cosTheta = clamp( dot(normal, vecToLight), 0, 1);
+    //float cosTheta = clamp( dot(normal, vecToLight), -1, 1);
+    //if (cosTheta <= 0)
+        //cosTheta = -cosTheta;
     //float cosTheta = clamp( dot(normal, vecToLight), 0, 1) + clamp( -dot(normal, vecToLight), 0, 1);
     //gl_FragColor = vec4(cosTheta, cosTheta, cosTheta, 1);
     float dist = distance(pos, light_pos); 
     gl_FragColor = vec4((cosTheta * color * material_color) / (dist), 1);
+    vec4 fin = vec4((cosTheta * color * material_color) / (dist), 1);
+    //gl_FragColor = fin * 0.12;
+    gl_FragColor = fin;
     //gl_FragColor = vec4(material_color, 1);
     //gl_FragColor = vec4(color, 1);
     //gl_FragColor = vec4(normal, 1);
@@ -361,6 +373,10 @@ void main() {
     //gl_FragColor = vec4(texture2D(diffuse_tex, tex_coord).xyz, 1);
     //gl_FragColor = vec4(texture2D(diffuse_tex, gl_FragCoord.xy).xyz, 1);
     //gl_FragColor = vec4(1,0,0,1);
+    //gl_FragColor = vec4(color,1);
+    //gl_FragColor = vec4(material_color*0.03,1);
+    //gl_FragColor = vec4(material_color,1);
+    //gl_FragColor = vec4(cosTheta,0,0,1);
     //gl_FragColor = vec4(final_color + material_color * vec3(0.3,0.3,0.3), 0);
 }
     ";

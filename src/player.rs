@@ -8,6 +8,7 @@ use camera::Camera;
 use solids::GameObject;
 use solids::Mask;
 use solids;
+use shader;
 use renderer;
 use mapgen::Point;
 //use std::num::abs;
@@ -185,10 +186,10 @@ impl Player {
 
 }
 
-pub fn new(id: u32, x: GLfloat, height: GLfloat, z: GLfloat,  speed: GLfloat) -> Player {
+pub fn new(id: u32, x: GLfloat, height: GLfloat, z: GLfloat,  speed: GLfloat, shader:shader::Shader) -> Player {
     let size = 0.78f32*2.0;
     let height = 1.7f32;
-    let model = object::new(-size/2.0, 0f32, size/2.0, size/2.0, height, -size/2.0, 1.0, 0.0, 0.5);
+    let model = object::new2(-size/2.0, 0f32, size/2.0, size/2.0, height, -size/2.0, 1.0, 0.0, 0.5, shader);
     let mask = solids::new_mask(size, size);
     Player{ player_id: id, x: x, y: height, z: z, model: model, height: height, mask: mask,
         fb: 0f32, lr: 0f32, old_fb: 0f32, old_lr: 0f32,
