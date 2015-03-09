@@ -161,7 +161,7 @@ impl Object {
     }
 }
 
-pub fn new_tri(r:f32, g:f32, b:f32)  -> Object {
+pub fn new_tri(r:f32, g:f32, b:f32, s:shader::Shader)  -> Object {
     let verts: [GLfloat; 9] = [
         0.0, 0.5, 0.0,
         0.5, -0.5, 0.0,
@@ -174,178 +174,14 @@ pub fn new_tri(r:f32, g:f32, b:f32)  -> Object {
             ];
     let mut indxs: [u32; 3] = [0; 3];
     for i in 0..(3) { indxs[i] = i as u32; }
-    generate(&verts, &norms, &indxs, r, g, b)
+    generate2(&verts, &norms, &indxs, r, g, b, s, false)
 }
 
-pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32)  -> Object {
-    let verts: [GLfloat; 6*6*3] = [
-        // Front face
-        x1, y1, z1,
-        x2, y2, z1,
-        x1, y2, z1,
-        x1, y1, z1,
-        x2, y1, z1,
-        x2, y2, z1,
-
-        // Top face
-        x1, y2, z1,
-        x2, y2, z2,
-        x1, y2, z2,
-        x1, y2, z1,
-        x2, y2, z1,
-        x2, y2, z2,
-
-        // Back face
-        x2, y1, z2,
-        x1, y2, z2,
-        x2, y2, z2,
-        x2, y1, z2,
-        x1, y1, z2,
-        x1, y2, z2,
-
-        // Bottom face
-        x1, y1, z2,
-        x2, y1, z1,
-        x1, y1, z1,
-        x1, y1, z2,
-        x2, y1, z2,
-        x2, y1, z1,
-
-        // Left face
-        x1, y1, z2,
-        x1, y2, z1,
-        x1, y2, z2,
-        x1, y1, z2,
-        x1, y1, z1,
-        x1, y2, z1,
-
-        // Right face
-        x2, y1, z1,
-        x2, y2, z2,
-        x2, y2, z1,
-        x2, y1, z1,
-        x2, y1, z2,
-        x2, y2, z2,
-            ];
-    let norms: [GLfloat; 6*6*3] = [
-        // Front face
-        0.0f32, 0.0f32, 1.0f32,
-        0.0f32, 0.0f32, 1.0f32,
-        0.0f32, 0.0f32, 1.0f32,
-        0.0f32, 0.0f32, 1.0f32,
-        0.0f32, 0.0f32, 1.0f32,
-        0.0f32, 0.0f32, 1.0f32,
-
-        // Top face
-        0.0f32, 1.0f32, 0.0f32,
-        0.0f32, 1.0f32, 0.0f32,
-        0.0f32, 1.0f32, 0.0f32,
-        0.0f32, 1.0f32, 0.0f32,
-        0.0f32, 1.0f32, 0.0f32,
-        0.0f32, 1.0f32, 0.0f32,
-
-        // Back face
-        0.0f32, 0.0f32, -1.0f32,
-        0.0f32, 0.0f32, -1.0f32,
-        0.0f32, 0.0f32, -1.0f32,
-        0.0f32, 0.0f32, -1.0f32,
-        0.0f32, 0.0f32, -1.0f32,
-        0.0f32, 0.0f32, -1.0f32,
-
-        // Bottom face
-        0.0f32, -1.0f32, 0.0f32,
-        0.0f32, -1.0f32, 0.0f32,
-        0.0f32, -1.0f32, 0.0f32,
-        0.0f32, -1.0f32, 0.0f32,
-        0.0f32, -1.0f32, 0.0f32,
-        0.0f32, -1.0f32, 0.0f32,
-
-        // Left face
-        -1.0f32, 0.0f32, 0.0f32,
-        -1.0f32, 0.0f32, 0.0f32,
-        -1.0f32, 0.0f32, 0.0f32,
-        -1.0f32, 0.0f32, 0.0f32,
-        -1.0f32, 0.0f32, 0.0f32,
-        -1.0f32, 0.0f32, 0.0f32,
-
-        // Right face
-        1.0f32, 0.0f32, 0.0f32,
-        1.0f32, 0.0f32, 0.0f32,
-        1.0f32, 0.0f32, 0.0f32,
-        1.0f32, 0.0f32, 0.0f32,
-        1.0f32, 0.0f32, 0.0f32,
-        1.0f32, 0.0f32, 0.0f32,
-            ];
-    let mut indxs: [u32; 6*6] = [0; 6*6];
-    for i in 0..(6*6) { indxs[i] = i as u32; }
-    generate(&verts, &norms, &indxs, r, g, b)
-}
-
-pub fn generate(verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f32, g:f32, b:f32) -> Object {
-    generate_general(verts, norms, indxs, r, g, b, VS_SRC, FS_SRC, false)
-}
-
-pub fn generate_general(verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f32, g:f32, b:f32,
-                        vertex_shader: &str, fragment_shader: &str, is_light: bool) -> Object {
-    let shader = shader::new(vertex_shader, fragment_shader);
-    let mut vert_buff:u32 = 0;
-    let mut norm_buff:u32 = 0;
-    //let mut vert_buff:u32;
-    let mut indx_buff:u32 = 0;
-    let mut vao = 0;
-    unsafe {
-        gl::GenVertexArrays(1, &mut vao);
-        gl::BindVertexArray(vao);
-
-        gl::GenBuffers(1, &mut vert_buff);
-        gl::GenBuffers(1, &mut norm_buff);
-        //gl::GenBuffers(1, &mut texc_buff);
-        gl::GenBuffers(1, &mut indx_buff);
-
-        gl::BindBuffer(gl::ARRAY_BUFFER, vert_buff);
-        gl::BufferData(gl::ARRAY_BUFFER, (verts.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
-                        mem::transmute(&verts[0]), gl::STATIC_DRAW);
-        gl::BindBuffer(gl::ARRAY_BUFFER, norm_buff);
-        gl::BufferData(gl::ARRAY_BUFFER, (norms.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
-                        mem::transmute(&norms[0]), gl::STATIC_DRAW);
-        //gl::BindBuffer(gl::ARRAY_BUFFER, texc_buff);
-        //gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, (.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
-                        //mem::transmute(&[0]), gl::STATIC_DRAW);
-        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, indx_buff);
-        gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, (indxs.len()*mem::size_of::<GLfloat>()) as GLsizeiptr,
-                        mem::transmute(&indxs[0]), gl::STATIC_DRAW);
-
-    }
-    Object {
-        x: 0f32,
-        y: 0f32,
-        z: 0f32,
-
-        rx: 0f32,
-        ry: 0f32,
-        rz: 0f32,
-
-        r: r,
-        g: g,
-        b: b,
-
-        model_matrix: matrix::new(),
-
-        num_indx: indxs.len() as u32,
-
-        visible: true,
-
-        shader: shader,
-        vao: vao,
-        vert_buff: vert_buff,
-        norm_buff: norm_buff,
-        texc_buff: 0,
-        indx_buff: indx_buff,
-        is_light: is_light,
-    }
-}
 
 pub fn new2(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32, s:shader::Shader)  -> Object {
+    new(x1, y1, z1, x2, y2, z2, r, g, b, s, false)
+}
+pub fn new(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32, s:shader::Shader, is_light:bool)  -> Object {
     let verts: [GLfloat; 6*6*3] = [
         // Front face
         x1, y1, z1,
@@ -446,7 +282,7 @@ pub fn new2(x1:f32, y1:f32, z1:f32, x2:f32, y2:f32, z2:f32, r:f32, g:f32, b:f32,
             ];
     let mut indxs: [u32; 6*6] = [0; 6*6];
     for i in 0..(6*6) { indxs[i] = i as u32; }
-    generate2(&verts, &norms, &indxs, r, g, b, s, false)
+    generate2(&verts, &norms, &indxs, r, g, b, s, is_light)
 }
 
 pub fn generate2(verts: &[GLfloat], norms: &[GLfloat], indxs: &[u32], r:f32, g:f32, b:f32,

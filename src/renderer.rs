@@ -16,6 +16,7 @@ impl Renderer {
     pub fn start_geometry_pass(&self) {
         self.gbuff.bind_for_writing();
         unsafe {
+            gl::Enable(gl::CULL_FACE);
             gl::DepthMask(gl::TRUE);
             gl::ClearColor(0.0, 0.0, 0.0, 0.0);
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
@@ -28,6 +29,7 @@ impl Renderer {
     }
     pub fn start_light_pass(&self) {
         unsafe {
+            //gl::Disable(gl::CULL_FACE);
             gl::DepthMask(gl::FALSE);
             gl::Disable(gl::DEPTH_TEST);
 
@@ -35,7 +37,7 @@ impl Renderer {
             gl::BlendEquation(gl::FUNC_ADD);
             gl::BlendFunc(gl::ONE, gl::ONE);
 
-            //gl::BindFramebuffer(gl::FRAMEBUFFER, 0);
+            gl::BindFramebuffer(gl::FRAMEBUFFER, 0);
 
             self.gbuff.bind_for_reading();
             gl::ClearColor(0.0, 0.0, 0.0, 1.0);
