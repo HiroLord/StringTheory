@@ -334,33 +334,20 @@ varying vec4 position_modelSpace;
 
 void main() {
     vec2 tex_coord = gl_FragCoord.xy / window_size;
-    //vec2 tex_coord = gl_FragCoord.xy / vec2(1280,720);
 
     vec4 pos = texture2D(position_tex, tex_coord);
     vec4 normal = texture2D(normal_tex, tex_coord);
     vec3 color = texture2D(diffuse_tex, tex_coord).xyz;
-    //vec3 last = texture2D(last_tex, tex_coord).xyz;
 
-    //normal = normalize(normal);
-
-    //vec4 light_pos = vec4(3, 1, 0, 1);
     vec4 light_pos = vec4(light_world_pos, 1);
 
-    // I don't think I should have to negate this....
-    //vec3 vecToLight = normalize(pos - light_pos);
-    //vec3 vecToLight = -normalize(pos - light_pos);
     vec4 vecToLight = -normalize(pos - light_pos);
-    float cosTheta = clamp( dot(normal, vecToLight), 0, 1);
-    //float cosTheta = clamp( dot(normal, vecToLight), -1, 1);
-    //if (cosTheta <= 0)
-        //cosTheta = -cosTheta;
-    //float cosTheta = clamp( dot(normal, vecToLight), 0, 1) + clamp( -dot(normal, vecToLight), 0, 1);
-    //gl_FragColor = vec4(cosTheta, cosTheta, cosTheta, 1);
+    float cosTheta = clamp( dot(normal, vecToLight), -1, 1);
+    if (cosTheta <= 0)
+        discard;
     float dist = distance(pos, light_pos); 
-    gl_FragColor = vec4((cosTheta * color * material_color) / (dist), 1);
-    vec4 fin = vec4((cosTheta * color * material_color) / (dist), 1);
-    //gl_FragColor = fin * 0.12;
-    gl_FragColor = fin;
+    gl_FragColor = vec4((cosTheta * color * material_color + (color * material_color * 0.5)) / (dist*(dist*0.5)), 1) ;
+
     //gl_FragColor = vec4(material_color, 1);
     //gl_FragColor = vec4(color, 1);
     //gl_FragColor = vec4(normal, 1);
