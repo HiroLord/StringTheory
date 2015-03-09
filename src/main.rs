@@ -47,8 +47,8 @@ fn main() {
 
     let port: u16 = 1231;
 
-    let ip = "128.61.104.39"; // Desktop
-    //let ip = "lr.room409.xyz";
+    //let ip = "128.61.104.39"; // Desktop
+    let ip = "lr.room409.xyz";
     //let ip = "room409.xyz";
     //let ip = "192.168.1.146";
 
