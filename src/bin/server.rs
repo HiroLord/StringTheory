@@ -38,7 +38,7 @@ fn main() {
     
 
     'main:loop {
-        if rustnet::check_sockets() {
+        if rustnet::check_sockets(1) {
 
             let temp_client = rustnet::check_for_new_client();
             match temp_client{
@@ -154,8 +154,6 @@ fn main() {
                 break 'main;
             }
         }
-
-        sdl2::timer::delay(10);
     }
     println!("Server closed.");
 }

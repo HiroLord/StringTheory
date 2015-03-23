@@ -185,7 +185,7 @@ fn main() {
             }
         };
 
-        if rustnet::check_sockets() {
+        if rustnet::check_sockets(0) {
             if !socket.read_socket() {
             } else {
                 while socket.has_msg(&msg_size) {
