@@ -48,9 +48,10 @@ fn main() {
     let port: u16 = 1231;
 
     //let ip = "128.61.104.39"; // Desktop
-    let ip = "lr.room409.xyz";
+    //let ip = "lr.room409.xyz";
     //let ip = "room409.xyz";
     //let ip = "192.168.1.146";
+    let ip = "127.0.0.1";
 
     let option = rustnet::init_client(ip, port);
     let mut socket: rustnet::SocketWrapper;
@@ -58,8 +59,8 @@ fn main() {
     match option {
         Some(sock) => socket = sock,
         None => {
-            println!("Unable to connect to server on port {}", port);
-            return
+                println!("Unable to connect to {}:{}", ip, port);
+                return;
         },
     }
     
@@ -153,7 +154,7 @@ fn main() {
                     if key == KeyCode::A { strafe = -1.0f32; }
                     if key == KeyCode::D { strafe = 1.0f32; }
                     if key == KeyCode::E {
-                        for i in range(0, map.get_doors().len()) {
+                        for i in 0..map.get_doors().len() {
                             map.open_door(i as i32);
                         }
                     }
@@ -164,7 +165,7 @@ fn main() {
                     if key == KeyCode::D { strafe = 0f32; }
                     if key == KeyCode::S { forward = 0f32; }
                     if key == KeyCode::E {
-                        for i in range(0, map.get_doors().len()) {
+                        for i in 0..map.get_doors().len() {
                             map.close_door(i as i32);
                         }
                     }
@@ -247,7 +248,7 @@ fn main() {
         players[0].forward(forward);
         players[0].strafe(strafe);
 
-        for p in range(0, players.len()) {
+        for p in 0..players.len() {
             let (dx, dz) = players[p].get_move(delta);
            
             players[p].move_x(dx);

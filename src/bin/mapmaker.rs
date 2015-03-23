@@ -5,7 +5,8 @@
 extern crate sdl2;
 //mod camera;
 
-use std::old_io::File;
+use std::old_path::Path;
+use std::old_io::{File, Reader, Writer};
 use sdl2::video::{Window, WindowPos};
 use sdl2::event::{Event};
 use sdl2::keycode::KeyCode;
@@ -81,7 +82,7 @@ fn main() {
                         }
                     } else if btn == sdl2::mouse::Mouse::Right {
                         let mut to_remove = Vec::new();
-                        for b in range(0, blocks.len()) {
+                        for b in 0..blocks.len() {
                             if blocks[b].t == draw_block.t {
                                 if blocks[b].x == draw_block.x && blocks[b].y == draw_block.y {
                                     to_remove.push(b);
@@ -163,7 +164,7 @@ fn main() {
         drawer.set_draw_color(RGB(50, 100, 150));
 
         drawer.clear();
-        for i in range(1, 11) {
+        for i in 1..11 {
             for b in blocks.iter() {
                 if b.t == i {
                     let color = match b.t {
@@ -212,7 +213,7 @@ fn load_map() -> Vec<Block> {
         Err(e) => panic!("Error {}", e),
     };
     println!("Received {} objects.", size);
-    for _ in range(0, size) {
+    for _ in 0..size {
         let blocktype = match file.read_be_u32() {
             Ok(t) => t,
             Err(e) => panic!("Error {}", e),

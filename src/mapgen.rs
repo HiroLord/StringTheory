@@ -3,7 +3,8 @@ extern crate std;
 use solids;
 use object;
 use resourcemanager as res;
-use std::old_io::File;
+use std::old_io::{File, Reader};
+use std::old_path::Path;
 
 pub struct Map {
     floors: Vec<solids::Floor>,
@@ -67,7 +68,7 @@ pub fn load_map(resman : &mut res::ResourceManager) -> Map {
         Err(e) => panic!("{}", e),
     };
 
-    for _ in range(0, size) {
+    for _ in 0..size {
         let blocktype = match file.read_be_u32() {
             Ok(n) => n,
             Err(e) => panic!("{}", e),

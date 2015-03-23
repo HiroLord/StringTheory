@@ -5,7 +5,7 @@ version = "0.0.1"
 authors = ["Preston Turner <prestonturner42@gmail.com>", "Nathan Braswell <miloignis@gmail.com>", "Marcus Godwin <marcusgodwin@hotmail.com>"]
 
 [dependencies]
-sdl2 = "0.0.28"
+sdl2 = "0.0.31"
 
 [dependencies.rustnet]
 git = "https://github.com/hirolord/rustnet.git"
@@ -14,4 +14,4 @@ git = "https://github.com/hirolord/rustnet.git"
 git = "https://github.com/bjz/gl-rs.git"
 
 [dependencies.rust-assimp]
-git = "https://github.com/lotusronin/rust-assimp"
+git = "https://github.com/hirolord/rust-assimp"

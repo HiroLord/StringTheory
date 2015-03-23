@@ -1,5 +1,4 @@
 #![feature(old_io)]
-#![feature(core)]
 
 extern crate sdl2;
 extern crate rustnet;
@@ -82,20 +81,20 @@ fn main() {
 
             let mut to_remove = Vec::new();
 
-            for p in range(0, players.len() ) {
+            for p in 0..players.len() {
                 if !players[p as usize].socket().read_socket(){
                     println!("Lost connection to socket.");
                     to_remove.push(p);
                 }
             }
 
-            let mut offset = 0;
+            let mut offset: i32 = 0;
             for t in to_remove {
-                players.remove(t - offset);
+                players.remove((t as i32 - offset) as usize);
                 offset -= 1;
             }
             
-            for i in range(0, players.len()) {
+            for i in 0..players.len() {
                 while players[i].socket().has_msg(&msg_sizes) {
                     match players[i].read_byte() {
                         2 => {
