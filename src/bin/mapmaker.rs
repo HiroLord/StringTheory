@@ -62,6 +62,12 @@ impl Drawable for Block {
 fn main() {
     let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
 
+    let args: Vec<String> = std::env::args().collect();
+    let map_name: &str = match args.len() > 1 {
+        true => args[1].as_slice(),
+        false => "savedmap".as_slice(),
+    };
+
     // 720p
     let window_width = 1280;
     let window_height = 720;
@@ -84,7 +90,7 @@ fn main() {
 
     let block_size = 32;
 
-    let mut blocks: Vec<Block> = Vec::new();
+    let mut blocks: Vec<Block> = load_map(map_name);
 
     let mut draw_block = Block{ x: 0, y: 0, t: 1, block_size: block_size }; 
 
@@ -138,8 +144,8 @@ fn main() {
                 }
                 Event::KeyDown{keycode: key, ..} => {
                     if key == KeyCode::Escape { break 'main; }
-                    if key == KeyCode::S { save_map(&blocks); }
-                    if key == KeyCode::L { blocks = load_map(); }
+                    if key == KeyCode::S { save_map(&blocks, map_name); }
+                    //if key == KeyCode::L { blocks = load_map(); }
                     if key == KeyCode::Num1 { draw_block.t = 1; }
                     if key == KeyCode::Num2 { draw_block.t = 2; }
                     if key == KeyCode::Num3 { draw_block.t = 3; }
@@ -148,10 +154,10 @@ fn main() {
                     if key == KeyCode::Num6 { draw_block.t = 6; }
                     if key == KeyCode::Num0 { draw_block.t = 10; }
                     if key == KeyCode::M {
-                        save_map(&blocks);
+                        save_map(&blocks, map_name);
                         println!("Loading game.");
                         let k =
-                        std::process::Command::new("cargo").arg("run").arg("--bin").arg("StringTheory")
+                        std::process::Command::new("cargo").arg("run").arg("--bin").arg("StringTheory").arg(map_name)
                             .status().unwrap_or_else(|e| {
                             panic!("Failed: {}", e);
                         });
@@ -230,15 +236,16 @@ fn main() {
     }
 }
 
-
-fn load_map() -> Vec<Block> {
+fn load_map<'a>(raw_name: &'a str) -> Vec<Block> {
     let mut blocks = Vec::new();
 
-    let mut file = File::open_mode(&Path::new("savedmap.map"),std::old_io::FileMode:: Open,
+    let name = format!("maps/{}.map", raw_name);
+
+    let mut file = File::open_mode(&Path::new(name.clone()),std::old_io::FileMode:: Open,
     std::old_io::FileAccess::Read);
     let size = match file.read_be_i32() {
         Ok(s) => s,
-        Err(e) => panic!("Error {}", e),
+        Err(e) => {println!("{}", e); println!("New map will be saved as {}", name);return blocks;}
     };
     println!("Received {} objects.", size);
     for _ in 0..size {
@@ -259,14 +266,15 @@ fn load_map() -> Vec<Block> {
     blocks
 }
 
-fn save_map(map: &Vec<Block>) -> bool{
-    let mut file = File::create(&Path::new("savedmap.map"));
+fn save_map<'a>(map: &Vec<Block>, raw_name: &'a str) -> bool{
+    let name = format!("maps/{}.map", raw_name);
+    let mut file = File::create(&Path::new(name.clone()));
     let _ = file.write_be_i32(map.len() as i32);
     for block in map.iter() {
         let _ = file.write_be_u32(block.t);
         let _ = file.write_be_f32(block.x as f32 / 8f32);
         let _ = file.write_be_f32(block.y as f32 / 8f32);
     }
-    println!("Written!");
+    println!("Map saved as {}", name);
     true
 }

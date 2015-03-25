@@ -95,6 +95,14 @@ fn main() {
 
     let mut manager : resourcemanager::ResourceManager = resourcemanager::new();
 
+    /*
+    let args: Vec<String> = std::env::args().collect();
+    let map_name: &str = match args.len() > 1 {
+        true => args[1].as_slice(),
+        false => "savedmap",
+    };
+    */
+
     let mut map = mapgen::new_map(1, &mut manager);
 
     let play = manager.new_player(0, 0f32, 1.5f32, 0f32, 1f32);

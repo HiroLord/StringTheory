@@ -53,13 +53,14 @@ impl Map {
     }
 }
 
-pub fn load_map(resman : &mut res::ResourceManager) -> Map {
+pub fn load_map(resman : &mut res::ResourceManager, raw_name: &str) -> Map {
     let mut floors = Vec::new();
     let mut walls = Vec::new();
     let mut lights = Vec::new();
     let mut doors = Vec::new();
     let mut spawns = Vec::new();
-    let mut file = File::open_mode(&Path::new("savedmap.map"),
+    let name = format!("maps/{}.map", raw_name);
+    let mut file = File::open_mode(&Path::new(name),
                                 std::old_io::FileMode::Open,
                                 std::old_io::FileAccess::Read);
     
@@ -112,7 +113,12 @@ pub fn load_map(resman : &mut res::ResourceManager) -> Map {
 }
 
 pub fn new_map(size: u32, resman:&mut res::ResourceManager) -> Map {
-    load_map(resman)
+    let args: Vec<String> = std::env::args().collect();
+    let map_name: &str = match args.len() > 1 {
+        true => args[1].as_slice(),
+        false => "savedmap",
+    };
+    load_map(resman, map_name)
     /*
     let mut floors = vec![ new_floor(0.0, 0.0, 0.0), 
                     new_floor(4.0, 0.0, 0.0), new_floor(8.0, 0.0, 0.0),
