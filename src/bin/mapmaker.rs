@@ -13,11 +13,50 @@ use sdl2::keycode::KeyCode;
 use sdl2::pixels::Color::RGB;
 use sdl2::rect::Rect;
 
+use sdl2::render::RenderDrawer as Drawer;
+
 struct Block { 
     x: i32,
     y: i32,
     t: u32,
     block_size: i32,
+}
+
+trait Drawable {
+    fn draw(&self, drawer: &mut Drawer);
+    //fn force_draw_color(&self, RGB(254,180,204));
+}
+
+impl Drawable for Block {
+    fn draw(&self, drawer: &mut Drawer) {
+        let color = match self.t {
+            1 => RGB(0, 153, 204),
+            2...3 => RGB(180, 30, 20),
+            4 => RGB(250, 250, 255),
+            5...6 => RGB(20, 30, 255),
+            10 => RGB(0,155,0),
+            _ => RGB(0,0,0),
+        };
+
+        drawer.set_draw_color(color);
+
+        let dr_x = self.x;
+        let dr_y = self.y;
+
+        let mut square = match self.t {
+            1 => Rect::new(dr_x, dr_y, self.block_size, self.block_size),
+            2 | 5 => Rect::new(dr_x-1, dr_y, 2, self.block_size),
+            3 | 6 => Rect::new(dr_x, dr_y-1, self.block_size, 2),
+            4 => Rect::new(dr_x-3, dr_y-3, 6, 6),
+            10 => Rect::new(dr_x+6, dr_y+6, self.block_size-12, self.block_size-12),
+            _ => Rect::new(dr_x, dr_y, self.block_size, self.block_size),
+        };
+
+        square.x -= square.w/2;
+        square.y -= square.h/2;
+
+        drawer.fill_rect(square);
+    }
 }
 
 fn main() {
@@ -61,8 +100,8 @@ fn main() {
                         4 => (block_size/2, block_size/2),
                         _ => (0, 0),
                     };
-                    draw_block.x = (mx+xoff) - ((mx + xoff) % block_size);
-                    draw_block.y = (my+yoff) - ((my + yoff) % block_size);
+                    draw_block.x = mx - ((mx + xoff) % block_size) + block_size/2;
+                    draw_block.y = my - ((my + yoff) % block_size) + block_size/2;
                 }
                 Event::MouseButtonUp{mouse_btn: btn, ..} => {
                     if btn == sdl2::mouse::Mouse::Left{
@@ -108,6 +147,15 @@ fn main() {
                     if key == KeyCode::Num5 { draw_block.t = 5; }
                     if key == KeyCode::Num6 { draw_block.t = 6; }
                     if key == KeyCode::Num0 { draw_block.t = 10; }
+                    if key == KeyCode::M {
+                        save_map(&blocks);
+                        println!("Loading game.");
+                        let k =
+                        std::process::Command::new("cargo").arg("run").arg("--bin").arg("StringTheory")
+                            .status().unwrap_or_else(|e| {
+                            panic!("Failed: {}", e);
+                        });
+                    }
                     if key == KeyCode::W {
                         let mut to_add = Vec::new();
                         for block in blocks.iter() {
@@ -135,19 +183,19 @@ fn main() {
                                     }
                                 }
                                 if left {
-                                    to_add.push( Block{x: block.x, y: block.y, t: 2, block_size:
+                                    to_add.push( Block{x: block.x-block_size/2, y: block.y, t: 2, block_size:
                                         block_size} );
                                 }
                                 if up {
-                                    to_add.push( Block{x: block.x, y: block.y, t: 3, block_size:
+                                    to_add.push( Block{x: block.x, y: block.y-block_size/2, t: 3, block_size:
                                         block_size} );
                                 }
                                 if right {
-                                    to_add.push( Block{x: block.x+block_size, y: block.y, t: 2,
+                                    to_add.push( Block{x: block.x+block_size/2, y: block.y, t: 2,
                                         block_size: block_size} );
                                 }
                                 if down {
-                                    to_add.push( Block{x: block.x, y: block.y+block_size, t: 3,
+                                    to_add.push( Block{x: block.x, y: block.y+block_size/2, t: 3,
                                         block_size: block_size} );
                                 }
                             }
@@ -167,41 +215,21 @@ fn main() {
         for i in 1..11 {
             for b in blocks.iter() {
                 if b.t == i {
-                    let color = match b.t {
-                        1 => RGB(0, 153, 204),
-                        2...3 => RGB(180, 30, 20),
-                        4 => RGB(250, 250, 255),
-                        5...6 => RGB(20, 30, 255),
-                        10 => RGB(0,155,0),
-                        _ => RGB(0,0,0),
-                    };
-                    drawer.set_draw_color(color);
-                    let square = get_rect(&b);
-                    drawer.fill_rect(square);
+                    //drawer.set_draw_color(color);
+                    //let square = get_rect(&b);
+                    b.draw(&mut drawer);
                 }
             }
         }
 
-        drawer.set_draw_color(RGB(254,180,204));
-        let inner = get_rect(&draw_block);
-        drawer.draw_rect(inner);
+        //drawer.set_draw_color(RGB(254,180,204));
+        //draw_block.force_draw_color(RGB(254,180,204));
+        draw_block.draw(&mut drawer);
 
         drawer.present();
     }
 }
 
-fn get_rect(b: &Block) -> Rect {
-    return match b.t {
-        1 => Rect::new(b.x, b.y, b.block_size, b.block_size),
-        2 | 5 => Rect::new(b.x-1, b.y, 2, b.block_size),
-        3 | 6 => Rect::new(b.x, b.y-1, b.block_size, 2),
-        4 => Rect::new(b.x-3, b.y-3, 6, 6),
-        //5 => Rect::new(b.x-1, b.y, 2, b.block_size),
-        //6 => Rect::new(b.x, b.y-1, b.block_size, 2),
-        10 => Rect::new(b.x+6, b.y+6, b.block_size-12,b.block_size-12),
-        _ => Rect::new(b.x, b.y, b.block_size, b.block_size),
-    };
-}
 
 fn load_map() -> Vec<Block> {
     let mut blocks = Vec::new();
@@ -226,7 +254,7 @@ fn load_map() -> Vec<Block> {
             Ok(y) => y,
             Err(e) => panic!("Error {}", e),
         };
-        blocks.push( Block{x: (bx*32f32) as i32, y: (by*32f32) as i32, t: blocktype, block_size: 32} );
+        blocks.push( Block{x: (bx*8f32) as i32, y: (by*8f32) as i32, t: blocktype, block_size: 32} );
     }
     blocks
 }
@@ -236,8 +264,8 @@ fn save_map(map: &Vec<Block>) -> bool{
     let _ = file.write_be_i32(map.len() as i32);
     for block in map.iter() {
         let _ = file.write_be_u32(block.t);
-        let _ = file.write_be_f32(block.x as f32 / 32f32);
-        let _ = file.write_be_f32(block.y as f32 / 32f32);
+        let _ = file.write_be_f32(block.x as f32 / 8f32);
+        let _ = file.write_be_f32(block.y as f32 / 8f32);
     }
     println!("Written!");
     true
