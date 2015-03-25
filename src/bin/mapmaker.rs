@@ -45,10 +45,10 @@ impl Drawable for Block {
 
         let mut square = match self.t {
             1 => Rect::new(dr_x, dr_y, self.block_size, self.block_size),
-            2 | 5 => Rect::new(dr_x-1, dr_y, 2, self.block_size),
-            3 | 6 => Rect::new(dr_x, dr_y-1, self.block_size, 2),
-            4 => Rect::new(dr_x-3, dr_y-3, 6, 6),
-            10 => Rect::new(dr_x+6, dr_y+6, self.block_size-12, self.block_size-12),
+            2 | 5 => Rect::new(dr_x, dr_y, 2, self.block_size),
+            3 | 6 => Rect::new(dr_x, dr_y, self.block_size, 2),
+            4 => Rect::new(dr_x, dr_y, 6, 6),
+            10 => Rect::new(dr_x, dr_y, self.block_size-12, self.block_size-12),
             _ => Rect::new(dr_x, dr_y, self.block_size, self.block_size),
         };
 
@@ -95,8 +95,8 @@ fn main() {
             match event {
                 Event::MouseMotion{x: mx, y: my, ..} => {
                     let (xoff, yoff) = match draw_block.t {
-                        2 => (block_size/2, 0),
-                        3 => (0, block_size/2),
+                        2|5 => (block_size/2, 0),
+                        3|6 => (0, block_size/2),
                         4 => (block_size/2, block_size/2),
                         _ => (0, 0),
                     };

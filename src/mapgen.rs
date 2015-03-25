@@ -92,14 +92,14 @@ pub fn load_map(resman : &mut res::ResourceManager) -> Map {
             3 => walls.push( resman.new_wall(bx, 0.0, by, 1.0) ),
             4 => lights.push( resman.new_light(bx, 3.0, by, 4.0, 4.0, 4.0) ),
             5 => {
-                walls.push(resman.new_short_wall(bx * 4.0 - 2.0, 0.0, by * 4.0, 2.0) );
-                walls.push(resman.new_short_wall(bx * 4.0 - 2.0, 0.0, by * 4.0, 4.0) );
-                doors.push(resman.new_door(bx * 4.0 - 2.0, 0.0, by * 4.0, 2.0) );
+                walls.push(resman.new_short_wall(bx, 0.0, by, 2.0) );
+                walls.push(resman.new_short_wall(bx, 0.0, by, 4.0) );
+                doors.push(resman.new_door(bx, 0.0, by, 2.0) );
             },
             6 => {
-                walls.push(resman.new_short_wall(bx * 4.0, 0.0, by * 4.0 - 2.0, 1.0) );
-                walls.push(resman.new_short_wall(bx * 4.0, 0.0, by * 4.0 - 2.0, 3.0) );
-                doors.push(resman.new_door(bx * 4.0, 0.0, by * 4.0 - 2.0, 1.0) );
+                walls.push(resman.new_short_wall(bx, 0.0, by, 1.0) );
+                walls.push(resman.new_short_wall(bx, 0.0, by, 3.0) );
+                doors.push(resman.new_door(bx, 0.0, by, 1.0) );
             },
             10 => {
                 spawns.push(Point{a: bx, b: by} );
