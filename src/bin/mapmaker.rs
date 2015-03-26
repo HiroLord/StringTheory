@@ -100,14 +100,17 @@ fn main() {
         for event in event_pump.poll_iter() {
             match event {
                 Event::MouseMotion{x: mx, y: my, ..} => {
+                    let snap = match draw_block.t {
+                        4 => block_size/2,
+                        _ => block_size,
+                    };
                     let (xoff, yoff) = match draw_block.t {
                         2|5 => (block_size/2, 0),
                         3|6 => (0, block_size/2),
-                        4 => (block_size/2, block_size/2),
                         _ => (0, 0),
                     };
-                    draw_block.x = mx - ((mx + xoff) % block_size) + block_size/2;
-                    draw_block.y = my - ((my + yoff) % block_size) + block_size/2;
+                    draw_block.x = mx - ((mx + xoff) % snap) + block_size/2;
+                    draw_block.y = my - ((my + yoff) % snap) + block_size/2;
                 }
                 Event::MouseButtonUp{mouse_btn: btn, ..} => {
                     if btn == sdl2::mouse::Mouse::Left{
