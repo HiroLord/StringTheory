@@ -5,7 +5,7 @@ version = "0.0.1"
 authors = ["Preston Turner <prestonturner42@gmail.com>", "Nathan Braswell <miloignis@gmail.com>", "Marcus Godwin <marcusgodwin@hotmail.com>"]
 
 [dependencies]
-sdl2 = "0.0.31"
+sdl2 = "0.0.33"
 
 [dependencies.rustnet]
 git = "https://github.com/hirolord/rustnet.git"
