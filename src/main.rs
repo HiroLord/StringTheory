@@ -3,6 +3,7 @@
 #![feature(std_misc)]
 #![feature(old_io)]
 #![feature(old_path)]
+#![feature(convert)]
 
 extern crate sdl2;
 extern crate collections;

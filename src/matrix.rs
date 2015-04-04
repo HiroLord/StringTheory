@@ -5,6 +5,7 @@ use std::num::Float;
 use std::f32::consts;
 use std::iter;
 
+#[derive(Clone)]
 pub struct Matrix {
     pub data: [GLfloat; 16],
 }
@@ -59,7 +60,7 @@ impl Mul for Matrix {
     fn mul(self, other: Matrix) -> Matrix {
         let mut ret = Matrix { data: [0.0f32; 16] };
         for i in 0..4 {
-            for j in iter::range_step(0,16,4) {
+            for j in iter::range_step_inclusive(0,15,4) {
                 ret.data[i+j] = self.data[i] * other.data[j] +
                                 self.data[i+4] * other.data[j+1] +
                                 self.data[i+8] * other.data[j+2] +

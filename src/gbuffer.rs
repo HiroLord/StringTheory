@@ -11,6 +11,7 @@ pub enum TextureType {
     Number = 4,
 }
 impl Copy for GBuffer {}
+#[derive(Clone)]
 pub struct GBuffer {
     fbo: GLuint,
     pub textures: [GLuint; TextureType::Number as usize],
