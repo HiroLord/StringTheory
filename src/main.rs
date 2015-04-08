@@ -257,49 +257,35 @@ fn main() {
         players[0].forward(forward);
         players[0].strafe(strafe);
 
-        for p in 0..players.len() {
-            let (dx, dz) = players[p].get_move(delta);
-           
-            players[p].move_x(dx);
-            let mut i = 0;
-            let mut maxlen = map.get_walls().len();
-            if map.get_doors().len() > maxlen {
-                maxlen = map.get_doors().len();
-            }
-            while i < maxlen {
-                if i < map.get_walls().len() && check_collision(players[p].get_mask(), map.get_walls()[i].get_mask()) {
-                    players[p].move_x(-dx);
-                    align_x(&mut players[p], (map.get_walls()[i].get_mask()));
-                    //break;
-                }
-                if i < map.get_doors().len() && !map.get_doors()[i].is_open() && check_collision(players[p].get_mask(), 
-                                                                map.get_doors()[i].get_mask()) {
-                    players[p].move_x(-dx);
-                    align_x(&mut players[p], (map.get_doors()[i].get_mask()));
-                    //break;
-                }
-                i += 1;
-            }
-
-            i = 0;
-            players[p].move_z(dz);
-            while i < maxlen {
-                if i < map.get_walls().len() && check_collision(players[p].get_mask(), map.get_walls()[i].get_mask()) {
-                    players[p].move_z(-dz);
-                    align_z(&mut players[p], (map.get_walls()[i].get_mask()));
-                    //break;
-                }
-                if i < map.get_doors().len() && !map.get_doors()[i].is_open() && check_collision(players[p].get_mask(),
-                                                            map.get_doors()[i].get_mask()) {
-                    players[p].move_z(-dz);
-                    align_z(&mut players[p], (map.get_doors()[i].get_mask()));
-                    //break;
-                }
-
-                i += 1;
-            }
+        let mut solids = Vec::new();
+        for wall in map.get_walls() {
+            solids.push(wall.get_mask());
+        }
+        for door in map.get_doors() {
+            if door.is_open() { continue; }
+            solids.push(door.get_mask());
         }
 
+        for p in 0..players.len() {
+            let (dx, dz) = players[p].get_move(delta);
+
+            players[p].move_x(dx);
+            for i in 0..solids.len() {
+                if check_collision(players[p].get_mask(), solids[i]) {
+                    players[p].move_x(-dx);
+                    align_x(&mut players[p], solids[i]);
+                }
+            }
+
+            players[p].move_z(dz);
+            for i in 0..solids.len() {
+                if check_collision(players[p].get_mask(), solids[i]) {
+                    players[p].move_z(-dz);
+                    align_z(&mut players[p], solids[i]);
+                }
+            }
+        }
+        
         camera.snap_to_player(&players[0]);
         camera.update_view_projection();
 

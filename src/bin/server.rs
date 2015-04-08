@@ -24,6 +24,8 @@ fn main() {
     let mut players: Vec<Player> = Vec::new();
     let mut player_nums = 0;
 
+
+
     let (tx, rx) = mpsc::channel();
     
     thread::spawn( move || {
